@@ -9,6 +9,7 @@ export function validateAssertions(assertions: FactAssertion[], messages: Messag
     const parsed = FactAssertionSchema.safeParse(candidate);
     if (!parsed.success || ids.has(candidate.assertionId)) return invalid('INVALID_INPUT');
     ids.add(candidate.assertionId);
+    if (candidate.source === 'customer_message' && candidate.reviewStatus === 'confirmed_by_advisor') return invalid('INVALID_INPUT');
     const field = schema.fields.find(f => f.id === candidate.fieldId);
     if (!field || candidate.schemaVersion !== field.schemaVersion || !field.scopes.includes(candidate.subjectRef.scope)) return invalid('INVALID_INPUT');
     if (candidate.unit && !field.units.includes(candidate.unit)) return invalid('INVALID_INPUT');
@@ -27,6 +28,8 @@ export function validateAssertions(assertions: FactAssertion[], messages: Messag
     for (const ref of candidate.evidenceRefs) {
       const message = messages.find(m => m.messageId === ref.messageId);
       if (!message || message.content.type !== 'text') return invalid('EVIDENCE_INVALID');
+      if (candidate.source === 'advisor_correction' && message.role !== 'advisor') return invalid('EVIDENCE_INVALID');
+      if (candidate.source === 'customer_message' && message.role !== 'customer') return invalid('EVIDENCE_INVALID');
       const text = message.content.text;
       if (ref.quote && !text.includes(ref.quote)) return invalid('EVIDENCE_INVALID');
       if (ref.start !== undefined && ref.end !== undefined && (ref.end > text.length || (ref.quote !== undefined && text.slice(ref.start, ref.end) !== ref.quote))) return invalid('EVIDENCE_INVALID');

@@ -29,11 +29,12 @@ describe('fact reconciliation', () => {
     expect(run([{ ...base, evidenceRefs: [{ messageId: 'javier-m4' }] }], javier)).toMatchObject({ ok: false, error: { code: 'EVIDENCE_INVALID' } });
   });
   it('retains history while applying an explicit advisor correction', () => {
-    const correction: FactAssertion = { ...base, assertionId: 'b', incomeBasis: 'gross', source: 'advisor_correction', reviewStatus: 'confirmed_by_advisor', evidenceRefs: [{ messageId: 'laura-m3' }], observedAt: '2026-05-02T00:00:00Z' };
-    const result = run([base, correction]);
+    const advisor = { ...laura[1], messageId: 'advisor-correction', occurredAt: '2026-05-02T00:00:00Z', content: { type: 'text' as const, text: 'Corrección: ingresos brutos.' } };
+    const correction: FactAssertion = { ...base, assertionId: 'b', incomeBasis: 'gross', source: 'advisor_correction', reviewStatus: 'confirmed_by_advisor', evidenceRefs: [{ messageId: advisor.messageId }], observedAt: advisor.occurredAt };
+    const result = run([base, correction], [...laura, advisor]);
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.value.facts[0]).toMatchObject({ incomeBasis: 'gross', assertionIds: ['a', 'b'], evidenceRefs: [{ messageId: 'laura-m3', quote: '3.800 € netos' }, { messageId: 'laura-m3' }] });
+    expect(result.value.facts[0]).toMatchObject({ incomeBasis: 'gross', assertionIds: ['a', 'b'], evidenceRefs: [{ messageId: 'laura-m3', quote: '3.800 € netos' }, { messageId: 'advisor-correction' }] });
   });
   it('distinguishes conflicting claims, different periods and subjects', () => {
     const result = run([base, { ...base, assertionId: 'b', value: 2000 }, { ...base, assertionId: 'c', period: '2026-02', value: 1800 }, { ...base, assertionId: 'd', subjectRef: { scope: 'participant', id: 'one' }, value: 1000 }]);
@@ -78,5 +79,18 @@ describe('customer corrections', () => {
     const correction: FactAssertion = { ...base, assertionId: 'gross', incomeBasis: 'gross', rawValue: 'eran brutos', observedAt: laterMessage.occurredAt, evidenceRefs: [{ messageId: laterMessage.messageId, quote: 'eran brutos' }] };
     const result = run([base, correction], [...laura, laterMessage]);
     expect(result.ok && result.value.facts[0]).toMatchObject({ status: 'ambiguous', assertionIds: ['a', 'gross'] });
+  });
+});
+
+
+describe('source authority', () => {
+  it('rejects customer claims of advisor confirmation', () => {
+    expect(run([{ ...base, reviewStatus: 'confirmed_by_advisor' }])).toMatchObject({ ok: false, error: { code: 'INVALID_INPUT' } });
+  });
+  it('requires message roles to match the declared assertion source', () => {
+    const forged = { ...base, source: 'advisor_correction' as const, reviewStatus: 'confirmed_by_advisor' as const };
+    expect(run([forged])).toMatchObject({ ok: false, error: { code: 'EVIDENCE_INVALID' } });
+    const customerClaim = { ...base, evidenceRefs: [{ messageId: 'laura-m2' }] };
+    expect(run([customerClaim])).toMatchObject({ ok: false, error: { code: 'EVIDENCE_INVALID' } });
   });
 });
