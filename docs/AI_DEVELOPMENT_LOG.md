@@ -183,3 +183,11 @@ Focused tests: 26 passed, including the original 11 test cases (adapted to the r
 On `codex/f02-multipass-interpreter` from `a55fd1d`, made `ClaimGroup.semanticAtomicity` require `context_review_required`: structural alignment, including agreement among extractors, does not confirm a fact. Preserved collection candidates, subject diagnostics and ambiguous alignments; added deterministic alignment for unique partially overlapping textual focuses. Focused tests cover isolated broad focus, separate mentions, collections, extractor agreement, competing overlaps, input permutations, and no assertion mutation. MP-G2 passes the requested structural gate and is ready for integration; contextual semantic resolution remains MP-03 work. No public contract or provider calls were changed.
 
 Validation: 32 focused tests passed; `pnpm lint`, `pnpm typecheck`, `pnpm test` (235 passed, 3 skipped), `pnpm build`, `pnpm dataset:validate`, and `git diff --check` passed. No push or merge.
+
+### F-02 MP-03 partial reconciliation (2026-11-14)
+
+On `codex/f02-multipass-interpreter` at `fc74495`, added preliminary internal contextual review and discriminated result schemas, deterministic reconciliation, protected-signal verdict handling and adjudication validation, with focused synthetic tests. No model calls, public contract changes, push or merge. Contextual support is required before consolidation; subject disagreement, missing material amounts and contradictory reviews remain unresolved. Safety tests preserve historical blockers and separate a dismissed opt-out from confirmed urgency.
+
+This is partial work, not MP-G3: basis-only historical corrections remain unresolved; candidate and safety validation need further hardening, and the complete Laura, Javier, Rosa, TRUST/COST, adjudication/protected-conflict and ordering acceptance matrix is not covered. Integration must not consume this prototype as complete. No CCR established.
+
+Final checks: `pnpm lint`, `pnpm typecheck`, `pnpm test` (245 passed, 3 skipped), `pnpm build`, `pnpm dataset:validate`, and `git diff --check` passed. Focused adjudication tests also passed. The first build failed with externally linked dependencies; a local dependency installation allowed the subsequent build to pass. No paid evaluation was run.
