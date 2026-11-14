@@ -183,6 +183,7 @@ live('evaluates OpenAI backend against synthetic semantic oracle', async () => {
       } };
       const state = await execute(scenario, iteration, transport, cfg.mode);
       const checks = evaluateChecks(scenario, state);
+      if (cfg.mode === 'end-to-end' && state.action === 'CLARIFY') checks.push({ name: 'reviewable_draft', pass: state.draft === 'generated', expected: 'generated', actual: state.draft });
       const actionCheck = checks.find(c => c.name === 'commercial_action');
       const blocked = budgetExhausted || state.errors.some(e => e.code === 'MODEL_UNAVAILABLE') || calls.some(c => c.status === 'error' && c.diagnostic?.category === 'network');
       const verdict: Verdict = blocked ? 'BLOCKED' : checks.every(c => c.pass) ? 'PASS' : actionCheck?.pass ? 'PARTIAL' : 'FAIL';
