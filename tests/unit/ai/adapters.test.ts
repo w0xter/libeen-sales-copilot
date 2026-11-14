@@ -566,3 +566,17 @@ describe('U0 financial attribution instructions and preservation', () => {
     for (const [index, claim] of claims.entries()) expect(result.value.assertions[index]).toMatchObject({ subjectRef: { scope: claim.scope, id: claim.subjectId }, value: claim.value, unit: 'EUR', period: 'month', incomeBasis: 'unknown', evidenceRefs: [{ messageId: 'income' }] });
   });
 });
+
+describe('interpreter strategy configuration', () => {
+  it('gives replay priority over the interpreter strategy without credentials', async () => {
+    const adapters = createAIAdapters({ AI_MODE: 'replay', AI_INTERPRETER_STRATEGY: 'multipass' });
+    expect(adapters.ok).toBe(true);
+    if (adapters.ok) expect(await adapters.value.interpreter.interpret(input('rosa'))).toMatchObject({ ok: true });
+  });
+  it('rejects unknown OpenAI strategies before using a model', () => {
+    expect(createAIAdapters({ AI_MODE: 'openai', OPENAI_API_KEY: 'test', AI_INTERPRETER_STRATEGY: 'other' })).toMatchObject({ ok: false, error: { code: 'INVALID_CONFIGURATION' } });
+  });
+  it('does not silently use single-pass for an unavailable multipass strategy', () => {
+    expect(createAIAdapters({ AI_MODE: 'openai', OPENAI_API_KEY: 'test', AI_INTERPRETER_STRATEGY: 'multipass' })).toMatchObject({ ok: false, error: { code: 'MODEL_UNAVAILABLE' } });
+  });
+});
