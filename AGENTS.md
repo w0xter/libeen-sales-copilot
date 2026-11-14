@@ -19,7 +19,7 @@ Never add real WhatsApp/CRM delivery, real appointments, financial approvals, or
 ## Task context and sources of truth
 
 - Work from the **assigned AI Task Brief**: its dependencies, permitted paths, contracts, failure cases, acceptance criteria, and integration gate define the task boundary. Once a task is authorized, implement and verify within that boundary; do not restart product discovery or request approval for every routine edit.
-- Read **only the relevant** repository documentation in `docs/`, when available. The `docs/` folder initially contains no specifications: do not assume missing files exist or invent their contents. Request the required brief/contract if unavailable.
+- Read **only the relevant** repository documentation in `docs/`, when available. Request the required brief/contract if unavailable.
 - Once created, `src/contracts/` owns the shared TypeScript/Zod interfaces; `src/config/` owns workflow, fact, agent, and policy definitions. Source changes must agree with these contracts. Configuration is not permission to bypass safety invariants.
 - Check the existing code before modifying it. Do not treat mock data, model output, or a README example as authoritative policy.
 

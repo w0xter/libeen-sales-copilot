@@ -15,7 +15,7 @@
 | D-11 | Política `demo-v1` R01–R10 sintética sin umbrales financieros; R10 editable | Decisión de alcance demo |
 | D-12 | Desarrollo con Codex en ramas/worktrees y Superpowers como método, DAG como coordinación | Enfoque de ejecución elegido |
 | D-13 | Plan LIB-001–LIB-013 y puertas G0–G4 | **Plan, tareas aún no realizadas** |
-| D-14 | `AGENTS.md` raíz aprobado por el usuario | **Archivo documental aprobado**, pendiente de incorporación al repo |
+| D-14 | `AGENTS.md` raíz aprobado por el usuario | **Archivo documental aprobado** |
 
 ## Estado comprobado del repositorio
 
