@@ -160,3 +160,34 @@ describe('semantic grounding safeguards', () => {
     expect(normalizeModelInterpretation({ assertions: [a], blockers: [], warnings: [] }, input('rosa'))).toMatchObject({ ok: true, value: { assertions: [{ precision: 'ambiguous' }] } });
   });
 });
+
+describe('amount observation precision', () => {
+  it('preserves approximations attached to amounts without changing an exact amount in the same message', async () => {
+    const { normalizeModelInterpretation } = await import('../../../src/adapters/ai/openai');
+    const data = input('laura');
+    const base = { scope: 'buying_unit', subjectId: 'buying_unit', unit: 'EUR', incomeBasis: null, precision: 'explicit' };
+    const result = normalizeModelInterpretation({ assertions: [
+      { ...base, fieldId: 'declared_monthly_income', value: 3800, period: 'month', messageId: 'laura-m3' },
+      { ...base, fieldId: 'available_savings', value: 18000, period: null, messageId: 'laura-m3' },
+      { ...base, fieldId: 'monthly_debt', value: 250, period: 'month', messageId: 'laura-m4' }
+    ], blockers: [], warnings: [] }, data);
+    expect(result).toMatchObject({ ok: true, value: { assertions: [ { precision: 'approximate' }, { precision: 'approximate' }, { precision: 'explicit' } ] } });
+  });
+});
+
+describe('historical basis corrections', () => {
+  it('retains the earlier amount and records a later basis correction without attributing the amount to it', async () => {
+    const { normalizeModelInterpretation } = await import('../../../src/adapters/ai/openai');
+    const { reconcileFacts } = await import('../../../src/domain/facts');
+    const data = input('laura');
+    data.messages = [...data.messages, ...scenarios.find(s => s.id === 'laura-gross-correction')!.additions];
+    const earlier = { fieldId: 'declared_monthly_income', scope: 'buying_unit', subjectId: 'buying_unit', value: 3800, unit: 'EUR', period: 'month', incomeBasis: 'net', messageId: 'laura-m3', precision: 'explicit' };
+    const correction = { ...earlier, incomeBasis: 'gross', messageId: data.messages.at(-1)!.messageId };
+    const result = normalizeModelInterpretation({ assertions: [earlier, correction], blockers: [], warnings: [] }, data);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.assertions[1]).toMatchObject({ precision: 'ambiguous', incomeBasis: 'gross', evidenceRefs: [{ messageId: correction.messageId }] });
+    expect(result.value.assertions[1].value).toBeUndefined();
+    expect(reconcileFacts({ assertions: result.value.assertions, messages: data.messages, factSchema: data.factSchema })).toMatchObject({ ok: true, value: { facts: [{ status: 'ambiguous', value: 3800, evidenceRefs: expect.arrayContaining([{ messageId: 'laura-m3', quote: expect.any(String) }, { messageId: correction.messageId, quote: expect.any(String) }]) }] } });
+  });
+});

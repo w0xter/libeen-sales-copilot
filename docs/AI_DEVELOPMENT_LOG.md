@@ -123,3 +123,7 @@ No almacenar API keys, transcripciones de clientes reales ni secretos. No invent
 - Added field-specific model schemas, message-grounded evidence and conservative guards for unsupported amounts and interrogative rental intent. Added deterministic regression coverage without changing shared contracts or fixtures.
 - Ran 20 synthetic provider requests; mixed outcomes and every latency are recorded in `docs/evaluation/F01_OPENAI_REMEDIATION.md`. F-01 remains partially fixed: false TRUST, uncertainty errors and blocker omissions remain.
 - `pnpm lint`, `pnpm typecheck`, `pnpm test` (112 tests) and `pnpm build` passed. No push or merge.
+
+### 2026-11-14 — F-01, tercera iteración limitada
+
+Se investigaron límites de evidencia, precisión y correcciones; se añadieron salvaguardas conservadoras en el adaptador y dos regresiones deterministas. Doce intentos de interpretación real devolvieron `MODEL_UNAVAILABLE`; no se recibió respuesta. El verificador independiente de bloqueos y la evaluación semántica real quedan pendientes. Detalles y resultados en `docs/evaluation/F01_OPENAI_REMEDIATION.md`; F-01 sigue abierto.

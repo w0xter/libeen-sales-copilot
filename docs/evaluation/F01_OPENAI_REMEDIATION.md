@@ -111,3 +111,28 @@ Frente a las 18 solicitudes previas, se eliminó en esta muestra el rechazo por 
 Verificación final: `pnpm lint` PASS; `pnpm typecheck` PASS; `pnpm test` PASS (15 archivos, 112 tests); `pnpm build` PASS. Los tests de regresión se ejecutaron antes de la evaluación; la comprobación de error recuperable se ajustó después de las llamadas y no cambia sus resultados. El segundo recorrido usó el límite completo de 20 solicitudes; no se dispone de una prueba más amplia, ni de validación de cancelación efectiva del proveedor. Los cambios no cubren F-02–F-07 y no se modificaron contratos compartidos.
 
 **Veredicto final: PARTIALLY FIXED.** No se cumplen la consistencia de Laura, la conservación fiable de incertidumbre y correcciones, ni la detección estable de todos los bloqueos. No se debe presentar F-01 como resuelto.
+
+## Tercera iteración — 14 de noviembre de 2026
+
+**Dictamen: PARTIALLY FIXED. F-01 permanece abierto.** No se dispone de evidencia de inferencia real satisfactoria en esta iteración y no se afirma fiabilidad estadística.
+
+### Diagnóstico y cambios
+
+La precisión del modelo se aceptaba aunque el texto calificara la cifra como aproximada. El adaptador ahora detecta algunos marcadores de aproximación directamente asociados a una observación numérica concreta; no cambia todas las cifras financieras a aproximadas. Esta comprobación es conservadora y limitada: no demuestra que la cifra pertenezca al campo, sujeto o periodo inferidos, ni cubre todas las expresiones posibles. La evidencia sigue apuntando al mensaje completo salvo que se facilite una cita; no se ha resuelto la atribución semántica general a fragmentos.
+
+Cuando la salida identifica tanto una declaración anterior de ingresos como una corrección posterior de base, sin cifra repetida, el adaptador conserva la declaración previa y transforma la segunda en una afirmación ambigua sin valor numérico, con evidencia propia. El reconciliador existente conserva ambas evidencias y proyecta el hecho como ambiguo. La conversión exige una referencia temporal, sujeto y cantidad compatibles y un marcador explícito de corrección y base: no maneja todas las paráfrasis y no detecta una corrección omitida por el modelo. Sin la declaración anterior compatible se sigue rechazando la atribución de la cifra al mensaje de corrección. No se cambiaron contratos, configuración ni fixtures.
+
+No se implementó el verificador independiente de bloqueos: una clasificación TRUST especulativa todavía puede conducir a HANDOFF, y el modelo puede omitir URGENT o BINDING_CLAIM. No se introdujeron reglas de palabras clave para fingir una verificación. El tratamiento de preguntas condicionales de alquiler sigue siendo el de la iteración anterior; no se ha demostrado su generalización. Estos fallos mantienen abierto F-01.
+
+### Evaluación y verificaciones
+
+Se hicieron 12 intentos de interpretación, sin reintentos automáticos: Laura, Javier, Rosa, corrección bruta y dos paráfrasis, cada uno dos veces. Todos devolvieron `MODEL_UNAVAILABLE` inmediatamente; no se obtuvo ninguna respuesta del proveedor y no se puede confirmar cuántos intentos llegaron a él. No se hicieron solicitudes de borrador. El harness temporal se retiró. Por tanto, estructura, evidencia, corrección semántica, política/acción y éxito de caso completo quedan **NO EVALUADOS** para los seis escenarios; un error de conexión no cuenta como prueba del modelo.
+
+Las pruebas deterministas nuevas reproducen la pérdida de precisión y la corrección con dos afirmaciones y evidencia histórica. Se observó fallar cada regresión antes del cambio y pasar después. Son pruebas con salida simulada, no inferencia real. No se han añadido las regresiones independientes solicitadas para distinguir falsos y verdaderos TRUST, detectar omisiones URGENT/BINDING_CLAIM, ni cubrir sistemáticamente paráfrasis, contradicciones y evidencia insuficiente. Las pruebas preexistentes no sustituyen esas verificaciones.
+
+- `pnpm lint`: PASS.
+- `pnpm typecheck`: PASS.
+- `pnpm test`: PASS, 15 archivos y 114 tests (sin el harness temporal).
+- `pnpm build`: PASS.
+
+**Veredicto: PARTIALLY FIXED.** Las dos salvaguardas limitadas no satisfacen la misión completa ni el gate de evaluación real. No se modificaron F-02–F-07. La integración no está verificada para entrega.
