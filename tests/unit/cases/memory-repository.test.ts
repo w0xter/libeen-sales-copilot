@@ -16,8 +16,8 @@ describe('in-memory case repository', () => {
   it('persists an incoming message before any interpretation and deduplicates retries', async () => {
     const repo = new MemoryCaseRepository([fixture]);
     const first = await repo.appendEvent(event);
-    expect(first).toEqual({ ok: true, value: { eventId: 'evt-1', caseId: 'laura', revision: 1 } });
-    expect(await repo.appendEvent(event)).toEqual(first);
+    expect(first).toEqual({ ok: true, value: { receipt: { eventId: 'evt-1', caseId: 'laura', revision: 1 }, duplicate: false } });
+    expect(await repo.appendEvent(event)).toEqual({ ok: true, value: { receipt: { eventId: 'evt-1', caseId: 'laura', revision: 1 }, duplicate: true } });
     const current = await repo.get('laura');
     expect(current.ok && current.value.messages.filter(m => m.messageId === 'new')).toHaveLength(1);
     expect(current.ok && current.value.revision).toBe(1);
@@ -41,10 +41,21 @@ describe('in-memory case repository', () => {
     expect(await repo.get('laura')).toEqual({ ok: true, value: fixture });
     const receipt = await repo.appendEvent(event);
     if (!receipt.ok) throw new Error('event failed');
-    receipt.value.revision = 99;
-    expect(await repo.appendEvent(event)).toMatchObject({ ok: true, value: { revision: 1 } });
+    receipt.value.receipt.revision = 99;
+    expect(await repo.appendEvent(event)).toMatchObject({ ok: true, value: { receipt: { revision: 1 } } });
     await repo.reset('laura');
-    expect(await repo.appendEvent(event)).toMatchObject({ ok: true, value: { revision: 1 } });
+    expect(await repo.appendEvent(event)).toMatchObject({ ok: true, value: { receipt: { revision: 1 } } });
+  });
+  it('commits a lifecycle event and its projection together, once', async () => {
+    const repo = new MemoryCaseRepository([fixture]);
+    const approval: CaseEvent = { eventId: 'approve-1', caseId: 'laura', actor: 'advisor', occurredAt: event.occurredAt, expectedRevision: 0, type: 'DRAFT_APPROVED', payload: { draftId: 'd1', proposalId: 'p1' } };
+    const projected: CaseSnapshot = { ...structuredClone(fixture), revision: 1, events: [approval], status: 'WAITING_CUSTOMER' };
+    expect(await repo.appendEventWithSnapshot(approval, projected)).toMatchObject({ ok: true, value: { duplicate: false, receipt: { revision: 1 } } });
+    expect(await repo.appendEventWithSnapshot(approval, projected)).toMatchObject({ ok: true, value: { duplicate: true, receipt: { revision: 1 } } });
+    expect(await repo.get('laura')).toEqual({ ok: true, value: projected });
+    const other = { ...approval, eventId: 'approve-2' };
+    expect(await repo.appendEventWithSnapshot(other, { ...projected, events: [other] })).toMatchObject({ ok: false, error: { code: 'REVISION_CONFLICT' } });
+    expect(await repo.get('laura')).toEqual({ ok: true, value: projected });
   });
   it('rejects stale writes, isolates copies and restores the original fixture on reset', async () => {
     const repo = new MemoryCaseRepository([fixture]);

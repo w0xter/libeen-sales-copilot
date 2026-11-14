@@ -41,10 +41,13 @@ export interface EventReceipt {
   revision: number;
 }
 
+export interface EventAppendResult { receipt: EventReceipt; duplicate: boolean }
+
 export interface CaseRepository {
   get(caseId: string): Promise<Result<CaseSnapshot>>;
   saveIfRevision(snapshot: CaseSnapshot, expectedRevision: number): Promise<Result<CaseSnapshot>>;
-  appendEvent(event: CaseEvent): Promise<Result<EventReceipt>>;
+  appendEvent(event: CaseEvent): Promise<Result<EventAppendResult>>;
+  appendEventWithSnapshot(event: CaseEvent, snapshot: CaseSnapshot): Promise<Result<EventAppendResult>>;
   reset(caseId: string): Promise<Result<CaseSnapshot>>;
 }
 export type ApplicationResult = Result<CaseView>;

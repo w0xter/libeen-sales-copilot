@@ -76,3 +76,9 @@ No almacenar API keys, transcripciones de clientes reales ni secretos. No invent
 - Integrated separate OpenAI and replay adapters, output/evidence validation and action-specific safe draft templates. Replay handles the canonical synthetic messages and defined variations only; unknown inputs fail closed. Live OpenAI inference was not run, so its provider path remains unverified. Model output is barred from claiming advisor authority.
 - Added modular advisor workspace components using typed illustrative mocks; the mock UI labels its mode and does not persist or send. The UI agent checked case selection, evidence, Javier's unavailable audio and draft approval in a browser; it observed a missing favicon 404 and no other runtime errors.
 - Integrator ran `pnpm test` (60 tests), `pnpm typecheck`, `pnpm lint`, `pnpm build`, and `git diff --check`; all passed. UI lifecycle behavior and fixture-to-engine flows still require LIB-009–012 integration and acceptance testing.
+
+### 2026-11-14 — LIB-009 orchestrator
+
+- Integrated modular case orchestration and approved a repository-port change: stable receipts now include a separate duplicate indicator, and non-message events commit atomically with their projections. Incoming messages still commit before interpretation; tests exercise conflicting and repeated events.
+- Integrator ran `pnpm test` (72 tests), `pnpm typecheck`, `pnpm lint`, `pnpm build`, and `git diff --check`; all passed. Focused cases cover replay, AI and draft failures, stale proposals, R10, source authority, evidence fragments, duplicate simulated sends and delayed-model CAS.
+- Human-edited draft text is not semantically screened for prohibited claims; generated text uses constrained templates and no external delivery exists. This remains an integration limitation. G2 remains open until API/UI wiring and end-to-end verification.
