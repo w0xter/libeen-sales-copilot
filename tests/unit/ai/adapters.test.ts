@@ -100,3 +100,30 @@ describe('AI adapters', () => {
   });
 
 });
+
+describe('model-facing interpretation', () => {
+  it('converts nullable optional fields while retaining exact customer evidence', async () => {
+    const candidate = { assertions: [{ fieldId: 'available_savings', scope: 'buying_unit', subjectId: 'buying_unit', value: 0, unit: 'EUR', period: null, incomeBasis: null, quote: 'Ahorros no tenemos', messageId: 'rosa-m1', precision: 'explicit' }], blockers: [], warnings: [] };
+    const { normalizeModelInterpretation } = await import('../../../src/adapters/ai/openai');
+    const result = normalizeModelInterpretation(candidate, input('rosa'));
+    expect(result).toMatchObject({ ok: true, value: { assertions: [expect.objectContaining({ value: 0, rawValue: 'Ahorros no tenemos', source: 'customer_message' })] } });
+    expect(normalizeModelInterpretation({ ...candidate, assertions: [{ ...candidate.assertions[0], messageId: 'missing' }] }, input('rosa'))).toMatchObject({ ok: false, error: { code: 'EVIDENCE_INVALID' } });
+  });
+});
+
+describe('structured output failures', () => {
+  it('rejects unsupported fields, invalid types and forged evidence without dropping assertions', async () => {
+    const { normalizeModelInterpretation } = await import('../../../src/adapters/ai/openai');
+    const a = { fieldId: 'available_savings', scope: 'buying_unit', subjectId: 'buying_unit', value: 0, unit: 'EUR', period: null, incomeBasis: null, quote: 'Ahorros no tenemos', messageId: 'rosa-m1', precision: 'explicit' };
+    for (const change of [{ fieldId: 'not_a_field' }, { value: ['0'] }, { quote: 'inventado' }]) {
+      expect(normalizeModelInterpretation({ assertions: [{ ...a, ...change }], blockers: [], warnings: [] }, input('rosa')).ok).toBe(false);
+    }
+  });
+  it('distinguishes incomplete or refused responses without exposing provider details', async () => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    for (const message of ['MODEL_REFUSAL', 'MODEL_INCOMPLETE']) {
+      const result = await new OpenAIInterpreter({ complete: async () => { throw new Error(message); } }).interpret(input('rosa'));
+      expect(result).toMatchObject({ ok: false, error: { code: 'MODEL_OUTPUT_INVALID' } });
+    }
+  });
+});

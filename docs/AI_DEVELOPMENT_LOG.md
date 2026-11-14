@@ -111,3 +111,9 @@ No almacenar API keys, transcripciones de clientes reales ni secretos. No invent
 
 - Fresh local clone of `f00de60`: `pnpm install --frozen-lockfile`, `pnpm lint`, `pnpm typecheck`, `pnpm test` (105 tests), and `pnpm build` all passed. Following the README environment setup (`cp .env.example .env.local`), `pnpm dev -p 3219` started; the page and Laura API returned HTTP 200 and the API identified replay mode with four original messages. The server was stopped afterward.
 - LIB-013/G4 delivery checks are complete for this local synthetic PoC. No remote push or permission change was made. Live OpenAI inference, live-model prompt-injection resistance, production authentication/persistence, and semantic screening of human-edited drafts remain untested or out of scope.
+
+
+### 2026-11-14 — F-01 OpenAI remediation, partial
+
+- Diagnosed a real synthetic response, added a strict model-facing schema and evidence-preserving conversion, bounded cancellable requests, and regression tests. Ran 18 provider requests and retained mixed results in `docs/evaluation/F01_OPENAI_REMEDIATION.md`; the original evaluation remains unchanged.
+- Lint, typecheck, 108 tests and build passed. Live corrections and canonical cases remain inconsistent, so F-01 is **not resolved**. No external delivery or shared-contract changes.

@@ -39,7 +39,7 @@ El asesor puede editar, aprobar o descartar un borrador y registrar un envío **
 - `AI_MODE=replay`: funciona sin credenciales y está etiquetado en la interfaz. Solo admite las conversaciones y variantes sintéticas reconocidas.
 - `AI_MODE=openai`: configura `OPENAI_API_KEY` en `.env.local` y opcionalmente `OPENAI_MODEL` (por defecto `gpt-4.1-mini`). La clave solo se lee en el servidor. Reinicia el servidor tras cambiar el entorno. La falta de clave o un error del proveedor se comunica sin cambiar a replay silenciosamente.
 
-El adaptador OpenAI extrae candidatos estructurados que pasan validación y selecciona entre plantillas de borrador permitidas; no redacta libremente. **No se ha realizado una ejecución con OpenAI real ni se ha verificado la resistencia del modelo a instrucciones maliciosas.** Las pruebas deterministas no hacen llamadas reales.
+El adaptador OpenAI extrae candidatos estructurados que pasan validación y selecciona entre plantillas de borrador permitidas; no redacta libremente. **La inferencia real se ha evaluado, pero sigue siendo inconsistente y F-01 no está resuelto.** La evaluación original y la remediación parcial conservan los fallos y límites observados: [evaluación independiente](docs/evaluation/INDEPENDENT_EVALUATION.md) y [remediación F-01](docs/evaluation/F01_OPENAI_REMEDIATION.md). Las pruebas deterministas no hacen llamadas reales; una prueba aislada de instrucciones maliciosas no acredita resistencia general.
 
 ## Configuración R10
 
