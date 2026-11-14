@@ -163,3 +163,11 @@ Validation: focused adapter tests passed (66); `pnpm lint`, `pnpm typecheck`, `p
 On `codex/f01-trust-boundaries` at `3af965e`, clarified model instructions for financial ownership and JSON null, and normalized only optional assertion metadata before choosing the validation route. Added deterministic adapter coverage for scope preservation, null variants, invalid metadata and nonurgent TIME review. The attribution itself remains model-dependent; no historical facts or shared contracts were rewritten. No paid model requests were made, so Javier B05, the real-model TIME case and the 24-scenario U0 acceptance remain unverified.
 
 Validation: focused adapter tests passed (85); `pnpm lint`, `pnpm typecheck`, `pnpm test` (203 passed, 3 skipped), `pnpm build`, `pnpm dataset:validate` and `git diff --check` passed.
+
+### F-02 MP-G0–MP-G2, partial implementation (2026-11-14)
+
+Created isolated `codex/f02-multipass-interpreter` from `5309484662b6eff4cde631e9416e78ddc9c35087`; the source worktree and its F-02 brief were preserved. Baseline: `pnpm test` 203 passed, 3 skipped. Added preliminary internal schemas, UTF-16 evidence checks, adapter-generated candidate IDs, and position-based grouping with rejection of missing/multi-number focus, duplicate contributions and invalid evidence. Added deterministic tests. No model requests, public contracts, fixtures or replay changes.
+
+Final checks: focused tests 11 passed; `pnpm lint`, `pnpm typecheck`, `pnpm test` (214 passed, 3 skipped), `pnpm build`, `pnpm dataset:validate` and `git diff --check` passed. The first build failed because Turbopack rejected the external node_modules symlink; a frozen offline local installation fixed it.
+
+MP-G1 and MP-G2 are not declared complete: candidate validation is not enforced by the grouping entry point, subject identity and correction links are not checked against a case snapshot, alignment only recognizes identical focus offsets, and broader adversarial coverage and cross-contract validation are still needed. No MP-03 or later work was started; no push or merge.
