@@ -13,7 +13,16 @@
 | Brief individual | Scope, rutas de escritura y criterios del trabajo |
 | Superpowers | TDD, debugging, code review, worktree hygiene, verificación |
 
-No invocar brainstorming global en tareas de implementación ya especificadas; sí plan técnico breve dentro del brief. No autorizar a una skill a cambiar políticas, clases de eventos o dependencias por su cuenta.
+No invocar brainstorming global en tareas de implementación ya especificadas. Codex puede preparar un plan técnico breve **para sí mismo**, pero **no debe pausar para pedir aprobación de ese plan**: el brief asignado y desbloqueado autoriza ejecución, tests, correcciones y self-review dentro de su scope. No autorizar a una skill a cambiar políticas, clases de eventos o dependencias por su cuenta.
+
+## Política de autonomía de esta PoC
+
+- **No existe gate de revisión humana del plan técnico de cada tarea.** Las decisiones importantes de producto, arquitectura y contratos ya están recogidas en las especificaciones, el DAG y los briefs.
+- Al recibir un nodo listo, Codex lee el contexto pertinente, determina los pasos y los ejecuta de extremo a extremo sin solicitar validación entre pasos. Puede usar Superpowers para TDD, debugging y review, pero una skill no debe convertir la tarea en una nueva fase de diseño o aprobación interactiva.
+- Si una ambigüedad menor permite una decisión conservadora compatible, resolverla y documentarla en el handoff. Si se necesita cambiar un contrato compartido, una decisión de negocio no definida o el ownership, **bloquear solo la parte afectada** y presentar un CCR; continuar con el trabajo independiente permitido.
+- Los checks automáticos y la self-review sustituyen las interrupciones rutinarias, **no** las autorizaciones de push/merge, efectos externos, cambios sensibles o el control humano sobre los borradores comerciales del producto.
+- La [Definition of Done](../ai/definition-of-done.md) define la evidencia que entrega cada nodo antes de integrarse. **No se requiere plantilla de PR para esta PoC**; el handoff y el AI Development Log cubren la trazabilidad.
+
 
 ## Worktrees y ownership
 

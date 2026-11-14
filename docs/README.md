@@ -10,6 +10,25 @@
 4. [`implementation/DAG.md`](implementation/DAG.md): dependencias y gates G0–G4.
 5. [`implementation/tasks/`](implementation/tasks/): **un** AI Task Brief por trabajo.
 
+## Guía de consulta para agentes Codex
+
+No es necesario leer toda la documentación al iniciar cada sesión. `AGENTS.md` establece las reglas globales; el AI Task Brief asignado determina el trabajo concreto. Esta tabla explica **para qué sirve cada documento y cuándo consultarlo**.
+
+| Documento | Uso y momento de consulta |
+| --- | --- |
+| [`ai/ubiquitous-language.md`](ai/ubiquitous-language.md) | **Antes de nombrar o interpretar entidades, hechos, hitos y reglas**; evita mezclar conceptos de dominio. |
+| [`contracts/INTEGRATION_V0.md`](contracts/INTEGRATION_V0.md) | **Al consumir o implementar contratos compartidos**; semántica de eventos, revisiones, errores, puertos y datos. |
+| [`specs/`](specs/) | **Durante la implementación**; solo especificaciones relevantes para el brief actual (ver tabla inferior). |
+| [`implementation/DAG.md`](implementation/DAG.md) | **Antes de iniciar un nodo y al integrar**; predecesores, paralelismo y gates. |
+| [`implementation/tasks/`](implementation/tasks/) | **Al iniciar la tarea**; scope autorizado, ownership, entradas/salidas y aceptación. |
+| [`implementation/CODEX_PROTOCOL.md`](implementation/CODEX_PROTOCOL.md) | **Para desarrollo en paralelo**; autonomía, Superpowers, worktrees, Contract Change Requests, integración y handoff. |
+| [`implementation/ACCEPTANCE_MATRIX.md`](implementation/ACCEPTANCE_MATRIX.md) | **Al diseñar/verificar pruebas**; cobertura AC-01–AC-15 y casos adversariales. |
+| [`ai/definition-of-done.md`](ai/definition-of-done.md) | **Antes de declarar una tarea lista**; checklist de resultados comprobados y riesgos pendientes. |
+| [`AI_DEVELOPMENT_LOG.md`](AI_DEVELOPMENT_LOG.md) | **Después de trabajo real con Codex**; registrar qué se delegó, revisó y comprobó, sin entradas ficticias. |
+| [`DECISIONS_AND_STATUS.md`](DECISIONS_AND_STATUS.md) | **Cuando surge una duda de estado o decisión**; distinguir lo confirmado, lo diseñado y lo implementado. |
+
+**Ciclo esperado para una tarea asignada y desbloqueada:** leer brief → inspeccionar código y consultar contexto pertinente → plan técnico interno → implementar, probar y revisar autónomamente → completar Definition of Done → entregar handoff. **No se requiere aprobación humana intermedia del plan técnico.** El integrador sigue controlando cambios compartidos y operaciones externas no autorizadas. Ni el DAG ni el índice obligan a leer todos los documentos.
+
 ## Especificaciones funcionales (leer selectivamente)
 
 | Documento | A quién le sirve |

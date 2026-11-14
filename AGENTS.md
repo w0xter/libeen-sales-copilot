@@ -23,6 +23,24 @@ Never add real WhatsApp/CRM delivery, real appointments, financial approvals, or
 - Once created, `src/contracts/` owns the shared TypeScript/Zod interfaces; `src/config/` owns workflow, fact, agent, and policy definitions. Source changes must agree with these contracts. Configuration is not permission to bypass safety invariants.
 - Check the existing code before modifying it. Do not treat mock data, model output, or a README example as authoritative policy.
 
+## Documentation routing (read on demand)
+
+Treat `docs/` as the local source of project context; **do not require Notion access**. Start with the assigned task brief and consult only the documents relevant to the task. `docs/README.md` is the navigable index, not a requirement to read every file.
+
+| Document | When and why to read it |
+| --- | --- |
+| `docs/implementation/tasks/LIB-XXX.md` | **At task start:** assigned objective, dependencies, writable paths, contract I/O, edge cases, acceptance criteria and gate. |
+| `docs/DECISIONS_AND_STATUS.md` | **When checking assumptions:** confirmed decisions versus planned capabilities; do not treat documentation as implemented code. |
+| `docs/ai/ubiquitous-language.md` | **When naming or modeling domain concepts:** canonical terms, distinctions, business rules and discouraged terminology. |
+| `docs/contracts/INTEGRATION_V0.md` | **When implementing or consuming a module boundary:** events, versions, evidence, errors, consistency and ports. |
+| `docs/specs/` | **When implementing a feature:** read only the matching product, workflow, fact, policy, UI or testing specification identified by the brief. |
+| `docs/implementation/DAG.md` and `docs/implementation/CODEX_PROTOCOL.md` | **When scheduling, parallelizing or integrating:** dependency gates, worktrees, file ownership and Contract Change Requests. |
+| `docs/implementation/ACCEPTANCE_MATRIX.md` | **When designing tests:** map behavior and regressions to AC-01–AC-15. |
+| `docs/ai/definition-of-done.md` | **Before handing off:** evidence checklist, verification, failure cases and truthful completion status. |
+| `docs/AI_DEVELOPMENT_LOG.md` | **After actual agent work:** record real task execution, reviews and validation; never invent activity. |
+
+A ready and explicitly assigned brief authorizes autonomous planning, implementation, testing, fixes and self-review **without an intermediate human plan-approval gate**. Stop only the affected work for material ambiguities, unauthorized shared-contract changes, out-of-scope changes or sensitive/external actions. Do not let a Superpowers skill reopen completed product planning.
+
 ## Architectural boundaries
 
 - `src/app/` and `src/components/` render UI and send typed intents; they **do not** evaluate eligibility, milestones, or business rules.
