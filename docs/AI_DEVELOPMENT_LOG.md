@@ -211,3 +211,10 @@ Reconciliation now projects only newly validated blockers: historical open and r
 MP-G3 PASS for the stated deterministic acceptance criteria. Historical corrections remain in human review with their evidence; protected findings in the same message conservatively inhibit adjudication. Identity that cannot be established from validated anchors also remains in review. No CCR identified; MP-04 and MP-05 not started. No model calls, push, merge or PR.
 
 Final verification: focused multipass tests 60 passed; `pnpm lint`, `pnpm typecheck`, `pnpm test` (295 passed, 3 skipped), `pnpm build`, `pnpm dataset:validate`, `pnpm eval:recorded` (3 passed), and `git diff --check` passed.
+
+### F-02 / MP-04 — pipeline simulado (2026-11-15)
+
+- Implementado pipeline interno con transporte inyectado, snapshot clonado y congelado, cuatro fases iniciales concurrentes, revisión contextual, agrupación y reconciliación. No está conectado al adaptador público ni a OpenAI.
+- Presupuesto máximo de siete intentos, una reparación global, adjudicación focalizada, cancelación y plazos; errores y trazas no incluyen transcripciones ni respuestas completas. Las revisiones protegidas fallidas y las revisiones contextuales incompletas no producen interpretación consolidada.
+- Pruebas simuladas ejercitan concurrencia, ceguera de S1, orden de S2, reparación, siete intentos con adjudicación inválida, diagnóstico de duplicado, cancelación, timeouts, snapshot y un hecho por cada conversación original de Laura, Javier y Rosa. También cubren una señal protegida detectada por S2 y la omisión de una revisión ordinaria.
+- Durante TDD se observó que una revisión ordinaria ausente podía producir consolidación; se añadió una comprobación de cobertura de candidatos y la regresión correspondiente. Quedan pendientes las pruebas completas de todos los hechos y señales de los tres casos mediante el pipeline, más varios casos de aceptación de MP-04; por ello el gate se informa como parcial.
