@@ -113,7 +113,7 @@ pnpm eval:openai --dataset f01 --split development --category trust_real --sampl
 # Ejecutar 4 escenarios de confianza, máximo 8 llamadas
 pnpm eval:openai --dataset f01 --split development --category trust_real --sample 4 --seed 42
 
-# Muestra transversal por categoría, máximo 16 llamadas
+# Muestra transversal por categoría: hasta 20 llamadas si incluye correcciones
 pnpm eval:openai --dataset f01 --split validation --sample 8 --seed 42 --mode end-to-end
 
 # Probar correcciones financieras conservando el estado del expediente
