@@ -60,3 +60,13 @@ No almacenar API keys, transcripciones de clientes reales ni secretos. No invent
 - Added a single-process repository with defensive copies, conditional revision writes, stable event fingerprints, idempotent receipts, message persistence before analysis, and fixture reset. No production persistence is claimed.
 - `pnpm test` passed 20 tests (including four repository tests), `pnpm typecheck`, `pnpm lint`, and `git diff --check` passed. Concurrent calls were exercised as sequential competing writes from the same revision; multi-process concurrency and orchestration failure paths remain untested and outside this adapter's scope.
 - G1 remains open. Additional worktree creation stalled; continuing safely with isolated or sequential work within the available worktrees.
+
+### 2026-11-14 — LIB-005 facts
+
+- Integrated the independently developed fact validator and reconciler. Review identified a source-authority gap; added regressions and checks so customer evidence cannot claim advisor confirmation and correction evidence must match its declared source.
+- Combined `pnpm test` passed 39 tests (including work in progress from LIB-006), `pnpm typecheck` and `pnpm lint` passed. Customer corrections that conflict remain unresolved until advisor confirmation; missing fact views mean unknown. The future orchestrator must reject model output claiming advisor authority, since role checks alone cannot authenticate the producer.
+
+### 2026-11-14 — LIB-006 workflow, policy and actions
+
+- Added deterministic, modular condition, workflow, policy and action evaluation. Integrator approved additive contract/config changes for an advisor-confirmed terminal handoff route and option-gated predicates; critical-blocker protection is mandatory. These changes affect configuration validation and predicate consumers.
+- Integrator reviewed safety precedence and ran focused contract, configuration and workflow/policy/action suites (33 tests), `pnpm typecheck`, `pnpm lint`, and `git diff --check`; all passed. Full fixture-to-engine and orchestration behavior remains unverified pending integration. Call confirmation cannot bypass the normal prerequisite path; a confirmed human handoff may follow the alternate terminal route.

@@ -35,6 +35,11 @@ export type Condition = {
   conditions: Condition[];
 } | {
   id: string;
+  op: 'when_option_enabled';
+  option: 'requireProductInterest' | 'requireLocation' | 'requireBuyerCount' | 'requireMovingHorizon' | 'requireDeclaredIncomeContext' | 'requireDeclaredSavings' | 'requireDisclosedDebtSemanticsResolved';
+  condition: Condition;
+} | {
+  id: string;
   op: 'NOT';
   condition: Condition;
 } | {
@@ -78,6 +83,9 @@ export const ConditionSchema: z.ZodType<Condition> = z.lazy(() => z.discriminate
   }),
   z.strictObject({
     id: Id, op: z.literal('policy_result'), result: PolicyDecisionSchema.shape.result
+  }),
+  z.strictObject({
+    id: Id, op: z.literal('when_option_enabled'), option: z.enum(['requireProductInterest', 'requireLocation', 'requireBuyerCount', 'requireMovingHorizon', 'requireDeclaredIncomeContext', 'requireDeclaredSavings', 'requireDisclosedDebtSemanticsResolved']), condition: ConditionSchema
   }),
   // NOT swaps satisfied/unsatisfied and preserves unknown/conflict. blocker_open matches currently open types.
   z.strictObject({

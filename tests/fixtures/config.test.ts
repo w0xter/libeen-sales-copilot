@@ -54,3 +54,24 @@ describe('demo configuration and synthetic fixtures', () => {
     expect(scenarios.find(s => s.id === 'laura-initial')?.expected.productInterest).toBe('unknown');
   });
 });
+
+describe('terminal handoff route', () => {
+  it('allows an explicit handoff route only on a terminal milestone', () => {
+    const m5 = demoBundle.workflow.milestones.find(m => m.id === 'M5')!;
+    expect(m5.alternativeTerminalConfirmations).toEqual(['HUMAN_HANDOFF_CONFIRMED']);
+    const invalid = structuredClone(demoBundle);
+    invalid.workflow.milestones[0].alternativeTerminalConfirmations = ['HUMAN_HANDOFF_CONFIRMED'];
+    expect(validateConfig(invalid)).toMatchObject({ ok: false, error: { code: 'INVALID_CONFIGURATION' } });
+  });
+});
+
+describe('policy option guards', () => {
+  it('validates references nested in option guards', () => {
+    const valid = structuredClone(demoBundle);
+    valid.workflow.milestones[0].completion = { id: 'option', op: 'when_option_enabled', option: 'requireLocation', condition: { id: 'location', op: 'fact_present', fieldId: 'desired_locations' } };
+    expect(validateConfig(valid).ok).toBe(true);
+    const invalid = structuredClone(demoBundle);
+    invalid.workflow.milestones[0].completion = { id: 'option', op: 'when_option_enabled', option: 'requireLocation', condition: { id: 'bad', op: 'fact_present', fieldId: 'missing' } };
+    expect(validateConfig(invalid)).toMatchObject({ ok: false, error: { code: 'INVALID_CONFIGURATION' } });
+  });
+});

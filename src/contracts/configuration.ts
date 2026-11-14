@@ -39,8 +39,9 @@ export const MilestoneDefinitionSchema = z.strictObject({
   onBlocked: StringList,
   allowedSuccessors: StringList,
   terminalRoute: z.boolean(),
+  alternativeTerminalConfirmations: z.array(z.literal('HUMAN_HANDOFF_CONFIRMED')).min(1).optional(),
   evidencePolicy: StringList
-});
+}).refine(milestone => milestone.terminalRoute || !milestone.alternativeTerminalConfirmations, 'Alternative confirmations require a terminal route');
 export type MilestoneDefinition = z.infer<typeof MilestoneDefinitionSchema>;
 
 export const WorkflowDefinitionSchema = z.strictObject({
@@ -101,7 +102,7 @@ export const BusinessPolicySchema = z.strictObject({
     requireDeclaredIncomeContext: z.boolean(),
     requireDeclaredSavings: z.boolean(),
     requireDisclosedDebtSemanticsResolved: z.boolean(),
-    preventWhenCriticalBlockerOpen: z.boolean()
+    preventWhenCriticalBlockerOpen: z.literal(true)
   }),
   financialApprovalEnabled: z.literal(false),
   rules: z.array(PolicyRuleSchema)
