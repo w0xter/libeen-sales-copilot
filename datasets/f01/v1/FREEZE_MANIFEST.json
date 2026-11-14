@@ -1,0 +1,47 @@
+{
+  "dataset": "f01-controlled-synthetic",
+  "version": "1.0.1",
+  "freezeDate": "2026-11-14",
+  "freezeType": "content_hash_locked_provisional_annotations",
+  "labelStatus": "internally_audited_pending_independent_review",
+  "independentHumanSignOff": false,
+  "purpose": "deterministic regression and exploratory synthetic model evaluation; no production accuracy claim",
+  "splits": {
+    "development": {
+      "file": "development.jsonl",
+      "records": 176,
+      "gitBlobSha1": "4d3f4a01145f4eb58159fbaaa4daf35a36c2c0fe",
+      "templateClusters": 44
+    },
+    "validation": {
+      "file": "validation.jsonl",
+      "records": 88,
+      "gitBlobSha1": "a229811cb829f79371922dacd39b86d3e909ca24",
+      "templateClusters": 22
+    },
+    "holdout": {
+      "file": "holdout.jsonl",
+      "records": 88,
+      "gitBlobSha1": "36fe4a7767261d5240c31ccca402c20cb4d2f3e2",
+      "templateClusters": 22,
+      "accessPolicy": "explicit_cli_unlock_once_no_model_tuning"
+    }
+  },
+  "review": {
+    "reviewer": "ChatGPT (same assistant context as dataset author; not independent)",
+    "date": "2026-11-14",
+    "method": "all 88 template clusters inspected + cross-profile audits; deterministic source/labels checks",
+    "limitations": [
+      "four numeric/geographic variations per cluster are dependent samples",
+      "non-representative controlled synthetic language",
+      "no independent human reviewer or second adjudicator",
+      "some labels remain normative and ambiguous",
+      "holdout was inspected during annotation audit but will not be used for model tuning"
+    ],
+    "requiredBeforeGoldStandard": [
+      "independent annotation reviewer",
+      "adjudicate ambiguous evidence spans and subject attribution",
+      "record signed-off reviewed version"
+    ]
+  }
+}
