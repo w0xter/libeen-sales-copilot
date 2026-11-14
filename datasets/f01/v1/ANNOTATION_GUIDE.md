@@ -1,6 +1,6 @@
 # F-01 dataset v1 · Independent annotation and adjudication guide
 
-**This guide is normative for labeling, not proof the provisional labels are correct.** The separate `README.md` documents population, origins and split constraints.
+**This guide is normative for labeling, not proof the provisional labels are correct.** The internally audited v1.0.1 annotations are content-hash locked in `FREEZE_MANIFEST.json`, but independent human sign-off remains pending. See `ANNOTATION_AUDIT_2026-11-14.md` for adjudications and unresolved issues.
 
 ## Review roles
 
@@ -54,3 +54,8 @@
 The corpus may be used immediately for **data pipeline and structural regression tests**. Do not call its provisional labels a verified gold standard, cite an aggregate accuracy based on them, or claim representativeness of real Libeen customers. Only mark a reviewed, version-frozen release suitable for an inferential evaluation when labels and their quality checks have been signed off.
 
 **Do not change canonical `src/fixtures/` during annotation or modeling.**
+
+
+## Status of v1.0.1
+
+All 88 source template clusters were inspected in an internal same-author-context audit, and the three JSONL splits are byte-locked by manifest Git blob hashes. This is **not an independent review**, and no third-party adjudication has occurred. Any further annotation correction requires a new dataset version and manifest; do not silently edit v1.0.1. Before treating scores as externally validated, commission the independent pass, especially for participant identity, exact evidence spans, invoicing versus income, and allowed action alternatives.
