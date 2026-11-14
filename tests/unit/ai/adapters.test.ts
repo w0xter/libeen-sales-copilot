@@ -576,7 +576,9 @@ describe('interpreter strategy configuration', () => {
   it('rejects unknown OpenAI strategies before using a model', () => {
     expect(createAIAdapters({ AI_MODE: 'openai', OPENAI_API_KEY: 'test', AI_INTERPRETER_STRATEGY: 'other' })).toMatchObject({ ok: false, error: { code: 'INVALID_CONFIGURATION' } });
   });
-  it('does not silently use single-pass for an unavailable multipass strategy', () => {
-    expect(createAIAdapters({ AI_MODE: 'openai', OPENAI_API_KEY: 'test', AI_INTERPRETER_STRATEGY: 'multipass' })).toMatchObject({ ok: false, error: { code: 'MODEL_UNAVAILABLE' } });
+  it('selects multipass explicitly without changing the draft generator', () => {
+    const adapters = createAIAdapters({ AI_MODE: 'openai', OPENAI_API_KEY: 'test', AI_INTERPRETER_STRATEGY: 'multipass' });
+    expect(adapters.ok).toBe(true);
+    if (adapters.ok) { expect(adapters.value.interpreter.constructor.name).toBe('MultipassInterpreter'); expect(adapters.value.draftGenerator.constructor.name).toBe('OpenAIDraftGenerator'); }
   });
 });
