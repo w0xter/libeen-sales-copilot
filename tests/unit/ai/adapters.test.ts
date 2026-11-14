@@ -127,3 +127,36 @@ describe('structured output failures', () => {
     }
   });
 });
+
+describe('schema and source grounding', () => {
+  it('constrains value types and enum options by configured field', async () => {
+    const { modelSchemaFor } = await import('../../../src/adapters/ai/openai');
+    const schema = modelSchemaFor(demoBundle.factSchema);
+    const assertion = { fieldId: 'monthly_debt', scope: 'buying_unit', subjectId: 'buying_unit', value: ['250'], unit: 'EUR', period: 'month', incomeBasis: null, messageId: 'laura-m4', precision: 'explicit' };
+    expect(schema.safeParse({ assertions: [assertion], blockers: [], warnings: [] }).success).toBe(false);
+    expect(schema.safeParse({ assertions: [{ ...assertion, value: 250 }], blockers: [], warnings: [] }).success).toBe(true);
+    expect(schema.safeParse({ assertions: [{ ...assertion, fieldId: 'product_intent', scope: 'case', value: 'invented' }], blockers: [], warnings: [] }).success).toBe(false);
+  });
+  it('resolves message references to original customer text and rejects missing or audio sources', async () => {
+    const { normalizeModelInterpretation } = await import('../../../src/adapters/ai/openai');
+    const a = { fieldId: 'available_savings', scope: 'buying_unit', subjectId: 'buying_unit', value: 0, unit: 'EUR', period: null, incomeBasis: null, messageId: 'rosa-m1', precision: 'explicit' };
+    const valid = normalizeModelInterpretation({ assertions: [a], blockers: [], warnings: [] }, input('rosa'));
+    expect(valid).toMatchObject({ ok: true, value: { assertions: [{ rawValue: expect.stringContaining('Ahorros no tenemos'), evidenceRefs: [{ messageId: 'rosa-m1' }] }] } });
+    expect(normalizeModelInterpretation({ assertions: [{ ...a, messageId: 'missing' }], blockers: [], warnings: [] }, input('rosa')).ok).toBe(false);
+  });
+});
+
+describe('semantic grounding safeguards', () => {
+  it('rejects a financial amount absent from a basis correction message', async () => {
+    const { normalizeModelInterpretation } = await import('../../../src/adapters/ai/openai');
+    const data = input('laura');
+    data.messages = [...data.messages, { messageId: 'correction', conversationId: 'laura-conversation', role: 'customer', occurredAt: '2026-05-03T09:00:00Z', content: { type: 'text', text: 'Me corrijo: las cifras eran brutas.' }, simulated: true }];
+    const a = { fieldId: 'declared_monthly_income', scope: 'buying_unit', subjectId: 'buying_unit', value: 3800, unit: 'EUR', period: 'month', incomeBasis: 'gross', messageId: 'correction', precision: 'explicit' };
+    expect(normalizeModelInterpretation({ assertions: [a], blockers: [], warnings: [] }, data)).toMatchObject({ ok: false, error: { code: 'EVIDENCE_INVALID' } });
+  });
+  it('keeps an exclusive intent based on a question ambiguous', async () => {
+    const { normalizeModelInterpretation } = await import('../../../src/adapters/ai/openai');
+    const a = { fieldId: 'product_intent', scope: 'case', subjectId: 'case', value: 'classical_rental', unit: null, period: null, incomeBasis: null, messageId: 'rosa-m2', precision: 'explicit' };
+    expect(normalizeModelInterpretation({ assertions: [a], blockers: [], warnings: [] }, input('rosa'))).toMatchObject({ ok: true, value: { assertions: [{ precision: 'ambiguous' }] } });
+  });
+});

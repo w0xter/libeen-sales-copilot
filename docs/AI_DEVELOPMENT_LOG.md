@@ -117,3 +117,9 @@ No almacenar API keys, transcripciones de clientes reales ni secretos. No invent
 
 - Diagnosed a real synthetic response, added a strict model-facing schema and evidence-preserving conversion, bounded cancellable requests, and regression tests. Ran 18 provider requests and retained mixed results in `docs/evaluation/F01_OPENAI_REMEDIATION.md`; the original evaluation remains unchanged.
 - Lint, typecheck, 108 tests and build passed. Live corrections and canonical cases remain inconsistent, so F-01 is **not resolved**. No external delivery or shared-contract changes.
+
+### 2026-11-14 — F-01 semantic reliability, second iteration
+
+- Added field-specific model schemas, message-grounded evidence and conservative guards for unsupported amounts and interrogative rental intent. Added deterministic regression coverage without changing shared contracts or fixtures.
+- Ran 20 synthetic provider requests; mixed outcomes and every latency are recorded in `docs/evaluation/F01_OPENAI_REMEDIATION.md`. F-01 remains partially fixed: false TRUST, uncertainty errors and blocker omissions remain.
+- `pnpm lint`, `pnpm typecheck`, `pnpm test` (112 tests) and `pnpm build` passed. No push or merge.
