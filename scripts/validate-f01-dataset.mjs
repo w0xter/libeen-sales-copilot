@@ -1,5 +1,5 @@
-import { createHash } from 'node:crypto';
 #!/usr/bin/env node
+import { createHash } from 'node:crypto';
 // Validate the immutable F-01 synthetic dataset without AI or extra dependencies.
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -15,9 +15,9 @@ const allIds = new Set(), texts = new Set(), clusters = new Map(), classes = new
 const totals = {};
 for (const split of splits) {
   const fileContent = readFileSync(join(root, `${split}.jsonl`));
-  const blobHash = createHash('sha1').update(`blob ${fileContent.byteLength}\\0`).update(fileContent).digest('hex');
+  const blobHash = createHash('sha1').update(`blob ${fileContent.byteLength}`).update(Buffer.from([0])).update(fileContent).digest('hex');
   assert(blobHash === manifest.splits?.[split]?.gitBlobSha1, `${split} has changed since freeze; create a new dataset version and manifest rather than silently editing`);
-  const lines = fileContent.toString('utf8').trim().split('\\n');
+  const lines = fileContent.toString('utf8').trim().split(String.fromCharCode(10));
   let count = 0;
   for (let i=0; i<lines.length; i++) {
     const caseData = JSON.parse(lines[i]);
