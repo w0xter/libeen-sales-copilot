@@ -499,3 +499,70 @@ describe('protected candidate dismissal reconciliation', () => {
     expect(await interpret(verdict, dataFor([text, text]))).toMatchObject({ ok: false, error: { code } });
   });
 });
+
+describe('U0 optional metadata normalization', () => {
+  it.each([null, 'null', 'Null', 'NULL', 'nUlL', ' NULL '])('normalizes optional metadata %s before model output validation', async optional => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const extraction = { assertions: [{ fieldId: 'available_savings', scope: 'buying_unit', subjectId: 'buying_unit', value: 0, unit: optional, period: optional, incomeBasis: optional, messageId: 'rosa-m1', precision: 'explicit' }], blockers: [], warnings: [] };
+    const result = await new OpenAIInterpreter({ complete: async (_i, _d, kind) => kind === 'verification' ? { findings: [], dismissals: [], inconclusive: false } : extraction }).interpret(input('rosa'));
+    expect(result).toMatchObject({ ok: true, value: { assertions: [expect.objectContaining({ value: 0 })] } });
+  });
+  it('normalizes direct contract output and preserves valid metadata and text', async () => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const data = input('rosa');
+    data.messages = [{ ...data.messages[0], messageId: 'null', content: { type: 'text', text: 'Ahorros null: 0 euros' } }];
+    const assertion = { assertionId: 'a', fieldId: 'available_savings', subjectRef: { scope: 'buying_unit', id: 'buying_unit' }, value: 0, unit: 'EUR', period: ' NULL ', incomeBasis: 'unknown', rawValue: 'Ahorros null: 0 euros', source: 'customer_message', evidenceRefs: [{ messageId: 'null', quote: 'Ahorros null: 0 euros' }], observedAt: data.messages[0].occurredAt, precision: 'explicit', reviewStatus: 'unreviewed', schemaVersion: '1.0.0' };
+    const result = await new OpenAIInterpreter({ complete: async (_i, _d, kind) => kind === 'verification' ? { findings: [], dismissals: [], inconclusive: false } : { assertions: [assertion], blockers: [], warnings: [] } }).interpret(data);
+    expect(result).toMatchObject({ ok: true, value: { assertions: [expect.objectContaining({ unit: 'EUR', incomeBasis: 'unknown', rawValue: assertion.rawValue, evidenceRefs: assertion.evidenceRefs })] } });
+    if (result.ok) expect(result.value.assertions[0]).not.toHaveProperty('period');
+  });
+  it.each(['none', 'N/A', 'false', '0', 'null euros'])('rejects invalid metadata %s', async invalid => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const extraction = { assertions: [{ fieldId: 'available_savings', scope: 'buying_unit', subjectId: 'buying_unit', value: 0, unit: invalid, period: null, incomeBasis: null, messageId: 'rosa-m1', precision: 'explicit' }], blockers: [], warnings: [] };
+    expect(await new OpenAIInterpreter({ complete: async () => extraction }).interpret(input('rosa'))).toMatchObject({ ok: false, error: { code: 'MODEL_OUTPUT_INVALID' } });
+  });
+  it('sends a nonurgent TIME candidate to the reviewer after normalizing metadata', async () => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const data = input('laura');
+    const text = 'El año que viene, aún no tenemos ninguna prisa.';
+    data.messages = [{ ...data.messages[0], messageId: 'time', content: { type: 'text', text } }];
+    const extraction = { assertions: [{ fieldId: 'desired_locations', scope: 'case', subjectId: 'case', value: ['Madrid'], unit: 'null', period: 'null', incomeBasis: 'null', messageId: 'time', precision: 'ambiguous' }], blockers: [{ type: 'TIME', description: 'tiempo', messageId: 'time' }], warnings: [] };
+    let reviewed = false;
+    const result = await new OpenAIInterpreter({ complete: async (_i, d, kind) => { if (kind !== 'verification') return extraction; reviewed = true; expect(d).toMatchObject({ proposedBlockers: [expect.objectContaining({ type: 'TIME' })] }); return { findings: [], dismissals: [{ type: 'TIME', messageId: 'time', quote: text, reason: 'No hay prisa.' }], inconclusive: false }; } }).interpret(data);
+    expect(reviewed).toBe(true);
+    expect(result).toMatchObject({ ok: true, value: { blockers: [] } });
+    if (result.ok) {
+      const { evaluatePolicy } = await import('../../../src/domain/policies/evaluate-policy');
+      expect(evaluatePolicy({ knowledge: { facts: [] }, events: [], blockers: result.value.blockers, policy: demoBundle.businessPolicy, actionCatalog: demoBundle.actionCatalog }).allowedActions).toContain('CLARIFY');
+    }
+  });
+});
+
+describe('U0 financial attribution instructions and preservation', () => {
+  it('instructs the model to attribute amounts to their owners and preserve ambiguity', async () => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    let instructions = '';
+    await new OpenAIInterpreter({ complete: async (text, _d, kind) => { if (kind === 'verification') return { findings: [], dismissals: [], inconclusive: false }; instructions = text; return { assertions: [], blockers: [], warnings: [] }; } }).interpret(input('javier'));
+    expect(instructions).toContain('not the number of buyers');
+    expect(instructions).toContain('Never sum individual incomes, split joint income');
+    expect(instructions).toContain('When ownership is unclear');
+    expect(instructions).toContain('JSON literal null, without quotation marks');
+  });
+  it.each([
+    ['Soy autónomo, gano entre 2.000 y 3.000', [{ scope: 'participant', subjectId: 'participant-1', value: { min: 2000, max: 3000 } }]],
+    ['Entre los dos ingresamos 3.800', [{ scope: 'buying_unit', subjectId: 'buying_unit', value: 3800 }]],
+    ['Entre mi marido y yo, 1.400', [{ scope: 'buying_unit', subjectId: 'buying_unit', value: 1400 }]],
+    ['Yo gano 2.400 y mi pareja 1.800', [{ scope: 'participant', subjectId: 'participant-1', value: 2400 }, { scope: 'participant', subjectId: 'participant-2', value: 1800 }]],
+    ['Tenemos unos ingresos de 3.000', []],
+  ])('preserves model attribution without inventing aggregates: %s', async (text, claims) => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const data = input('javier');
+    data.messages = [{ ...data.messages[0], messageId: 'income', content: { type: 'text', text } }];
+    const assertions = claims.map(claim => ({ ...claim, fieldId: 'declared_monthly_income', unit: 'EUR', period: 'month', incomeBasis: 'unknown', messageId: 'income', precision: 'explicit' }));
+    const result = await new OpenAIInterpreter({ complete: async (_i, _d, kind) => kind === 'verification' ? { findings: [], dismissals: [], inconclusive: false } : { assertions, blockers: [], warnings: [] } }).interpret(data);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.assertions).toHaveLength(claims.length);
+    for (const [index, claim] of claims.entries()) expect(result.value.assertions[index]).toMatchObject({ subjectRef: { scope: claim.scope, id: claim.subjectId }, value: claim.value, unit: 'EUR', period: 'month', incomeBasis: 'unknown', evidenceRefs: [{ messageId: 'income' }] });
+  });
+});

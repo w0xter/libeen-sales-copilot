@@ -157,3 +157,9 @@ Validation: focused adapter tests passed (54); `pnpm lint`, `pnpm typecheck`, `p
 On `codex/f01-trust-boundaries` at `41b1835`, inspected the recorded documentation-request failure. The dismissal already matched type and message, but its exact quote covered only the first sentence of a two-sentence customer message; protected dismissal reconciliation required equality with the entire message. Allowed a literal complete-sentence quote while retaining same-candidate matching, independent protected findings, inconclusive failure and customer-text evidence validation. Added deterministic regressions for the recorded payload through action planning and for conflicting, missing, wrong-type, wrong-message and invalid evidence. Semantic relevance still depends on the reviewer; previously persisted blockers remain unchanged.
 
 Validation: focused adapter tests passed (66); `pnpm lint`, `pnpm typecheck`, `pnpm test` (184 passed, 3 skipped), `pnpm build`, `pnpm dataset:validate`, and `git diff --check` passed. No paid evaluation was run.
+
+### U0 financial attribution and optional metadata (2026-11-14)
+
+On `codex/f01-trust-boundaries` at `3af965e`, clarified model instructions for financial ownership and JSON null, and normalized only optional assertion metadata before choosing the validation route. Added deterministic adapter coverage for scope preservation, null variants, invalid metadata and nonurgent TIME review. The attribution itself remains model-dependent; no historical facts or shared contracts were rewritten. No paid model requests were made, so Javier B05, the real-model TIME case and the 24-scenario U0 acceptance remain unverified.
+
+Validation: focused adapter tests passed (85); `pnpm lint`, `pnpm typecheck`, `pnpm test` (203 passed, 3 skipped), `pnpm build`, `pnpm dataset:validate` and `git diff --check` passed.
