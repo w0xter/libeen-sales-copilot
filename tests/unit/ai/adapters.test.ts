@@ -437,3 +437,65 @@ describe('U0 review boundaries', () => {
     expect(await new OpenAIInterpreter({ complete: async (_i, _d, kind) => kind === 'verification' ? review : extraction }).interpret(sample(['Me preocupa si esta empresa es fiable.']))).toMatchObject({ ok: false, error: { code: 'EVIDENCE_INVALID' } });
   });
 });
+
+describe('protected candidate dismissal reconciliation', () => {
+  const text = 'Querría leer las condiciones generales del servicio, sin que eso implique solicitar aprobación.';
+  const id = 'F01D1-documentation_request-P2-V2-m1';
+  const dataFor = (texts = [text]) => {
+    const data = input('laura');
+    data.messages = texts.map((value, index) => ({ ...data.messages[0], messageId: index ? `other-${index}` : id, content: { type: 'text' as const, text: value } }));
+    return data;
+  };
+  const extraction = { assertions: [], blockers: [{ type: 'BINDING_CLAIM', description: 'approval', messageId: id }], warnings: [] };
+  const dismissal = { type: 'BINDING_CLAIM', messageId: id, quote: text, reason: 'This is a request to read general terms and conditions, explicitly stating it does not imply requesting approval.' };
+  const review = (overrides: Record<string, unknown> = {}) => ({ findings: [], dismissals: [dismissal], inconclusive: false, ...overrides });
+  const interpret = async (verdict: unknown, data = dataFor()) => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    return new OpenAIInterpreter({ complete: async (_i, _d, kind) => kind === 'verification' ? verdict : extraction }).interpret(data);
+  };
+  const action = async (blockers: CaseSnapshot['blockers']) => {
+    const { evaluatePolicy } = await import('../../../src/domain/policies/evaluate-policy');
+    const { planAction } = await import('../../../src/domain/actions/plan-action');
+    const decision = evaluatePolicy({ knowledge: { facts: [] }, events: [], blockers, policy: demoBundle.businessPolicy, actionCatalog: demoBundle.actionCatalog });
+    return planAction({ decision, catalog: demoBundle.actionCatalog, profile: demoBundle.agentProfile, proposalId: 'test', caseRevision: 0, configBundleRef });
+  };
+  it('accepts the reported documentation dismissal and allows clarification', async () => {
+    const result = await interpret(review(), dataFor([`${text} Mi ciudad de referencia es Madrid.`]));
+    expect(result).toMatchObject({ ok: true, value: { blockers: [] } });
+    if (result.ok) expect(await action(result.value.blockers)).toMatchObject({ ok: true, value: { actionType: 'CLARIFY' } });
+  });
+  it('preserves a confirmed written approval request and hands off', async () => {
+    const request = 'Necesito aprobación por escrito.';
+    const result = await interpret(review({ findings: [{ type: 'BINDING_CLAIM', messageId: id, quote: request }], dismissals: [] }), dataFor([request]));
+    expect(result).toMatchObject({ ok: true, value: { blockers: [expect.objectContaining({ type: 'BINDING_CLAIM' })] } });
+    if (result.ok) expect(await action(result.value.blockers)).toMatchObject({ ok: true, value: { actionType: 'HANDOFF' } });
+  });
+  it('preserves a confirmed finding even when the reviewer also dismisses it', async () => {
+    const result = await interpret(review({ findings: [{ type: 'BINDING_CLAIM', messageId: id, quote: text }] }));
+    expect(result).toMatchObject({ ok: true, value: { blockers: [expect.objectContaining({ type: 'BINDING_CLAIM' })] } });
+    if (result.ok) expect(await action(result.value.blockers)).toMatchObject({ ok: true, value: { actionType: 'HANDOFF' } });
+  });
+  it('preserves a genuine finding in another sentence of the same message', async () => {
+    const genuine = 'Necesito aprobación por escrito.';
+    const result = await interpret(review({ findings: [{ type: 'BINDING_CLAIM', messageId: id, quote: genuine }] }), dataFor([`${text} ${genuine}`]));
+    expect(result).toMatchObject({ ok: true, value: { blockers: [expect.objectContaining({ type: 'BINDING_CLAIM' })] } });
+    if (result.ok) expect(await action(result.value.blockers)).toMatchObject({ ok: true, value: { actionType: 'HANDOFF' } });
+  });
+  it('preserves a genuine protected finding in another message', async () => {
+    const genuine = 'Necesito aprobación por escrito.';
+    const result = await interpret(review({ findings: [{ type: 'BINDING_CLAIM', messageId: 'other-1', quote: genuine }] }), dataFor([text, genuine]));
+    expect(result).toMatchObject({ ok: true, value: { blockers: [expect.objectContaining({ type: 'BINDING_CLAIM', evidenceRefs: [expect.objectContaining({ messageId: 'other-1' })] })] } });
+    if (result.ok) expect(await action(result.value.blockers)).toMatchObject({ ok: true, value: { actionType: 'HANDOFF' } });
+  });
+  it.each([
+    ['wrong type', review({ dismissals: [{ ...dismissal, type: 'FIT' }] }), 'MODEL_OUTPUT_INVALID'],
+    ['wrong message', review({ dismissals: [{ ...dismissal, messageId: 'other-1' }] }), 'MODEL_OUTPUT_INVALID'],
+    ['invented quote', review({ dismissals: [{ ...dismissal, quote: 'inventado' }] }), 'EVIDENCE_INVALID'],
+    ['partial sentence', review({ dismissals: [{ ...dismissal, quote: 'sin que eso implique solicitar aprobación.' }] }), 'MODEL_OUTPUT_INVALID'],
+    ['missing dismissal', review({ dismissals: [] }), 'MODEL_OUTPUT_INVALID'],
+    ['uncertain review', review({ inconclusive: true }), 'MODEL_OUTPUT_INVALID'],
+    ['missing review', null, 'MODEL_OUTPUT_INVALID'],
+  ])('fails safely for %s', async (_label, verdict, code) => {
+    expect(await interpret(verdict, dataFor([text, text]))).toMatchObject({ ok: false, error: { code } });
+  });
+});
