@@ -10,7 +10,8 @@
     "test": "vitest run",
     "typecheck": "next typegen && tsc --noEmit",
     "eval:openai": "node scripts/eval-openai.mjs",
-    "eval:recorded": "vitest run tests/evaluation/f01-recorded.test.ts"
+    "eval:recorded": "vitest run tests/evaluation/f01-recorded.test.ts",
+    "dataset:validate": "node scripts/validate-f01-dataset.mjs"
   },
   "dependencies": {
     "next": "16.4.6",
