@@ -42,7 +42,7 @@ export function evaluatePolicy(input: PolicyInput): PolicyDecision {
   if (optOut.length || optOutBlockers.length) return protectedDecision('STOP_CONTACT', 'STOP_CONTACT', 'R01', 'El cliente solicita no ser contactado', [...optOut.flatMap(e => e.payload.evidenceRefs), ...optOutBlockers.flatMap(b => b.evidenceRefs)]);
   const critical = input.blockers.filter(b => b.status === 'open' && ['BINDING_CLAIM', 'URGENT'].includes(b.type));
   if (critical.length) return protectedDecision('HUMAN_REVIEW_REQUIRED', 'HANDOFF', 'R02', 'La solicitud requiere revisión humana', critical.flatMap(b => b.evidenceRefs));
-  const objections = input.blockers.filter(b => b.status === 'open' && ['TRUST', 'PRODUCT', 'COST', 'PRIVACY', 'TIME', 'FIT'].includes(b.type));
+  const objections = input.blockers.filter(b => b.status === 'open' && ['TRUST', 'PRIVACY'].includes(b.type));
   if (objections.length) return protectedDecision('HUMAN_REVIEW_REQUIRED', 'HANDOFF', 'R07', 'La cuestión requiere una fuente autorizada o revisión humana', objections.flatMap(b => b.evidenceRefs));
   if (approvalPending(input.events)) return protectedDecision('WAIT', 'WAIT', 'R09', 'Un borrador aprobado aún no es un envío ni un acuerdo', []);
   const matched = input.policy.rules.map(rule => ({ rule, ...matches(rule, input) })).filter(item => item.matches);

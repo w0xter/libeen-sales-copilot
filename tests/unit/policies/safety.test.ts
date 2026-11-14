@@ -47,3 +47,12 @@ describe('debt clarification evidence', () => {
     expect(decision.evidenceRefs).toContainEqual({ messageId: 'laura-m4' });
   });
 });
+
+
+it('routes ordinary objections through R07 without enabling a call', () => {
+  for (const type of ['COST', 'PRODUCT', 'TIME', 'FIT']) {
+    const decision = evaluatePolicy({ ...base, blockers: [blocker(type)] });
+    expect(decision).toMatchObject({ ruleIds: expect.arrayContaining(['R07']), allowedActions: ['ANSWER_QUESTION', 'HANDOFF'] });
+    expect(decision.allowedActions).not.toContain('PROPOSE_CALL');
+  }
+});

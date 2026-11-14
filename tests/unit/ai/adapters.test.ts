@@ -66,7 +66,7 @@ describe('AI adapters', () => {
 
   it('accepts valid, evidenced real-mode output and times out stalled calls', async () => {
     const candidate = { assertions: [{ assertionId: 'a', fieldId: 'available_savings', subjectRef: { scope: 'buying_unit', id: 'buying_unit' }, value: 0, rawValue: 'Ahorros no tenemos', source: 'customer_message', evidenceRefs: [{ messageId: 'rosa-m1' }], observedAt: '2026-05-01T10:01:00Z', precision: 'explicit', reviewStatus: 'unreviewed', schemaVersion: '1.0.0' }], blockers: [], warnings: [] };
-    const a = createAIAdapters({ AI_MODE: 'openai', OPENAI_API_KEY: 'test' }, { complete: async (_instructions, _input, kind) => kind === 'verification' ? { findings: [], inconclusive: false } : candidate });
+    const a = createAIAdapters({ AI_MODE: 'openai', OPENAI_API_KEY: 'test' }, { complete: async (_instructions, _input, kind) => kind === 'verification' ? { findings: [], dismissals: [], inconclusive: false } : candidate });
     if (!a.ok) throw Error('mode');
     expect(await a.value.interpreter.interpret(input('rosa'))).toMatchObject({ ok: true, value: candidate });
     const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
@@ -229,14 +229,14 @@ describe('independent blocker verification', () => {
   it('detects protected signals omitted by extraction', async () => {
     const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
     const extractor = { assertions: [], blockers: [], warnings: [] };
-    const verifier = { findings: [{ type: 'URGENT', messageId: 'rosa-m1', quote: 'dos semanas' }, { type: 'BINDING_CLAIM', messageId: 'rosa-m3', quote: 'por escrito' }], inconclusive: false };
+    const verifier = { findings: [{ type: 'URGENT', messageId: 'rosa-m1', quote: 'dos semanas' }, { type: 'BINDING_CLAIM', messageId: 'rosa-m3', quote: 'por escrito' }], dismissals: [], inconclusive: false };
     const result = await new OpenAIInterpreter({ complete: async (_i, _input, kind) => kind === 'verification' ? verifier : extractor }).interpret(input('rosa'));
     expect(result).toMatchObject({ ok: true, value: { blockers: expect.arrayContaining([expect.objectContaining({ type: 'URGENT' }), expect.objectContaining({ type: 'BINDING_CLAIM' })]) } });
   });
   it('holds analysis when a candidate and independent assessment disagree', async () => {
     const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
     const extractor = { assertions: [], blockers: [{ type: 'TRUST', description: 'confianza', messageId: 'laura-m4' }], warnings: [] };
-    const result = await new OpenAIInterpreter({ complete: async (_i, _input, kind) => kind === 'verification' ? { findings: [], inconclusive: false } : extractor }).interpret(input('laura'));
+    const result = await new OpenAIInterpreter({ complete: async (_i, _input, kind) => kind === 'verification' ? { findings: [], dismissals: [], inconclusive: false } : extractor }).interpret(input('laura'));
     expect(result).toMatchObject({ ok: false, error: { code: 'MODEL_OUTPUT_INVALID' } });
   });
 });
@@ -247,7 +247,7 @@ describe('interpretation context', () => {
     const data = input('laura');
     data.caseSnapshot.knowledge.facts = [{ fieldId: 'declared_monthly_income', subjectRef: { scope: 'buying_unit', id: 'buying_unit' }, status: 'approximate', value: 3800, evidenceRefs: [{ messageId: 'laura-m3' }] }];
     let projected: unknown;
-    await new OpenAIInterpreter({ complete: async (_instructions, supplied, kind) => { if (kind === 'interpretation') { projected = supplied; return { assertions: [], blockers: [], warnings: [] }; } return { findings: [], inconclusive: false }; } }).interpret(data);
+    await new OpenAIInterpreter({ complete: async (_instructions, supplied, kind) => { if (kind === 'interpretation') { projected = supplied; return { assertions: [], blockers: [], warnings: [] }; } return { findings: [], dismissals: [], inconclusive: false }; } }).interpret(data);
     expect(projected).toMatchObject({ context: { facts: [expect.objectContaining({ fieldId: 'declared_monthly_income', evidenceRefs: [{ messageId: 'laura-m3' }] })] } });
   });
 });
@@ -271,7 +271,7 @@ describe('safety verification failure handling', () => {
     const extractor = { assertions: [], blockers: [], warnings: [] };
     const unavailable = new OpenAIInterpreter({ complete: async (_i, _v, kind) => { if (kind === 'verification') throw Error('unavailable'); return extractor; } });
     expect(await unavailable.interpret(input('rosa'))).toMatchObject({ ok: false, error: { code: 'MODEL_UNAVAILABLE' } });
-    const badEvidence = new OpenAIInterpreter({ complete: async (_i, _v, kind) => kind === 'verification' ? { findings: [{ type: 'URGENT', messageId: 'rosa-m1', quote: 'inventado' }], inconclusive: false } : extractor });
+    const badEvidence = new OpenAIInterpreter({ complete: async (_i, _v, kind) => kind === 'verification' ? { findings: [{ type: 'URGENT', messageId: 'rosa-m1', quote: 'inventado' }], dismissals: [], inconclusive: false } : extractor });
     expect(await badEvidence.interpret(input('rosa'))).toMatchObject({ ok: false, error: { code: 'EVIDENCE_INVALID' } });
   });
 });
@@ -290,16 +290,16 @@ describe('incremental basis correction wording', () => {
 });
 
 describe('unilateral noncritical safety findings', () => {
-  it('holds analysis rather than persisting a verifier-only time objection', async () => {
+  it('ignores a verifier-only time objection', async () => {
     const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
     const data = input('laura');
-    const interpreter = new OpenAIInterpreter({ complete: async (_instructions, _data, kind) => kind === 'verification' ? { findings: [{ type: 'TIME', messageId: 'laura-m1', quote: 'antes del verano' }], inconclusive: false } : { assertions: [], blockers: [], warnings: [] } });
-    expect(await interpreter.interpret(data)).toMatchObject({ ok: false, error: { code: 'MODEL_OUTPUT_INVALID', retryable: true } });
+    const interpreter = new OpenAIInterpreter({ complete: async (_instructions, _data, kind) => kind === 'verification' ? { findings: [{ type: 'TIME', messageId: 'laura-m1', quote: 'antes del verano' }], dismissals: [], inconclusive: false } : { assertions: [], blockers: [], warnings: [] } });
+    expect(await interpreter.interpret(data)).toMatchObject({ ok: true, value: { blockers: [] } });
   });
   it('retains independently discovered urgent and opt-out signals', async () => {
     const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
     const data = input('rosa');
-    const interpreter = new OpenAIInterpreter({ complete: async (_instructions, _data, kind) => kind === 'verification' ? { findings: [{ type: 'URGENT', messageId: 'rosa-m1', quote: 'necesitamos salir del piso en dos semanas' }], inconclusive: false } : { assertions: [], blockers: [], warnings: [] } });
+    const interpreter = new OpenAIInterpreter({ complete: async (_instructions, _data, kind) => kind === 'verification' ? { findings: [{ type: 'URGENT', messageId: 'rosa-m1', quote: 'necesitamos salir del piso en dos semanas' }], dismissals: [], inconclusive: false } : { assertions: [], blockers: [], warnings: [] } });
     expect(await interpreter.interpret(data)).toMatchObject({ ok: true, value: { blockers: [expect.objectContaining({ type: 'URGENT' })] } });
   });
 });
@@ -310,13 +310,52 @@ describe('paired blocker decisions from deterministic transport', () => {
     const message = input('laura').messages[0];
     if (message.content.type !== 'text') throw Error('text required');
     const extraction = { assertions: [], blockers: [{ type, description: 'safety concern', messageId: message.messageId }], warnings: [] };
-    const verification = { findings: [{ type, messageId: message.messageId, quote: message.content.text }], inconclusive: false };
+    const verification = { findings: [{ type, messageId: message.messageId, quote: message.content.text }], dismissals: [], inconclusive: false };
     const interpreter = new OpenAIInterpreter({ complete: async (_i, _data, kind) => kind === 'verification' ? verification : extraction });
     expect(await interpreter.interpret(input('laura'))).toMatchObject({ ok: true, value: { blockers: [expect.objectContaining({ type, status: 'open' })] } });
   });
   it.each(['TRUST', 'URGENT', 'BINDING_CLAIM', 'OPT_OUT'] as const)('holds when extraction and verification disagree about %s', async type => {
     const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
-    const interpreter = new OpenAIInterpreter({ complete: async (_i, _data, kind) => kind === 'verification' ? { findings: [], inconclusive: false } : { assertions: [], blockers: [{ type, description: 'safety concern', messageId: 'laura-m1' }], warnings: [] } });
+    const interpreter = new OpenAIInterpreter({ complete: async (_i, _data, kind) => kind === 'verification' ? { findings: [], dismissals: [], inconclusive: false } : { assertions: [], blockers: [{ type, description: 'safety concern', messageId: 'laura-m1' }], warnings: [] } });
     expect(await interpreter.interpret(input('laura'))).toMatchObject({ ok: false, error: { code: 'MODEL_OUTPUT_INVALID', retryable: true } });
   });
+});
+
+
+describe('severity-aware reconciliation', () => {
+  it.each([
+    ['javier', 'OPT_OUT', 'COST'],
+    ['rosa', 'URGENT', 'FIT'],
+  ] as const)('preserves %s protected action despite an extra commercial label', async (caseId, protectedType, extraType) => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const { evaluatePolicy } = await import('../../../src/domain/policies/evaluate-policy');
+    const data = input(caseId);
+    const message = data.messages.find(m => m.role === 'customer' && m.content.type === 'text')!;
+    if (message.content.type !== 'text') throw Error('text required');
+    const extraction = { assertions: [], blockers: [{ type: protectedType, description: 'protected', messageId: message.messageId }], warnings: [] };
+    const findings = [protectedType, extraType].map(type => ({ type, messageId: message.messageId, quote: message.content.type === 'text' ? message.content.text : '' }));
+    const result = await new OpenAIInterpreter({ complete: async (_i, _d, kind) => kind === 'verification' ? { findings, dismissals: [], inconclusive: false } : extraction }).interpret(data);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.blockers.map(b => b.type)).toEqual([protectedType]);
+    expect(evaluatePolicy({ knowledge: { facts: [] }, events: [], blockers: result.value.blockers, policy: demoBundle.businessPolicy, actionCatalog: demoBundle.actionCatalog }).allowedActions).toEqual([protectedType === 'OPT_OUT' ? 'STOP_CONTACT' : 'HANDOFF']);
+  });
+  it('holds an unconfirmed commercial candidate without persisting it', async () => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const extraction = { assertions: [], blockers: [{ type: 'COST', description: 'price', messageId: 'laura-m1' }], warnings: [] };
+    const result = await new OpenAIInterpreter({ complete: async (_i, _d, kind) => kind === 'verification' ? { findings: [], dismissals: [], inconclusive: false } : extraction }).interpret(input('laura'));
+    expect(result).toMatchObject({ ok: false, error: { code: 'MODEL_OUTPUT_INVALID', retryable: true } });
+  });
+});
+
+
+it('accepts an evidence-backed review that a price enquiry is not an objection', async () => {
+  const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+  const data = input('laura');
+  const message = { ...data.messages[0], messageId: 'price-question', content: { type: 'text' as const, text: '¿Cuánto cuesta?' } };
+  data.messages = [message];
+  const extraction = { assertions: [], blockers: [{ type: 'COST', description: 'coste', messageId: message.messageId }], warnings: [] };
+  const review = { findings: [], dismissals: [{ type: 'COST', messageId: message.messageId, quote: '¿Cuánto cuesta?', reason: 'Pide información sin expresar objeción.' }], inconclusive: false };
+  const result = await new OpenAIInterpreter({ complete: async (_i, _d, kind) => kind === 'verification' ? review : extraction }).interpret(data);
+  expect(result).toMatchObject({ ok: true, value: { blockers: [] } });
 });
