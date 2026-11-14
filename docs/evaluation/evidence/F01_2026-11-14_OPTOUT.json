@@ -1,0 +1,639 @@
+[
+  {
+    "request": 1,
+    "kind": "interpretation",
+    "latencyMs": 4653,
+    "result": "response"
+  },
+  {
+    "request": 2,
+    "kind": "verification",
+    "latencyMs": 1558,
+    "result": "response"
+  },
+  {
+    "scenario": "B10",
+    "model": "gpt-4.1-mini",
+    "result": {
+      "ok": true,
+      "value": {
+        "assertions": [
+          {
+            "assertionId": "model-84949f559494e78988abcdc0",
+            "fieldId": "initial_intent",
+            "subjectRef": {
+              "scope": "case",
+              "id": "case"
+            },
+            "value": "question",
+            "rawValue": "buenas, cuanto cuesta esto? me interesa algo por madrid o alrededores",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "javier-m1",
+                "quote": "buenas, cuanto cuesta esto? me interesa algo por madrid o alrededores"
+              }
+            ],
+            "observedAt": "2026-05-01T10:01:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-0271103f66b2adc1f61a7a1b",
+            "fieldId": "desired_locations",
+            "subjectRef": {
+              "scope": "case",
+              "id": "case"
+            },
+            "value": [
+              "madrid",
+              "alrededores"
+            ],
+            "rawValue": "buenas, cuanto cuesta esto? me interesa algo por madrid o alrededores",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "javier-m1",
+                "quote": "buenas, cuanto cuesta esto? me interesa algo por madrid o alrededores"
+              }
+            ],
+            "observedAt": "2026-05-01T10:01:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-328ec65a8aadfbab1eb1df97",
+            "fieldId": "buyer_count",
+            "subjectRef": {
+              "scope": "buying_unit",
+              "id": "buying_unit"
+            },
+            "value": 1,
+            "rawValue": "solo. soy autonomo, depende del mes, entre 2000 y 3000",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "javier-m3",
+                "quote": "solo. soy autonomo, depende del mes, entre 2000 y 3000"
+              }
+            ],
+            "observedAt": "2026-05-01T10:03:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-de751084f006e1098b56154d",
+            "fieldId": "employment_context",
+            "subjectRef": {
+              "scope": "participant",
+              "id": "participant"
+            },
+            "value": "autonomo",
+            "rawValue": "solo. soy autonomo, depende del mes, entre 2000 y 3000",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "javier-m3",
+                "quote": "solo. soy autonomo, depende del mes, entre 2000 y 3000"
+              }
+            ],
+            "observedAt": "2026-05-01T10:03:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-e2b78cc07a5f6a5e9c65cf7a",
+            "fieldId": "declared_monthly_income",
+            "subjectRef": {
+              "scope": "participant",
+              "id": "participant"
+            },
+            "value": {
+              "min": 2000,
+              "max": 3000
+            },
+            "unit": "EUR",
+            "period": "month",
+            "incomeBasis": "unknown",
+            "rawValue": "solo. soy autonomo, depende del mes, entre 2000 y 3000",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "javier-m3",
+                "quote": "solo. soy autonomo, depende del mes, entre 2000 y 3000"
+              }
+            ],
+            "observedAt": "2026-05-01T10:03:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-2f873b4cf89dc5be9f2c6f44",
+            "fieldId": "requested_next_step",
+            "subjectRef": {
+              "scope": "case",
+              "id": "case"
+            },
+            "value": "no_contact",
+            "rawValue": "No quiero que me contactéis más.",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "javier-opt-out-addition",
+                "quote": "No quiero que me contactéis más."
+              }
+            ],
+            "observedAt": "2026-05-02T10:00:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          }
+        ],
+        "blockers": [
+          {
+            "id": "verified-blocker-349d0169fc38a46e943c0150",
+            "type": "COST",
+            "description": "Señal de COST identificada para revisión",
+            "status": "open",
+            "evidenceRefs": [
+              {
+                "messageId": "javier-m1",
+                "quote": "buenas, cuanto cuesta esto?"
+              }
+            ]
+          },
+          {
+            "id": "verified-blocker-7911c4d5e1cd3b265fa52195",
+            "type": "TRUST",
+            "description": "Señal de TRUST identificada para revisión",
+            "status": "open",
+            "evidenceRefs": [
+              {
+                "messageId": "javier-m5",
+                "quote": "y esto es fiable? no sera una estafa no"
+              }
+            ]
+          },
+          {
+            "id": "verified-blocker-a1e9c9ea63f2ea255c0bd3e7",
+            "type": "OPT_OUT",
+            "description": "Señal de OPT_OUT identificada para revisión",
+            "status": "open",
+            "evidenceRefs": [
+              {
+                "messageId": "javier-opt-out-addition",
+                "quote": "No quiero que me contactéis más."
+              }
+            ]
+          }
+        ],
+        "warnings": []
+      }
+    },
+    "decision": {
+      "result": "STOP_CONTACT",
+      "action": "STOP_CONTACT",
+      "milestones": [
+        {
+          "milestoneId": "M0",
+          "status": "completed",
+          "guards": [
+            {
+              "conditionId": "initial_intent-present",
+              "result": "satisfied",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-m1",
+                  "quote": "buenas, cuanto cuesta esto? me interesa algo por madrid o alrededores"
+                }
+              ]
+            }
+          ],
+          "evidenceRefs": [
+            {
+              "messageId": "javier-m1",
+              "quote": "buenas, cuanto cuesta esto? me interesa algo por madrid o alrededores"
+            }
+          ],
+          "blockers": [
+            {
+              "id": "verified-blocker-349d0169fc38a46e943c0150",
+              "type": "COST",
+              "description": "Señal de COST identificada para revisión",
+              "status": "open",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-m1",
+                  "quote": "buenas, cuanto cuesta esto?"
+                }
+              ]
+            },
+            {
+              "id": "verified-blocker-7911c4d5e1cd3b265fa52195",
+              "type": "TRUST",
+              "description": "Señal de TRUST identificada para revisión",
+              "status": "open",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-m5",
+                  "quote": "y esto es fiable? no sera una estafa no"
+                }
+              ]
+            },
+            {
+              "id": "verified-blocker-a1e9c9ea63f2ea255c0bd3e7",
+              "type": "OPT_OUT",
+              "description": "Señal de OPT_OUT identificada para revisión",
+              "status": "open",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-opt-out-addition",
+                  "quote": "No quiero que me contactéis más."
+                }
+              ]
+            }
+          ],
+          "workflowVersion": "1.0.0"
+        },
+        {
+          "milestoneId": "M1",
+          "status": "blocked",
+          "guards": [
+            {
+              "conditionId": "product_intent-explore_smart_housing",
+              "result": "unknown",
+              "evidenceRefs": []
+            }
+          ],
+          "evidenceRefs": [],
+          "blockers": [
+            {
+              "id": "verified-blocker-349d0169fc38a46e943c0150",
+              "type": "COST",
+              "description": "Señal de COST identificada para revisión",
+              "status": "open",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-m1",
+                  "quote": "buenas, cuanto cuesta esto?"
+                }
+              ]
+            },
+            {
+              "id": "verified-blocker-7911c4d5e1cd3b265fa52195",
+              "type": "TRUST",
+              "description": "Señal de TRUST identificada para revisión",
+              "status": "open",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-m5",
+                  "quote": "y esto es fiable? no sera una estafa no"
+                }
+              ]
+            },
+            {
+              "id": "verified-blocker-a1e9c9ea63f2ea255c0bd3e7",
+              "type": "OPT_OUT",
+              "description": "Señal de OPT_OUT identificada para revisión",
+              "status": "open",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-opt-out-addition",
+                  "quote": "No quiero que me contactéis más."
+                }
+              ]
+            }
+          ],
+          "workflowVersion": "1.0.0"
+        },
+        {
+          "milestoneId": "M2",
+          "status": "blocked",
+          "guards": [
+            {
+              "conditionId": "housing-context",
+              "result": "unknown",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-m1",
+                  "quote": "buenas, cuanto cuesta esto? me interesa algo por madrid o alrededores"
+                },
+                {
+                  "messageId": "javier-m3",
+                  "quote": "solo. soy autonomo, depende del mes, entre 2000 y 3000"
+                }
+              ]
+            },
+            {
+              "conditionId": "desired_locations-present",
+              "result": "satisfied",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-m1",
+                  "quote": "buenas, cuanto cuesta esto? me interesa algo por madrid o alrededores"
+                }
+              ]
+            },
+            {
+              "conditionId": "moving_horizon-present",
+              "result": "unknown",
+              "evidenceRefs": []
+            },
+            {
+              "conditionId": "buyer_count-present",
+              "result": "satisfied",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-m3",
+                  "quote": "solo. soy autonomo, depende del mes, entre 2000 y 3000"
+                }
+              ]
+            }
+          ],
+          "evidenceRefs": [
+            {
+              "messageId": "javier-m1",
+              "quote": "buenas, cuanto cuesta esto? me interesa algo por madrid o alrededores"
+            },
+            {
+              "messageId": "javier-m3",
+              "quote": "solo. soy autonomo, depende del mes, entre 2000 y 3000"
+            }
+          ],
+          "blockers": [
+            {
+              "id": "verified-blocker-349d0169fc38a46e943c0150",
+              "type": "COST",
+              "description": "Señal de COST identificada para revisión",
+              "status": "open",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-m1",
+                  "quote": "buenas, cuanto cuesta esto?"
+                }
+              ]
+            },
+            {
+              "id": "verified-blocker-7911c4d5e1cd3b265fa52195",
+              "type": "TRUST",
+              "description": "Señal de TRUST identificada para revisión",
+              "status": "open",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-m5",
+                  "quote": "y esto es fiable? no sera una estafa no"
+                }
+              ]
+            },
+            {
+              "id": "verified-blocker-a1e9c9ea63f2ea255c0bd3e7",
+              "type": "OPT_OUT",
+              "description": "Señal de OPT_OUT identificada para revisión",
+              "status": "open",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-opt-out-addition",
+                  "quote": "No quiero que me contactéis más."
+                }
+              ]
+            }
+          ],
+          "workflowVersion": "1.0.0"
+        },
+        {
+          "milestoneId": "M3",
+          "status": "blocked",
+          "guards": [
+            {
+              "conditionId": "financial-context",
+              "result": "unknown",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-m3",
+                  "quote": "solo. soy autonomo, depende del mes, entre 2000 y 3000"
+                }
+              ]
+            },
+            {
+              "conditionId": "declared_monthly_income-clear",
+              "result": "satisfied",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-m3",
+                  "quote": "solo. soy autonomo, depende del mes, entre 2000 y 3000"
+                }
+              ]
+            },
+            {
+              "conditionId": "income-net",
+              "result": "unknown",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-m3",
+                  "quote": "solo. soy autonomo, depende del mes, entre 2000 y 3000"
+                }
+              ]
+            },
+            {
+              "conditionId": "available_savings-clear",
+              "result": "unknown",
+              "evidenceRefs": []
+            },
+            {
+              "conditionId": "debt-resolved",
+              "result": "unknown",
+              "evidenceRefs": []
+            },
+            {
+              "conditionId": "debt_deduction_semantics-included",
+              "result": "unknown",
+              "evidenceRefs": []
+            },
+            {
+              "conditionId": "debt_deduction_semantics-excluded",
+              "result": "unknown",
+              "evidenceRefs": []
+            },
+            {
+              "conditionId": "debt_deduction_semantics-no_disclosed_debt",
+              "result": "unknown",
+              "evidenceRefs": []
+            }
+          ],
+          "evidenceRefs": [
+            {
+              "messageId": "javier-m3",
+              "quote": "solo. soy autonomo, depende del mes, entre 2000 y 3000"
+            }
+          ],
+          "blockers": [
+            {
+              "id": "verified-blocker-349d0169fc38a46e943c0150",
+              "type": "COST",
+              "description": "Señal de COST identificada para revisión",
+              "status": "open",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-m1",
+                  "quote": "buenas, cuanto cuesta esto?"
+                }
+              ]
+            },
+            {
+              "id": "verified-blocker-7911c4d5e1cd3b265fa52195",
+              "type": "TRUST",
+              "description": "Señal de TRUST identificada para revisión",
+              "status": "open",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-m5",
+                  "quote": "y esto es fiable? no sera una estafa no"
+                }
+              ]
+            },
+            {
+              "id": "verified-blocker-a1e9c9ea63f2ea255c0bd3e7",
+              "type": "OPT_OUT",
+              "description": "Señal de OPT_OUT identificada para revisión",
+              "status": "open",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-opt-out-addition",
+                  "quote": "No quiero que me contactéis más."
+                }
+              ]
+            }
+          ],
+          "workflowVersion": "1.0.0"
+        },
+        {
+          "milestoneId": "M4",
+          "status": "blocked",
+          "guards": [
+            {
+              "conditionId": "orientation",
+              "result": "unsatisfied",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-opt-out-addition",
+                  "quote": "No quiero que me contactéis más."
+                }
+              ]
+            }
+          ],
+          "evidenceRefs": [
+            {
+              "messageId": "javier-opt-out-addition",
+              "quote": "No quiero que me contactéis más."
+            }
+          ],
+          "blockers": [
+            {
+              "id": "verified-blocker-349d0169fc38a46e943c0150",
+              "type": "COST",
+              "description": "Señal de COST identificada para revisión",
+              "status": "open",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-m1",
+                  "quote": "buenas, cuanto cuesta esto?"
+                }
+              ]
+            },
+            {
+              "id": "verified-blocker-7911c4d5e1cd3b265fa52195",
+              "type": "TRUST",
+              "description": "Señal de TRUST identificada para revisión",
+              "status": "open",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-m5",
+                  "quote": "y esto es fiable? no sera una estafa no"
+                }
+              ]
+            },
+            {
+              "id": "verified-blocker-a1e9c9ea63f2ea255c0bd3e7",
+              "type": "OPT_OUT",
+              "description": "Señal de OPT_OUT identificada para revisión",
+              "status": "open",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-opt-out-addition",
+                  "quote": "No quiero que me contactéis más."
+                }
+              ]
+            }
+          ],
+          "workflowVersion": "1.0.0"
+        },
+        {
+          "milestoneId": "M5",
+          "status": "blocked",
+          "guards": [
+            {
+              "conditionId": "confirmed-next-step",
+              "result": "unknown",
+              "evidenceRefs": []
+            },
+            {
+              "conditionId": "customer-confirmed",
+              "result": "unknown",
+              "evidenceRefs": []
+            },
+            {
+              "conditionId": "handoff-confirmed",
+              "result": "unknown",
+              "evidenceRefs": []
+            }
+          ],
+          "evidenceRefs": [],
+          "blockers": [
+            {
+              "id": "verified-blocker-349d0169fc38a46e943c0150",
+              "type": "COST",
+              "description": "Señal de COST identificada para revisión",
+              "status": "open",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-m1",
+                  "quote": "buenas, cuanto cuesta esto?"
+                }
+              ]
+            },
+            {
+              "id": "verified-blocker-7911c4d5e1cd3b265fa52195",
+              "type": "TRUST",
+              "description": "Señal de TRUST identificada para revisión",
+              "status": "open",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-m5",
+                  "quote": "y esto es fiable? no sera una estafa no"
+                }
+              ]
+            },
+            {
+              "id": "verified-blocker-a1e9c9ea63f2ea255c0bd3e7",
+              "type": "OPT_OUT",
+              "description": "Señal de OPT_OUT identificada para revisión",
+              "status": "open",
+              "evidenceRefs": [
+                {
+                  "messageId": "javier-opt-out-addition",
+                  "quote": "No quiero que me contactéis más."
+                }
+              ]
+            }
+          ],
+          "workflowVersion": "1.0.0"
+        }
+      ]
+    }
+  }
+]

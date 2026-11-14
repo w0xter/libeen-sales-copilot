@@ -136,3 +136,7 @@ Las pruebas deterministas nuevas reproducen la pérdida de precisión y la corre
 - `pnpm build`: PASS.
 
 **Veredicto: PARTIALLY FIXED.** Las dos salvaguardas limitadas no satisfacen la misión completa ni el gate de evaluación real. No se modificaron F-02–F-07. La integración no está verificada para entrega.
+
+## Cuarta iteración — 14 de noviembre de 2026: fronteras de confianza
+
+**Dictamen: PARTIALLY FIXED; no listo para integración.** Se añadió un verificador separado, proyección acotada de contexto financiero, diagnósticos de transporte y selección determinista de plantilla única. La evaluación real usó 19 solicitudes en total, incluida una comprobación de transporte. Los originales produjeron acciones apropiadas en esta muestra, pero la corrección de base falló de forma segura, una prueba de opt-out falló por evidencia y su repetición generó un COST falso. Los bloqueos antiguos siguen sin una vía auditada de retractación; se preparó un CCR sin modificar contratos. Resultados, límites, pruebas e instrumentos en [F01_TRUST_BOUNDARIES_EVALUATION.md](F01_TRUST_BOUNDARIES_EVALUATION.md).

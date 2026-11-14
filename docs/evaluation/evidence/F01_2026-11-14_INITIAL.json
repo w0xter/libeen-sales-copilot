@@ -1,0 +1,616 @@
+[
+  {
+    "request": 1,
+    "kind": "interpretation",
+    "latencyMs": 5694,
+    "result": "response"
+  },
+  {
+    "request": 2,
+    "kind": "verification",
+    "latencyMs": 1534,
+    "result": "response"
+  },
+  {
+    "scenario": "B01",
+    "model": "gpt-4.1-mini",
+    "result": {
+      "ok": true,
+      "value": {
+        "assertions": [
+          {
+            "assertionId": "model-f8f424d12b5d30c5060fcb84",
+            "fieldId": "initial_intent",
+            "subjectRef": {
+              "scope": "case",
+              "id": "case"
+            },
+            "value": "undetermined",
+            "rawValue": "¡Hola! Hemos visto vuestro anuncio en Instagram. Somos mi pareja y yo, buscamos piso en Valencia para mudarnos antes del verano.",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "laura-m1",
+                "quote": "¡Hola! Hemos visto vuestro anuncio en Instagram. Somos mi pareja y yo, buscamos piso en Valencia para mudarnos antes del verano."
+              }
+            ],
+            "observedAt": "2026-05-01T10:01:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-0a1ed41064654d7bf07c6fc7",
+            "fieldId": "desired_locations",
+            "subjectRef": {
+              "scope": "case",
+              "id": "case"
+            },
+            "value": [
+              "Valencia"
+            ],
+            "rawValue": "¡Hola! Hemos visto vuestro anuncio en Instagram. Somos mi pareja y yo, buscamos piso en Valencia para mudarnos antes del verano.",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "laura-m1",
+                "quote": "¡Hola! Hemos visto vuestro anuncio en Instagram. Somos mi pareja y yo, buscamos piso en Valencia para mudarnos antes del verano."
+              }
+            ],
+            "observedAt": "2026-05-01T10:01:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-2ac42409460ead1d0db307bf",
+            "fieldId": "moving_horizon",
+            "subjectRef": {
+              "scope": "case",
+              "id": "case"
+            },
+            "value": "antes del verano",
+            "rawValue": "¡Hola! Hemos visto vuestro anuncio en Instagram. Somos mi pareja y yo, buscamos piso en Valencia para mudarnos antes del verano.",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "laura-m1",
+                "quote": "¡Hola! Hemos visto vuestro anuncio en Instagram. Somos mi pareja y yo, buscamos piso en Valencia para mudarnos antes del verano."
+              }
+            ],
+            "observedAt": "2026-05-01T10:01:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-d3f2f8aa989730668f9ed091",
+            "fieldId": "buyer_count",
+            "subjectRef": {
+              "scope": "buying_unit",
+              "id": "buying_unit"
+            },
+            "value": 2,
+            "rawValue": "¡Hola! Hemos visto vuestro anuncio en Instagram. Somos mi pareja y yo, buscamos piso en Valencia para mudarnos antes del verano.",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "laura-m1",
+                "quote": "¡Hola! Hemos visto vuestro anuncio en Instagram. Somos mi pareja y yo, buscamos piso en Valencia para mudarnos antes del verano."
+              }
+            ],
+            "observedAt": "2026-05-01T10:01:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-457f20d075260f8782013840",
+            "fieldId": "declared_monthly_income",
+            "subjectRef": {
+              "scope": "buying_unit",
+              "id": "buying_unit"
+            },
+            "value": 3800,
+            "unit": "EUR",
+            "period": "month",
+            "incomeBasis": "net",
+            "rawValue": "Unos 3.800 € netos entre los dos. Ahorrado tenemos 18.000 más o menos. Yo tengo 31 y él 34.",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "laura-m3",
+                "quote": "Unos 3.800 € netos entre los dos. Ahorrado tenemos 18.000 más o menos. Yo tengo 31 y él 34."
+              }
+            ],
+            "observedAt": "2026-05-01T10:03:00Z",
+            "precision": "approximate",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-0240c4e9b46ac08357c4d114",
+            "fieldId": "available_savings",
+            "subjectRef": {
+              "scope": "buying_unit",
+              "id": "buying_unit"
+            },
+            "value": 18000,
+            "unit": "EUR",
+            "rawValue": "Unos 3.800 € netos entre los dos. Ahorrado tenemos 18.000 más o menos. Yo tengo 31 y él 34.",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "laura-m3",
+                "quote": "Unos 3.800 € netos entre los dos. Ahorrado tenemos 18.000 más o menos. Yo tengo 31 y él 34."
+              }
+            ],
+            "observedAt": "2026-05-01T10:03:00Z",
+            "precision": "approximate",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-21cdf0265950994b5eba73cb",
+            "fieldId": "monthly_debt",
+            "subjectRef": {
+              "scope": "buying_unit",
+              "id": "buying_unit"
+            },
+            "value": 250,
+            "unit": "EUR",
+            "period": "month",
+            "rawValue": "Ah, y pagamos un préstamo del coche de 250 € al mes, no sé si cuenta.",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "laura-m4",
+                "quote": "Ah, y pagamos un préstamo del coche de 250 € al mes, no sé si cuenta."
+              }
+            ],
+            "observedAt": "2026-05-01T10:04:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-d776ac95a80e3a946cf30ba6",
+            "fieldId": "debt_deduction_semantics",
+            "subjectRef": {
+              "scope": "buying_unit",
+              "id": "buying_unit"
+            },
+            "value": "unknown",
+            "rawValue": "Ah, y pagamos un préstamo del coche de 250 € al mes, no sé si cuenta.",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "laura-m4",
+                "quote": "Ah, y pagamos un préstamo del coche de 250 € al mes, no sé si cuenta."
+              }
+            ],
+            "observedAt": "2026-05-01T10:04:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          }
+        ],
+        "blockers": [],
+        "warnings": []
+      }
+    }
+  },
+  {
+    "request": 3,
+    "kind": "interpretation",
+    "latencyMs": 3111,
+    "result": "response"
+  },
+  {
+    "request": 4,
+    "kind": "verification",
+    "latencyMs": 1374,
+    "result": "response"
+  },
+  {
+    "scenario": "B05",
+    "model": "gpt-4.1-mini",
+    "result": {
+      "ok": true,
+      "value": {
+        "assertions": [
+          {
+            "assertionId": "model-84949f559494e78988abcdc0",
+            "fieldId": "initial_intent",
+            "subjectRef": {
+              "scope": "case",
+              "id": "case"
+            },
+            "value": "question",
+            "rawValue": "buenas, cuanto cuesta esto? me interesa algo por madrid o alrededores",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "javier-m1",
+                "quote": "buenas, cuanto cuesta esto? me interesa algo por madrid o alrededores"
+              }
+            ],
+            "observedAt": "2026-05-01T10:01:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-0271103f66b2adc1f61a7a1b",
+            "fieldId": "desired_locations",
+            "subjectRef": {
+              "scope": "case",
+              "id": "case"
+            },
+            "value": [
+              "madrid",
+              "alrededores"
+            ],
+            "rawValue": "buenas, cuanto cuesta esto? me interesa algo por madrid o alrededores",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "javier-m1",
+                "quote": "buenas, cuanto cuesta esto? me interesa algo por madrid o alrededores"
+              }
+            ],
+            "observedAt": "2026-05-01T10:01:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-328ec65a8aadfbab1eb1df97",
+            "fieldId": "buyer_count",
+            "subjectRef": {
+              "scope": "buying_unit",
+              "id": "buying_unit"
+            },
+            "value": 1,
+            "rawValue": "solo. soy autonomo, depende del mes, entre 2000 y 3000",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "javier-m3",
+                "quote": "solo. soy autonomo, depende del mes, entre 2000 y 3000"
+              }
+            ],
+            "observedAt": "2026-05-01T10:03:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-de751084f006e1098b56154d",
+            "fieldId": "employment_context",
+            "subjectRef": {
+              "scope": "participant",
+              "id": "participant"
+            },
+            "value": "autonomo",
+            "rawValue": "solo. soy autonomo, depende del mes, entre 2000 y 3000",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "javier-m3",
+                "quote": "solo. soy autonomo, depende del mes, entre 2000 y 3000"
+              }
+            ],
+            "observedAt": "2026-05-01T10:03:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-e2b78cc07a5f6a5e9c65cf7a",
+            "fieldId": "declared_monthly_income",
+            "subjectRef": {
+              "scope": "participant",
+              "id": "participant"
+            },
+            "value": {
+              "min": 2000,
+              "max": 3000
+            },
+            "unit": "EUR",
+            "period": "month",
+            "incomeBasis": "unknown",
+            "rawValue": "solo. soy autonomo, depende del mes, entre 2000 y 3000",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "javier-m3",
+                "quote": "solo. soy autonomo, depende del mes, entre 2000 y 3000"
+              }
+            ],
+            "observedAt": "2026-05-01T10:03:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          }
+        ],
+        "blockers": [
+          {
+            "id": "verified-blocker-7911c4d5e1cd3b265fa52195",
+            "type": "TRUST",
+            "description": "Señal de TRUST identificada para revisión",
+            "status": "open",
+            "evidenceRefs": [
+              {
+                "messageId": "javier-m5",
+                "quote": "y esto es fiable? no sera una estafa no"
+              }
+            ]
+          }
+        ],
+        "warnings": []
+      }
+    }
+  },
+  {
+    "request": 5,
+    "kind": "interpretation",
+    "latencyMs": 4626,
+    "result": "response"
+  },
+  {
+    "request": 6,
+    "kind": "verification",
+    "latencyMs": 1517,
+    "result": "response"
+  },
+  {
+    "scenario": "B08",
+    "model": "gpt-4.1-mini",
+    "result": {
+      "ok": true,
+      "value": {
+        "assertions": [
+          {
+            "assertionId": "model-e1aabe3a7224d0c82a40620e",
+            "fieldId": "buyer_count",
+            "subjectRef": {
+              "scope": "buying_unit",
+              "id": "buying_unit"
+            },
+            "value": 2,
+            "rawValue": "Buenos días. Somos mi marido y yo. Él tiene 67 años y está jubilado, yo trabajo a media jornada. Entre los dos, 1.400 €. Ahorros no tenemos, pero necesitamos salir del piso en dos semanas.",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "rosa-m1",
+                "quote": "Buenos días. Somos mi marido y yo. Él tiene 67 años y está jubilado, yo trabajo a media jornada. Entre los dos, 1.400 €. Ahorros no tenemos, pero necesitamos salir del piso en dos semanas."
+              }
+            ],
+            "observedAt": "2026-05-01T10:01:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-00f96600b7e80688407ffa8f",
+            "fieldId": "declared_monthly_income",
+            "subjectRef": {
+              "scope": "buying_unit",
+              "id": "buying_unit"
+            },
+            "value": 1400,
+            "unit": "EUR",
+            "period": "monthly",
+            "incomeBasis": "unknown",
+            "rawValue": "Buenos días. Somos mi marido y yo. Él tiene 67 años y está jubilado, yo trabajo a media jornada. Entre los dos, 1.400 €. Ahorros no tenemos, pero necesitamos salir del piso en dos semanas.",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "rosa-m1",
+                "quote": "Buenos días. Somos mi marido y yo. Él tiene 67 años y está jubilado, yo trabajo a media jornada. Entre los dos, 1.400 €. Ahorros no tenemos, pero necesitamos salir del piso en dos semanas."
+              }
+            ],
+            "observedAt": "2026-05-01T10:01:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-050c2f6f5c7eda456ca6a44c",
+            "fieldId": "employment_context",
+            "subjectRef": {
+              "scope": "participant",
+              "id": "participant_1"
+            },
+            "value": "jubilado",
+            "rawValue": "Buenos días. Somos mi marido y yo. Él tiene 67 años y está jubilado, yo trabajo a media jornada. Entre los dos, 1.400 €. Ahorros no tenemos, pero necesitamos salir del piso en dos semanas.",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "rosa-m1",
+                "quote": "Buenos días. Somos mi marido y yo. Él tiene 67 años y está jubilado, yo trabajo a media jornada. Entre los dos, 1.400 €. Ahorros no tenemos, pero necesitamos salir del piso en dos semanas."
+              }
+            ],
+            "observedAt": "2026-05-01T10:01:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-8e62e66fd1ca93fab3cdd372",
+            "fieldId": "employment_context",
+            "subjectRef": {
+              "scope": "participant",
+              "id": "participant_2"
+            },
+            "value": "trabajo a media jornada",
+            "rawValue": "Buenos días. Somos mi marido y yo. Él tiene 67 años y está jubilado, yo trabajo a media jornada. Entre los dos, 1.400 €. Ahorros no tenemos, pero necesitamos salir del piso en dos semanas.",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "rosa-m1",
+                "quote": "Buenos días. Somos mi marido y yo. Él tiene 67 años y está jubilado, yo trabajo a media jornada. Entre los dos, 1.400 €. Ahorros no tenemos, pero necesitamos salir del piso en dos semanas."
+              }
+            ],
+            "observedAt": "2026-05-01T10:01:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-9714760d00f348307d4ac74e",
+            "fieldId": "available_savings",
+            "subjectRef": {
+              "scope": "buying_unit",
+              "id": "buying_unit"
+            },
+            "value": 0,
+            "unit": "EUR",
+            "rawValue": "Buenos días. Somos mi marido y yo. Él tiene 67 años y está jubilado, yo trabajo a media jornada. Entre los dos, 1.400 €. Ahorros no tenemos, pero necesitamos salir del piso en dos semanas.",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "rosa-m1",
+                "quote": "Buenos días. Somos mi marido y yo. Él tiene 67 años y está jubilado, yo trabajo a media jornada. Entre los dos, 1.400 €. Ahorros no tenemos, pero necesitamos salir del piso en dos semanas."
+              }
+            ],
+            "observedAt": "2026-05-01T10:01:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-1675e9d8b3ca3fe167b8ed91",
+            "fieldId": "moving_horizon",
+            "subjectRef": {
+              "scope": "case",
+              "id": "case"
+            },
+            "value": "dos semanas",
+            "rawValue": "Buenos días. Somos mi marido y yo. Él tiene 67 años y está jubilado, yo trabajo a media jornada. Entre los dos, 1.400 €. Ahorros no tenemos, pero necesitamos salir del piso en dos semanas.",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "rosa-m1",
+                "quote": "Buenos días. Somos mi marido y yo. Él tiene 67 años y está jubilado, yo trabajo a media jornada. Entre los dos, 1.400 €. Ahorros no tenemos, pero necesitamos salir del piso en dos semanas."
+              }
+            ],
+            "observedAt": "2026-05-01T10:01:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-553104085d995fc76bd5bbf0",
+            "fieldId": "initial_intent",
+            "subjectRef": {
+              "scope": "case",
+              "id": "case"
+            },
+            "value": "undetermined",
+            "rawValue": "Si no podéis vendernos, ¿nos alquiláis algo solo de alquiler?",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "rosa-m2",
+                "quote": "Si no podéis vendernos, ¿nos alquiláis algo solo de alquiler?"
+              }
+            ],
+            "observedAt": "2026-05-01T10:02:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-f1a9ad5d272cf628204ebf6c",
+            "fieldId": "product_intent",
+            "subjectRef": {
+              "scope": "case",
+              "id": "case"
+            },
+            "value": "classical_rental",
+            "rawValue": "Si no podéis vendernos, ¿nos alquiláis algo solo de alquiler?",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "rosa-m2",
+                "quote": "Si no podéis vendernos, ¿nos alquiláis algo solo de alquiler?"
+              }
+            ],
+            "observedAt": "2026-05-01T10:02:00Z",
+            "precision": "ambiguous",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "assertionId": "model-10bfb58262f0e7ad6c71bb16",
+            "fieldId": "requested_next_step",
+            "subjectRef": {
+              "scope": "case",
+              "id": "case"
+            },
+            "value": "follow_up",
+            "rawValue": "Mi hijo dice que os pida por escrito que estamos aprobados antes de seguir.",
+            "source": "customer_message",
+            "evidenceRefs": [
+              {
+                "messageId": "rosa-m3",
+                "quote": "Mi hijo dice que os pida por escrito que estamos aprobados antes de seguir."
+              }
+            ],
+            "observedAt": "2026-05-01T10:03:00Z",
+            "precision": "explicit",
+            "reviewStatus": "unreviewed",
+            "schemaVersion": "1.0.0"
+          }
+        ],
+        "blockers": [
+          {
+            "id": "verified-blocker-05c0158ecee89b37b7c2dca4",
+            "type": "URGENT",
+            "description": "Señal de URGENT identificada para revisión",
+            "status": "open",
+            "evidenceRefs": [
+              {
+                "messageId": "rosa-m1",
+                "quote": "necesitamos salir del piso en dos semanas."
+              }
+            ]
+          },
+          {
+            "id": "verified-blocker-cbbe3fc752e86a742b4a6e79",
+            "type": "BINDING_CLAIM",
+            "description": "Señal de BINDING_CLAIM identificada para revisión",
+            "status": "open",
+            "evidenceRefs": [
+              {
+                "messageId": "rosa-m3",
+                "quote": "Mi hijo dice que os pida por escrito que estamos aprobados antes de seguir."
+              }
+            ]
+          }
+        ],
+        "warnings": []
+      }
+    }
+  },
+  {
+    "request": 7,
+    "kind": "interpretation",
+    "latencyMs": 4518,
+    "result": "response"
+  },
+  {
+    "scenario": "C01",
+    "model": "gpt-4.1-mini",
+    "result": {
+      "ok": false,
+      "error": {
+        "code": "EVIDENCE_INVALID",
+        "message": "La cuantía no aparece en el mensaje citado",
+        "retryable": true
+      }
+    }
+  }
+]

@@ -53,7 +53,7 @@ describe('AI adapters', () => {
       expect(await a.value.interpreter.interpret(input('rosa'))).toMatchObject({ ok: false, error: { code } });
     }
   });
-  it('returns controlled errors for model failure and disallows unsafe template selections', async () => {
+  it('returns controlled model errors and selects singleton templates without a model', async () => {
     const broken = createAIAdapters({ AI_MODE: 'openai', OPENAI_API_KEY: 'test' }, { complete: async () => { throw new Error('secret should never appear'); } });
     if (!broken.ok) throw Error('mode');
     const error = await broken.value.interpreter.interpret(input('laura'));
@@ -61,12 +61,12 @@ describe('AI adapters', () => {
     expect(JSON.stringify(error)).not.toContain('secret');
     const unsafe = createAIAdapters({ AI_MODE: 'openai', OPENAI_API_KEY: 'test' }, { complete: async () => ({ key: 'approved' }) });
     if (!unsafe.ok) throw Error('mode');
-    expect(await unsafe.value.draftGenerator.generate({ caseSnapshot: snapshot('laura'), proposal, agentProfile: demoBundle.agentProfile, policyDecision: policy })).toMatchObject({ ok: false, error: { code: 'DRAFT_GENERATION_FAILED' } });
+    expect(await unsafe.value.draftGenerator.generate({ caseSnapshot: snapshot('laura'), proposal, agentProfile: demoBundle.agentProfile, policyDecision: policy })).toMatchObject({ ok: true, value: { status: 'generated', aiMode: 'openai' } });
   });
 
   it('accepts valid, evidenced real-mode output and times out stalled calls', async () => {
     const candidate = { assertions: [{ assertionId: 'a', fieldId: 'available_savings', subjectRef: { scope: 'buying_unit', id: 'buying_unit' }, value: 0, rawValue: 'Ahorros no tenemos', source: 'customer_message', evidenceRefs: [{ messageId: 'rosa-m1' }], observedAt: '2026-05-01T10:01:00Z', precision: 'explicit', reviewStatus: 'unreviewed', schemaVersion: '1.0.0' }], blockers: [], warnings: [] };
-    const a = createAIAdapters({ AI_MODE: 'openai', OPENAI_API_KEY: 'test' }, { complete: async () => candidate });
+    const a = createAIAdapters({ AI_MODE: 'openai', OPENAI_API_KEY: 'test' }, { complete: async (_instructions, _input, kind) => kind === 'verification' ? { findings: [], inconclusive: false } : candidate });
     if (!a.ok) throw Error('mode');
     expect(await a.value.interpreter.interpret(input('rosa'))).toMatchObject({ ok: true, value: candidate });
     const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
@@ -189,5 +189,89 @@ describe('historical basis corrections', () => {
     expect(result.value.assertions[1]).toMatchObject({ precision: 'ambiguous', incomeBasis: 'gross', evidenceRefs: [{ messageId: correction.messageId }] });
     expect(result.value.assertions[1].value).toBeUndefined();
     expect(reconcileFacts({ assertions: result.value.assertions, messages: data.messages, factSchema: data.factSchema })).toMatchObject({ ok: true, value: { facts: [{ status: 'ambiguous', value: 3800, evidenceRefs: expect.arrayContaining([{ messageId: 'laura-m3', quote: expect.any(String) }, { messageId: correction.messageId, quote: expect.any(String) }]) }] } });
+  });
+});
+
+describe('safe transport diagnostics', () => {
+  it('classifies SDK failures without exposing provider messages or arbitrary identifiers', async () => {
+    const OpenAI = (await import('openai')).default;
+    const { classifyModelError } = await import('../../../src/adapters/ai/openai');
+    const headers = new Headers({ 'x-request-id': 'req_safe123' });
+    for (const [status, category] of [[401, 'authentication'], [403, 'authentication'], [429, 'rate_limit'], [400, 'request_schema'], [422, 'request_schema'], [503, 'provider']] as const) {
+      const diagnostic = classifyModelError(new OpenAI.APIError(status, { code: 'safe_code', message: 'secret payload' }, 'secret payload', headers));
+      expect(diagnostic).toMatchObject({ category, status, requestId: 'req_safe123' });
+      expect(JSON.stringify(diagnostic)).not.toContain('secret');
+    }
+    expect(classifyModelError(new OpenAI.APIConnectionError({ cause: Object.assign(new Error('secret'), { code: 'ENOTFOUND' }) }))).toMatchObject({ category: 'network' });
+    expect(classifyModelError(new OpenAI.APIConnectionTimeoutError({}))).toMatchObject({ category: 'timeout' });
+    expect(classifyModelError(new SyntaxError('secret'))).toMatchObject({ category: 'parse_schema' });
+  });
+  it('requests cancellation when a model call exceeds its deadline', async () => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    let signal: AbortSignal | undefined;
+    const result = await new OpenAIInterpreter({ complete: async (_a, _b, _c, received) => { signal = received; return new Promise(() => {}); } }, 5).interpret(input('laura'));
+    expect(result).toMatchObject({ ok: false, error: { code: 'MODEL_UNAVAILABLE' } });
+    expect(signal?.aborted).toBe(true);
+  });
+});
+
+describe('deterministic draft selection', () => {
+  it('selects the sole allowed template without an inference request', async () => {
+    let calls = 0;
+    const a = createAIAdapters({ AI_MODE: 'openai', OPENAI_API_KEY: 'test' }, { complete: async () => { calls++; throw Error('unexpected'); } });
+    if (!a.ok) throw Error('mode');
+    expect(await a.value.draftGenerator.generate({ caseSnapshot: snapshot('laura'), proposal, agentProfile: demoBundle.agentProfile, policyDecision: policy })).toMatchObject({ ok: true, value: { text: expect.stringContaining('cuota'), aiMode: 'openai', status: 'generated' } });
+    expect(calls).toBe(0);
+  });
+});
+
+describe('independent blocker verification', () => {
+  it('detects protected signals omitted by extraction', async () => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const extractor = { assertions: [], blockers: [], warnings: [] };
+    const verifier = { findings: [{ type: 'URGENT', messageId: 'rosa-m1', quote: 'dos semanas' }, { type: 'BINDING_CLAIM', messageId: 'rosa-m3', quote: 'por escrito' }], inconclusive: false };
+    const result = await new OpenAIInterpreter({ complete: async (_i, _input, kind) => kind === 'verification' ? verifier : extractor }).interpret(input('rosa'));
+    expect(result).toMatchObject({ ok: true, value: { blockers: expect.arrayContaining([expect.objectContaining({ type: 'URGENT' }), expect.objectContaining({ type: 'BINDING_CLAIM' })]) } });
+  });
+  it('holds analysis when a candidate and independent assessment disagree', async () => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const extractor = { assertions: [], blockers: [{ type: 'TRUST', description: 'confianza', messageId: 'laura-m4' }], warnings: [] };
+    const result = await new OpenAIInterpreter({ complete: async (_i, _input, kind) => kind === 'verification' ? { findings: [], inconclusive: false } : extractor }).interpret(input('laura'));
+    expect(result).toMatchObject({ ok: false, error: { code: 'MODEL_OUTPUT_INVALID' } });
+  });
+});
+
+describe('interpretation context', () => {
+  it('supplies bounded prior facts as context with their evidence, not advisor instructions', async () => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const data = input('laura');
+    data.caseSnapshot.knowledge.facts = [{ fieldId: 'declared_monthly_income', subjectRef: { scope: 'buying_unit', id: 'buying_unit' }, status: 'approximate', value: 3800, evidenceRefs: [{ messageId: 'laura-m3' }] }];
+    let projected: unknown;
+    await new OpenAIInterpreter({ complete: async (_instructions, supplied, kind) => { if (kind === 'interpretation') { projected = supplied; return { assertions: [], blockers: [], warnings: [] }; } return { findings: [], inconclusive: false }; } }).interpret(data);
+    expect(projected).toMatchObject({ context: { facts: [expect.objectContaining({ fieldId: 'declared_monthly_income', evidenceRefs: [{ messageId: 'laura-m3' }] })] } });
+  });
+});
+
+describe('incremental financial correction', () => {
+  it('uses an evidenced earlier assertion when a basis-only correction arrives alone', async () => {
+    const { normalizeModelInterpretation } = await import('../../../src/adapters/ai/openai');
+    const data = input('laura');
+    data.messages = [...data.messages, ...scenarios.find(s => s.id === 'laura-gross-correction')!.additions];
+    data.caseSnapshot.assertions = [{ assertionId: 'old', fieldId: 'declared_monthly_income', subjectRef: { scope: 'buying_unit', id: 'buying_unit' }, value: 3800, unit: 'EUR', period: 'month', incomeBasis: 'net', rawValue: 'Unos 3.800 € netos', source: 'customer_message', evidenceRefs: [{ messageId: 'laura-m3' }], observedAt: '2026-05-01T10:03:00Z', precision: 'approximate', reviewStatus: 'unreviewed', schemaVersion: '1.0.0' }];
+    const correction = { fieldId: 'declared_monthly_income', scope: 'buying_unit', subjectId: 'buying_unit', value: 3800, unit: 'EUR', period: 'month', incomeBasis: 'gross', messageId: data.messages.at(-1)!.messageId, precision: 'explicit' };
+    const result = normalizeModelInterpretation({ assertions: [correction], blockers: [], warnings: [] }, data);
+    expect(result).toMatchObject({ ok: true, value: { assertions: [{ precision: 'ambiguous', incomeBasis: 'gross', evidenceRefs: [{ messageId: correction.messageId }] }] } });
+    if (result.ok) expect(result.value.assertions[0].value).toBeUndefined();
+  });
+});
+
+describe('safety verification failure handling', () => {
+  it('fails closed on unavailable verifier and unrelated evidence', async () => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const extractor = { assertions: [], blockers: [], warnings: [] };
+    const unavailable = new OpenAIInterpreter({ complete: async (_i, _v, kind) => { if (kind === 'verification') throw Error('unavailable'); return extractor; } });
+    expect(await unavailable.interpret(input('rosa'))).toMatchObject({ ok: false, error: { code: 'MODEL_UNAVAILABLE' } });
+    const badEvidence = new OpenAIInterpreter({ complete: async (_i, _v, kind) => kind === 'verification' ? { findings: [{ type: 'URGENT', messageId: 'rosa-m1', quote: 'inventado' }], inconclusive: false } : extractor });
+    expect(await badEvidence.interpret(input('rosa'))).toMatchObject({ ok: false, error: { code: 'EVIDENCE_INVALID' } });
   });
 });
