@@ -116,6 +116,7 @@ function checksFor(record: RecordData, state: State): Check[] {
   if(record.gold.expectedAction!==null){
     push('expected_action',state.action===record.gold.expectedAction,record.gold.expectedAction,state.action);
   }
+  else push('no_unjustified_call',state.action!=='PROPOSE_CALL','not PROPOSE_CALL without demonstrated full context',state.action);
   push('all_evidence_customer_text',state.snapshot.assertions.every(a=>supported(a.evidenceRefs))&&state.snapshot.blockers.every(b=>supported(b.evidenceRefs)),true,'assertions/blockers source check');
   const audioIds=new Set(record.messages.filter(m=>m.content.type==='audio_unavailable').map(m=>m.messageId));
   const unsupported=[...audioIds,...(record.gold.forbiddenEvidenceMessageIds??[])];
@@ -148,6 +149,10 @@ function checksFor(record: RecordData, state: State): Check[] {
     push(`blocker_required_${index}_${g.type}`,matching.length>0,g,blockers.map(b=>({type:b.type,evidenceRefs:b.evidenceRefs})));
   }
   for(const type of record.gold.forbiddenBlockers)push(`blocker_forbidden_${type}`,!blockers.some(b=>b.type===type),'absent',blockers.map(b=>b.type));
+  if(record.category==='ready_call'){
+    const intent=facts.find(f=>f.fieldId==='initial_intent'&&f.subjectRef.scope==='case');
+    push('meaningful_initial_intent',intent?.status==='known'&&'value' in intent&&typeof intent.value==='string'&&intent.value.trim().toLocaleLowerCase('es-ES')!=='undetermined','explicit informative intent',intent??null);
+  }
   if(record.category==='multiple_subjects'){
     const income=facts.filter(f=>f.fieldId==='declared_monthly_income'&&f.subjectRef.scope==='participant');
     push('distinct_income_subjects',new Set(income.map(f=>f.subjectRef.id)).size>=2,'two distinct participant IDs',income.map(f=>f.subjectRef));
