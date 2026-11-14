@@ -359,3 +359,81 @@ it('accepts an evidence-backed review that a price enquiry is not an objection',
   const result = await new OpenAIInterpreter({ complete: async (_i, _d, kind) => kind === 'verification' ? review : extraction }).interpret(data);
   expect(result).toMatchObject({ ok: true, value: { blockers: [] } });
 });
+
+describe('U0 grounding regressions', () => {
+  const sample = (text: string) => {
+    const data = input('laura');
+    data.messages = [{ ...data.messages[0], messageId: 'u0', content: { type: 'text' as const, text } }];
+    return data;
+  };
+  it('anchors a minor reviewer quotation error to the original agreed trust message', async () => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const text = 'Antes de daros los datos bancarios, ¿cómo sé que esta empresa es fiable y no una estafa?';
+    const extraction = { assertions: [], blockers: [{ type: 'TRUST', description: 'fiabilidad', messageId: 'u0' }], warnings: [] };
+    const review = { findings: [{ type: 'TRUST', messageId: 'u0', quote: 'Antes de daros los datos bancarios, ¿cómo sé que esta empresa es fiable y no es una estafa?' }], dismissals: [], inconclusive: false };
+    const result = await new OpenAIInterpreter({ complete: async (_i, _d, kind) => kind === 'verification' ? review : extraction }).interpret(sample(text));
+    expect(result).toMatchObject({ ok: true, value: { blockers: [{ type: 'TRUST', evidenceRefs: [{ messageId: 'u0', quote: text }] }] } });
+  });
+  it.each([
+    ['TRUST', 'En los cálculos de vivienda, ¿restáis la cuota mensual de financiación de nuestro coche de 180 euros? Es lo que me genera dudas.'],
+    ['BINDING_CLAIM', 'Querría leer las condiciones generales del servicio, sin que eso implique solicitar aprobación.'],
+  ])('accepts an explicitly reviewed unsupported %s candidate', async (type, text) => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const extraction = { assertions: [], blockers: [{ type, description: 'candidate', messageId: 'u0' }], warnings: [] };
+    const review = { findings: [], dismissals: [{ type, messageId: 'u0', quote: text, reason: 'El contexto es informativo y no expresa esa preocupación.' }], inconclusive: false };
+    expect(await new OpenAIInterpreter({ complete: async (_i, _d, kind) => kind === 'verification' ? review : extraction }).interpret(sample(text))).toMatchObject({ ok: true, value: { blockers: [] } });
+  });
+  it('does not promote a reference city to a desired location without reviewer confirmation', async () => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const extraction = { assertions: [{ fieldId: 'desired_locations', scope: 'case', subjectId: 'case', value: ['Madrid'], unit: null, period: null, incomeBasis: null, messageId: 'u0', precision: 'explicit' }], blockers: [], warnings: [] };
+    const review = { findings: [], dismissals: [], inconclusive: false };
+    expect(await new OpenAIInterpreter({ complete: async (_i, _d, kind) => kind === 'verification' ? review : extraction }).interpret(sample('Mi ciudad de referencia es Madrid.'))).toMatchObject({ ok: true, value: { assertions: [] } });
+  });
+});
+
+describe('U0 review boundaries', () => {
+  const sample = (texts: string[]) => {
+    const data = input('laura');
+    data.messages = texts.map((text, index) => ({ ...data.messages[0], messageId: `u${index}`, content: { type: 'text' as const, text } }));
+    return data;
+  };
+  it.each(['Mi ciudad de referencia es Madrid.', 'Actualmente vivo en Madrid.'])('rejects unconfirmed location: %s', async text => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const extraction = { assertions: [{ fieldId: 'desired_locations', scope: 'case', subjectId: 'case', value: ['Madrid'], unit: null, period: null, incomeBasis: null, messageId: 'u0', precision: 'explicit' }], blockers: [], warnings: [] };
+    const result = await new OpenAIInterpreter({ complete: async (_i, _d, kind) => kind === 'verification' ? { findings: [], dismissals: [], inconclusive: false } : extraction }).interpret(sample([text]));
+    expect(result).toMatchObject({ ok: true, value: { assertions: [] } });
+  });
+  it.each(['Estamos buscando vivienda en Madrid', 'Queremos comprar en Madrid o alrededores'])('keeps a confirmed search location: %s', async text => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const extraction = { assertions: [{ fieldId: 'desired_locations', scope: 'case', subjectId: 'case', value: ['Madrid'], unit: null, period: null, incomeBasis: null, messageId: 'u0', precision: 'explicit' }], blockers: [], warnings: [] };
+    const result = await new OpenAIInterpreter({ complete: async (_i, _d, kind) => kind === 'verification' ? { findings: [{ type: 'DESIRED_LOCATION', messageId: 'u0', quote: text }], dismissals: [], inconclusive: false } : extraction }).interpret(sample([text]));
+    expect(result).toMatchObject({ ok: true, value: { assertions: [expect.objectContaining({ fieldId: 'desired_locations', value: ['Madrid'] })] } });
+  });
+  it('preserves the complete shared monthly debt extracted from a financial question', async () => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const text = '¿Restáis la cuota mensual de financiación de nuestro coche de 180 euros?';
+    const extraction = { assertions: [{ fieldId: 'monthly_debt', scope: 'buying_unit', subjectId: 'buying_unit', value: 180, unit: 'EUR', period: 'month', incomeBasis: null, messageId: 'u0', precision: 'explicit' }], blockers: [], warnings: [] };
+    const result = await new OpenAIInterpreter({ complete: async (_i, _d, kind) => kind === 'verification' ? { findings: [], dismissals: [], inconclusive: false } : extraction }).interpret(sample([text]));
+    expect(result).toMatchObject({ ok: true, value: { assertions: [expect.objectContaining({ fieldId: 'monthly_debt', subjectRef: { scope: 'buying_unit', id: 'buying_unit' }, value: 180, unit: 'EUR', period: 'month' })] } });
+  });
+  it('retains a genuine finding elsewhere when dismissing a negated candidate', async () => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const texts = ['No solicito aprobación al pedir las condiciones.', 'Necesito que me garanticéis la aprobación por escrito.'];
+    const extraction = { assertions: [], blockers: [{ type: 'BINDING_CLAIM', description: 'candidate', messageId: 'u0' }], warnings: [] };
+    const review = { findings: [{ type: 'BINDING_CLAIM', messageId: 'u1', quote: texts[1] }], dismissals: [{ type: 'BINDING_CLAIM', messageId: 'u0', quote: texts[0], reason: 'Niega que solicite aprobación.' }], inconclusive: false };
+    expect(await new OpenAIInterpreter({ complete: async (_i, _d, kind) => kind === 'verification' ? review : extraction }).interpret(sample(texts))).toMatchObject({ ok: true, value: { blockers: [expect.objectContaining({ type: 'BINDING_CLAIM', evidenceRefs: [expect.objectContaining({ messageId: 'u1' })] })] } });
+  });
+  it('does not allow an unrelated dismissal to resolve a protected candidate', async () => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const text = 'Me preocupa si esta empresa es fiable.';
+    const extraction = { assertions: [], blockers: [{ type: 'TRUST', description: 'candidate', messageId: 'u0' }], warnings: [] };
+    const review = { findings: [], dismissals: [{ type: 'COST', messageId: 'u0', quote: text, reason: 'No es una objeción de coste.' }], inconclusive: false };
+    expect(await new OpenAIInterpreter({ complete: async (_i, _d, kind) => kind === 'verification' ? review : extraction }).interpret(sample([text]))).toMatchObject({ ok: false, error: { code: 'MODEL_OUTPUT_INVALID' } });
+  });
+  it('rejects an invented quote even when the same candidate was proposed', async () => {
+    const { OpenAIInterpreter } = await import('../../../src/adapters/ai/openai');
+    const extraction = { assertions: [], blockers: [{ type: 'TRUST', description: 'candidate', messageId: 'u0' }], warnings: [] };
+    const review = { findings: [{ type: 'TRUST', messageId: 'u0', quote: 'La empresa me parece una estafa inventada' }], dismissals: [], inconclusive: false };
+    expect(await new OpenAIInterpreter({ complete: async (_i, _d, kind) => kind === 'verification' ? review : extraction }).interpret(sample(['Me preocupa si esta empresa es fiable.']))).toMatchObject({ ok: false, error: { code: 'EVIDENCE_INVALID' } });
+  });
+});

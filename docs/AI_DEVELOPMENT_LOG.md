@@ -145,3 +145,9 @@ Final local checks: `pnpm lint`, `pnpm typecheck`, `pnpm test` (155 passed / 3 s
 ### 2026-11-14 — U0 safety and commercial reconciliation
 
 In the existing `codex/f01-trust-boundaries` worktree at `bc2d8fa`, separated independent protected-signal discovery from review of proposed commercial objections. The internal review accepts cited explanations for unsupported commercial candidates; unresolved sensitive disagreements remain safe failures, and existing persisted blockers are not closed. R07 now handles ordinary objections while TRUST and privacy remain protected handoffs. Added deterministic adapter and policy regressions. `pnpm lint`, `pnpm typecheck`, `pnpm test` (160 passed, 3 skipped), `pnpm build`, `pnpm dataset:validate`, and `git diff --check` passed. No paid model run was made; real-model acceptance and the existing blocker lifecycle CCR remain open.
+
+### U0 final interpretation stabilization (2026-11-14)
+
+Worked on `codex/f01-trust-boundaries` at `5de0729` in its existing clean worktree. Added narrowly anchored reviewer-quote correction for agreed candidates, internal evidence-backed TRUST/BINDING_CLAIM dismissals, independent review of proposed desired locations, and clearer shared-debt extraction guidance. Added deterministic adapter regressions for the reported failures and safety/financial/location boundaries. No shared contracts, policies, fixtures, evaluator, or persisted blocker lifecycle were changed. The verifier still makes semantic judgments and may err; real-model acceptance remains outstanding and the existing blocker lifecycle CCR remains proposed.
+
+Validation: focused adapter tests passed (54); `pnpm lint`, `pnpm typecheck`, `pnpm test` (172 passed, 3 skipped), `pnpm build`, `pnpm dataset:validate`, and `git diff --check` passed. Typecheck initially found an inferred array type error, which was corrected. Three category selections were checked with `--dry-run` (no model requests); U0 acceptance is not claimed.
