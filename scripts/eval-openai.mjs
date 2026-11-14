@@ -4,6 +4,13 @@ import { dirname, extname, isAbsolute, join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import process from 'node:process';
 
+// Keep the original six-scenario runner unchanged unless a dataset is requested.
+if (process.argv.includes('--dataset')) {
+  const result = spawnSync(process.execPath, [resolve('scripts/eval-openai-dataset.mjs'), ...process.argv.slice(2)], { cwd: process.cwd(), stdio: 'inherit', env: process.env });
+  if (result.error) { console.error('Could not start dataset runner:', result.error.code ?? 'unknown'); process.exit(2); }
+  process.exit(result.status ?? 1);
+}
+
 const usage = `Libeen backend OpenAI evaluation (real, billable model requests)
 
   pnpm eval:openai --case laura --repeat 3
