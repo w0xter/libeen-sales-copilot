@@ -97,3 +97,36 @@ Las salidas contienen **mensajes y resultados sintéticos del modelo**, y no cla
 6. El runner usa Vitest internamente para cargar TypeScript sin añadir otra dependencia. El test `f01-cli.test.ts` está omitido durante `pnpm test` salvo `F01_EVAL_RUN=1`.
 
 **Si el entorno no tiene acceso a OpenAI**, ejecutar desde uno con DNS y salida HTTPS disponibles. El `GET /models` no sustituye una prueba real del endpoint `POST /responses`. No presentar fallos de red como fallos semánticos, ni como éxito de inferencia.
+
+
+## Dataset sintético F-01 v1.0.1 (congelación provisional)
+
+El comando `pnpm eval:openai` conserva la interfaz anterior de seis escenarios y ahora permite seleccionar casos del corpus versionado de 352 registros sin modificar `src/fixtures/`.
+
+```bash
+# Validar anotaciones y huellas fijadas en FREEZE_MANIFEST.json
+pnpm dataset:validate
+
+# Ver exactamente qué evaluaría, sin tocar OpenAI
+pnpm eval:openai --dataset f01 --split development --category trust_real --sample 4 --seed 42 --dry-run
+
+# Ejecutar 4 escenarios de confianza, máximo 8 llamadas
+pnpm eval:openai --dataset f01 --split development --category trust_real --sample 4 --seed 42
+
+# Muestra transversal por categoría, máximo 16 llamadas
+pnpm eval:openai --dataset f01 --split validation --sample 8 --seed 42 --mode end-to-end
+
+# Probar correcciones financieras conservando el estado del expediente
+pnpm eval:openai --dataset f01 --split development --category basis_correction --sample 3 --mode end-to-end
+
+# Usar holdout únicamente después de congelar el diseño; requiere opt-in explícito
+pnpm eval:openai --dataset f01 --split holdout --sample 5 --unlock-holdout
+```
+
+Opciones: `--split development|validation|holdout`, `--category <nombre>|all`, `--sample N`, `--seed N`, `--repeat N`, `--mode interpreter|end-to-end`, `--max-requests N` (máximo 20), `--output PATH`, `--allow-failures`, `--dry-run`, `--unlock-holdout`. Para conversaciones que incluyen rectificaciones, utilizar `end-to-end`; el runner evita compararlas como mensajes independientes sin contexto. Una llamada de extracción y otra de verificación se contabilizan por cada análisis; una secuencia de corrección puede necesitar cuatro llamadas. El comando se niega a superar el presupuesto máximo estimado.
+
+La muestra es determinista por semilla y prioriza plantillas distintas. Los archivos JSON locales contienen las respuestas del extractor y verificador, las decisiones, los hechos y evidencia, los checks positivos/negativos y los denominadores por categoría. No se guarda automáticamente nada en Git ni se usa un modelo juez.
+
+**Advertencia metodológica:** `FREEZE_MANIFEST.json` fija el contenido de las anotaciones de la versión 1.0.1, pero `independentHumanSignOff=false`. Las etiquetas están auditadas internamente por el mismo contexto que las generó; falta su revisión/adjudicación por otra persona. El PASS solo significa coincidencia con los *checks explícitos provisionales*; no es una certificación semántica ni una estimación de fiabilidad en producción. Un holdout desbloqueado deja de ser apto para ajustes posteriores, y el conjunto fue inspeccionado por su autor durante la auditoría; no constituye una muestra independiente a ciegas.
+
+[Protocolo de anotaciones](../../datasets/f01/v1/ANNOTATION_GUIDE.md) · [Informe de auditoría y congelación](../../datasets/f01/v1/ANNOTATION_AUDIT_2026-11-14.md) · [Manifiesto de contenido congelado](../../datasets/f01/v1/FREEZE_MANIFEST.json)
