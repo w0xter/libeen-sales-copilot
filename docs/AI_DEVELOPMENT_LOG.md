@@ -70,3 +70,9 @@ No almacenar API keys, transcripciones de clientes reales ni secretos. No invent
 
 - Added deterministic, modular condition, workflow, policy and action evaluation. Integrator approved additive contract/config changes for an advisor-confirmed terminal handoff route and option-gated predicates; critical-blocker protection is mandatory. These changes affect configuration validation and predicate consumers.
 - Integrator reviewed safety precedence and ran focused contract, configuration and workflow/policy/action suites (33 tests), `pnpm typecheck`, `pnpm lint`, and `git diff --check`; all passed. Full fixture-to-engine and orchestration behavior remains unverified pending integration. Call confirmation cannot bypass the normal prerequisite path; a confirmed human handoff may follow the alternate terminal route.
+
+### 2026-11-14 — LIB-007 and LIB-008
+
+- Integrated separate OpenAI and replay adapters, output/evidence validation and action-specific safe draft templates. Replay handles the canonical synthetic messages and defined variations only; unknown inputs fail closed. Live OpenAI inference was not run, so its provider path remains unverified. Model output is barred from claiming advisor authority.
+- Added modular advisor workspace components using typed illustrative mocks; the mock UI labels its mode and does not persist or send. The UI agent checked case selection, evidence, Javier's unavailable audio and draft approval in a browser; it observed a missing favicon 404 and no other runtime errors.
+- Integrator ran `pnpm test` (60 tests), `pnpm typecheck`, `pnpm lint`, `pnpm build`, and `git diff --check`; all passed. UI lifecycle behavior and fixture-to-engine flows still require LIB-009–012 integration and acceptance testing.

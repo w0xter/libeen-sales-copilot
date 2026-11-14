@@ -1,0 +1,48 @@
+.shell { min-height:100vh; background:#f3f4ef; color:#202b27; font-family:Arial, sans-serif; padding:36px clamp(18px, 5vw, 72px) 70px; }
+.shell * { box-sizing:border-box; }
+.header { max-width:1500px; margin:0 auto 42px; display:flex; justify-content:space-between; align-items:flex-start; gap:20px; }
+.header h1 { font-size:clamp(30px, 3vw, 44px); letter-spacing:-.04em; margin:21px 0 8px; font-weight:600; }
+.header p { color:#68746d; margin:0; }
+.brand { color:#165b46; font-size:17px; font-weight:800; letter-spacing:.08em; }
+.brand span { color:#7f8b83; font-size:11px; letter-spacing:.12em; font-weight:600; }
+.mode,.badge { border:1px solid #d8e3db; border-radius:99px; background:#fff; padding:8px 12px; color:#51645a; font-size:12px; white-space:nowrap; }
+.dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:#68a77a; margin-right:7px; }
+.toolbar { max-width:1500px; margin:auto; display:flex; align-items:end; justify-content:space-between; gap:16px; }
+.toolbar h2 { margin:6px 0 0; font-size:22px; letter-spacing:-.025em; }
+.eyebrow { color:#718078; font-size:10px; font-weight:700; letter-spacing:.14em; }
+.tabs { display:flex; gap:5px; border:1px solid #dbe2db; background:#e9ede7; border-radius:12px; padding:4px; }
+.tabs button { border:0; border-radius:8px; padding:10px 18px; background:transparent; color:#56645a; cursor:pointer; font-weight:600; }
+.tabs button[aria-pressed='true'] { background:white; color:#174f3c; box-shadow:0 1px 4px #203a271a; }
+.demoNotice,.notice { max-width:1500px; margin:20px auto 0; font-size:13px; color:#66776d; }
+.notice { color:#165b46; }
+.workspace { max-width:1500px; margin:16px auto; }
+.columns { display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 1fr); gap:20px; align-items:start; }
+.panel { background:white; border:1px solid #e0e7df; border-radius:16px; padding:25px; margin-bottom:20px; box-shadow:0 5px 22px #1b382208; }
+.panel h2 { margin:6px 0 0; font-size:21px; letter-spacing:-.025em; }
+.panel h3 { margin:25px 0 12px; font-size:14px; }
+.panelHeader { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:20px; }
+.messages { display:grid; gap:10px; }
+.message { background:#f5f7f3; border-radius:12px 12px 12px 3px; padding:14px 16px; margin-right:9%; }
+.message.advisor { background:#eaf3ec; margin-left:9%; margin-right:0; border-radius:12px 12px 3px 12px; }
+.messageMeta { display:flex; justify-content:space-between; gap:10px; color:#6c7b70; font-size:11px; }
+.message p { font-size:14px; line-height:1.55; margin:8px 0 0; }
+.muted { color:#78857c; font-size:12px; line-height:1.5; }
+.milestones { display:flex; flex-wrap:wrap; gap:6px; }
+.milestone { background:#f4f6f2; border:1px solid #e5eae3; padding:8px; border-radius:8px; min-width:62px; display:grid; gap:4px; font-size:11px; }
+.milestone span { color:#758278; }
+.facts { margin:0; }
+.facts > div { display:flex; justify-content:space-between; gap:15px; padding:10px 0; border-bottom:1px solid #f0f2ef; font-size:13px; }
+.facts dt { color:#68776d; text-transform:capitalize; }
+.facts dd { margin:0; text-align:right; }
+.facts small,.alert small { display:block; margin-top:4px; color:#89958d; font-size:10px; }
+.alert { border-left:3px solid #d5a84e; padding:10px 13px; background:#fbf8ed; color:#69582f; font-size:13px; }
+.action { display:inline-block; background:#e8f3ea; color:#1d6a48; border-radius:6px; padding:6px 9px; margin-top:15px; font-size:11px; font-weight:bold; }
+.recommendation p { font-size:13px; line-height:1.55; }
+.entry h3 { margin:0; }.entry form { display:grid; gap:8px; }
+.panel label { display:block; font-weight:600; font-size:12px; margin:14px 0 7px; }
+.panel textarea { width:100%; min-height:88px; resize:vertical; border:1px solid #dce4dc; border-radius:10px; padding:12px; font:inherit; font-size:13px; line-height:1.5; color:#26352b; }
+.panel button { background:#175e46; border:1px solid #175e46; color:white; border-radius:8px; padding:10px 14px; font-weight:600; font-size:12px; cursor:pointer; }
+.panel button:disabled { opacity:.45; cursor:not-allowed; }
+.buttons { display:flex; flex-wrap:wrap; gap:8px; }.buttons button:first-child,.buttons button:last-child { color:#315a45; background:white; border-color:#cddbd0; }
+.error { border-radius:10px; background:#fff2ef; color:#953e31; padding:10px 13px; font-size:13px; }
+@media(max-width:800px) { .columns { grid-template-columns:1fr; }.header,.toolbar { align-items:flex-start; flex-direction:column; }.header { margin-bottom:28px; }.panel { padding:20px; } }
