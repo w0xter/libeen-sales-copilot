@@ -75,3 +75,12 @@ it('does not duplicate a historical protected finding just because the scanner c
   const old = { id: 'old-id', type: 'OPT_OUT', description: 'prior', status: 'open' as const, evidenceRefs: signal.evidenceRefs };
   expect(reconcileSafety([signal], [verdict], messages, [old]).blockers).toEqual([old]);
 });
+it('does not reopen a resolved historical finding through a new signal id', () => {
+  const text = 'No me llaméis';
+  const messages = [{ messageId: 'm', conversationId: 'c', role: 'customer' as const, occurredAt: '2026-01-01T00:00:00Z', content: { type: 'text' as const, text } }];
+  const signal = { signalId: 'new', category: 'OPT_OUT' as const, evidenceRefs: [{ messageId: 'm', quote: text }] };
+  const old = { id: 'old', type: 'OPT_OUT', description: 'prior', status: 'resolved' as const, evidenceRefs: signal.evidenceRefs };
+  const result = reconcileSafety([signal], [{ signalId: 'new', status: 'confirmed', justification: 'matched', evidenceRefs: signal.evidenceRefs }], messages, [old]);
+  expect(result.blockers).toEqual([old]);
+  expect(result.humanReviewRequired).toBe(true);
+});

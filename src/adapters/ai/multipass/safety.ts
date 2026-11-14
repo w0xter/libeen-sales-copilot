@@ -48,7 +48,7 @@ export function reconcileSafety(candidates: SafetyCandidate[], verdicts: SafetyV
     findings.push({ ...candidate, status, justification: verdict?.justification ?? 'Insufficient validated safety review', evidenceRefs: verdict?.evidenceRefs ?? candidate.evidenceRefs });
     if (status === 'uncertain') humanReviewRequired = true;
     if (status === 'confirmed') {
-      const existing = blockers.find(b => b.id === candidate.signalId) ?? blockers.find(b => b.type === candidate.category && b.status === 'open' && sameEvidence(b.evidenceRefs, candidate.evidenceRefs, messages));
+      const existing = blockers.find(b => b.id === candidate.signalId) ?? blockers.find(b => b.type === candidate.category && sameEvidence(b.evidenceRefs, candidate.evidenceRefs, messages));
       if (!existing) blockers.push({ id: candidate.signalId, type: candidate.category, description: verdict!.justification, status: 'open', evidenceRefs: verdict!.evidenceRefs });
       else if (existing.type !== candidate.category || existing.status !== 'open' || !sameEvidence(existing.evidenceRefs, candidate.evidenceRefs, messages)) humanReviewRequired = true;
     }

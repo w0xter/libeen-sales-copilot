@@ -121,7 +121,7 @@ it('rejects duplicate groups for the same occurrence instead of emitting duplica
   const group = { groupId: 'g', fieldId: 'city', occurrence: a.occurrence, semanticAtomicity: 'context_review_required' as const, candidates: [a] };
   const reviews = [a, b].map((c, i) => ({ groupId: i ? 'other' : 'g', candidateId: c.candidateId, atomicity: 'atomic' as const, support: 'supported' as const, evidenceRefs: c.evidenceRefs, justification: 'supported' }));
   const result = reconcile({ groups: [group, { ...group, groupId: 'other', candidates: [b] }], reviews, messages: [message], materialFieldIds: [], ...validationContext, schemaVersion: '1', safety: { scanStatus: 'complete', reviewStatus: 'complete', candidates: [], verdicts: [], historicalBlockers: [] } });
-  expect(result.status).not.toBe('consolidated');
+  expect(result.status).toBe('human_review_required');
 });
 it('consolidates independently reviewed Laura-style joint income, savings and debt', () => {
   const fields = ['income', 'savings', 'debt'];
@@ -143,7 +143,7 @@ it('preserves a reviewed explicit zero savings amount', () => {
   const message = { messageId: 'm', conversationId: 'c', role: 'customer' as const, occurredAt: '2026-01-01T00:00:00Z', content: { type: 'text' as const, text } };
   const a = { candidateId: 'a', extractorId: 'e1', fieldId: 'savings', subjectRef: { scope: 'participant' as const, id: 'p' }, value: 0, precision: 'explicit' as const, occurrence: { messageId: 'm', statementSpan: { start: 0, end: text.length, text } }, evidenceRefs: [{ messageId: 'm', quote: text }] };
   const b = { ...a, candidateId: 'b', extractorId: 'e2' };
-  const reviews = [a, b].map(c => ({ groupId: 'g', candidateId: c.candidateId, atomicity: 'atomic' as const, support: 'supported' as const, evidenceRefs: c.evidenceRefs, justification: 'zero stated' }));
+  const reviews = [a, b].map(c => ({ groupId: 'g', candidateId: c.candidateId, atomicity: 'atomic' as const, support: 'supported' as const, evidenceRefs: c.evidenceRefs, justification: 'zero stated', identitySpan: { start: text.indexOf('cero'), end: text.indexOf('cero') + 4, text: 'cero' } }));
   const result = reconcile({ groups: [{ groupId: 'g', fieldId: 'savings', occurrence: a.occurrence, semanticAtomicity: 'context_review_required', candidates: [a, b] }], reviews, messages: [message], materialFieldIds: ['savings'], ...validationContext, factSchema: { ...defaultSchema, fields: [...defaultSchema.fields, { ...defaultSchema.fields[0], id: 'savings', label: 'savings' }] }, schemaVersion: '1', safety: { scanStatus: 'complete', reviewStatus: 'complete', candidates: [], verdicts: [], historicalBlockers: [] } });
   expect(result.status).toBe('consolidated');
   if (result.status === 'consolidated') expect(result.interpretation.assertions[0].value).toBe(0);
@@ -251,4 +251,139 @@ it('rejects duplicate candidate identifiers within the same group', () => {
   const review = { groupId: 'g', candidateId: 'same', atomicity: 'atomic' as const, support: 'supported' as const, evidenceRefs: a.evidenceRefs, justification: 'supported' };
   const result = reconcile({ groups: [{ groupId: 'g', fieldId: 'income', occurrence: a.occurrence, semanticAtomicity: 'context_review_required', candidates: [a, b] }], reviews: [review], messages: [message], materialFieldIds: ['income'], ...validationContext, schemaVersion: '1', safety: { scanStatus: 'complete', reviewStatus: 'complete', candidates: [], verdicts: [], historicalBlockers: [] } });
   expect(result.status).toBe('failed');
+});
+it('projects only new blockers while retaining resolved and open history in the case', () => {
+  const text = 'No quiero más llamadas';
+  const message = { messageId: 'm', conversationId: 'c', role: 'customer' as const, occurredAt: '2026-01-01T00:00:00Z', content: { type: 'text' as const, text } };
+  const old = { id: 'old', type: 'OPT_OUT', description: 'previous', status: 'open' as const, evidenceRefs: [{ messageId: 'm', quote: text }] };
+  const resolved = { id: 'resolved', type: 'TRUST', description: 'resolved', status: 'resolved' as const, evidenceRefs: [] };
+  const signal = { signalId: 'new-id', category: 'OPT_OUT' as const, evidenceRefs: old.evidenceRefs };
+  const result = reconcile({ groups: [], reviews: [], messages: [message], materialFieldIds: [], ...validationContext, schemaVersion: '1', safety: { scanStatus: 'complete', reviewStatus: 'complete', candidates: [signal], verdicts: [{ signalId: 'new-id', status: 'confirmed', justification: 'opt-out', evidenceRefs: signal.evidenceRefs }], historicalBlockers: [old, resolved] } });
+  expect(result.status).toBe('consolidated');
+  if (result.status === 'consolidated') expect(result.interpretation.blockers).toEqual([]);
+});
+it('uses a reviewed source anchor for equivalent nonnumeric focuses', () => {
+  const text = 'Busco vivienda en Madrid capital';
+  const message = { messageId: 'm', conversationId: 'c', role: 'customer' as const, occurredAt: '2026-01-01T00:00:00Z', content: { type: 'text' as const, text } };
+  const anchor = { start: 18, end: 24, text: 'Madrid' };
+  const run = (focus: { start: number; end: number; text: string }, candidateId: string) => {
+    const a = { candidateId, extractorId: 'e1', fieldId: 'city', subjectRef: { scope: 'case' as const, id: 'c' }, value: 'Madrid', precision: 'explicit' as const, occurrence: { messageId: 'm', statementSpan: { start: 0, end: text.length, text }, focusSpan: focus }, evidenceRefs: [{ messageId: 'm', quote: text }] };
+    return reconcile({ groups: [{ groupId: 'g', fieldId: 'city', occurrence: a.occurrence, semanticAtomicity: 'context_review_required', candidates: [a] }], reviews: [{ groupId: 'g', candidateId, atomicity: 'atomic', support: 'supported', evidenceRefs: a.evidenceRefs, justification: 'same location', identitySpan: anchor }], messages: [message], materialFieldIds: [], ...validationContext, schemaVersion: '1', safety: { scanStatus: 'complete', reviewStatus: 'complete', candidates: [], verdicts: [], historicalBlockers: [] } } as never);
+  };
+  const a = run(anchor, 'a'); const b = run({ start: 18, end: 32, text: 'Madrid capital' }, 'b');
+  expect(a.status).toBe('consolidated'); expect(b.status).toBe('consolidated');
+  if (a.status === 'consolidated' && b.status === 'consolidated') expect(a.interpretation.assertions[0].assertionId).toBe(b.interpretation.assertions[0].assertionId);
+});
+it('asks for review when textual identity cannot be tied to a unique source anchor', () => {
+  const text = 'Quiero Madrid y Sevilla';
+  const message = { messageId: 'm', conversationId: 'c', role: 'customer' as const, occurredAt: '2026-01-01T00:00:00Z', content: { type: 'text' as const, text } };
+  const a = { candidateId: 'a', extractorId: 'e1', fieldId: 'city', subjectRef: { scope: 'case' as const, id: 'c' }, value: 'alguna ciudad', precision: 'explicit' as const, occurrence: { messageId: 'm', statementSpan: { start: 0, end: text.length, text } }, evidenceRefs: [{ messageId: 'm', quote: text }] };
+  const result = reconcile({ groups: [{ groupId: 'g', fieldId: 'city', occurrence: a.occurrence, semanticAtomicity: 'context_review_required', candidates: [a] }], reviews: [{ groupId: 'g', candidateId: 'a', atomicity: 'atomic', support: 'supported', evidenceRefs: a.evidenceRefs, justification: 'simulated' }], messages: [message], materialFieldIds: [], ...validationContext, schemaVersion: '1', safety: { scanStatus: 'complete', reviewStatus: 'complete', candidates: [], verdicts: [], historicalBlockers: [] } });
+  expect(result.status).toBe('human_review_required');
+});
+it('reuses a unique validated historical assertion for the same source anchor', () => {
+  const text = 'Busco Madrid capital';
+  const message = { messageId: 'm', conversationId: 'c', role: 'customer' as const, occurredAt: '2026-01-01T00:00:00Z', content: { type: 'text' as const, text } };
+  const ref = { messageId: 'm', quote: 'Madrid', start: 6, end: 12 };
+  const prior = { assertionId: 'existing-id', fieldId: 'city', subjectRef: { scope: 'case' as const, id: 'c' }, value: 'Madrid', rawValue: text, source: 'customer_message' as const, evidenceRefs: [ref], observedAt: message.occurredAt, precision: 'explicit' as const, reviewStatus: 'unreviewed' as const, schemaVersion: '1' };
+  const candidate = { candidateId: 'new', extractorId: 'e1', fieldId: 'city', subjectRef: prior.subjectRef, value: 'Madrid', precision: 'explicit' as const, occurrence: { messageId: 'm', statementSpan: { start: 0, end: text.length, text }, focusSpan: { start: 6, end: 20, text: 'Madrid capital' } }, evidenceRefs: [ref] };
+  const result = reconcile({ groups: [{ groupId: 'g', fieldId: 'city', occurrence: candidate.occurrence, semanticAtomicity: 'context_review_required', candidates: [candidate] }], reviews: [{ groupId: 'g', candidateId: 'new', atomicity: 'atomic', support: 'supported', evidenceRefs: [ref], justification: 'location', identitySpan: { start: 6, end: 12, text: 'Madrid' } }], messages: [message], materialFieldIds: [], ...validationContext, historicalAssertions: [prior], schemaVersion: '1', safety: { scanStatus: 'complete', reviewStatus: 'complete', candidates: [], verdicts: [], historicalBlockers: [] } });
+  expect(result.status).toBe('consolidated');
+  if (result.status === 'consolidated') expect(result.interpretation.assertions).toEqual([prior]);
+});
+it('keeps repeated textual mentions at distinct source positions separate', () => {
+  const text = 'Madrid primero. Madrid después.';
+  const message = { messageId: 'm', conversationId: 'c', role: 'customer' as const, occurredAt: '2026-01-01T00:00:00Z', content: { type: 'text' as const, text } };
+  const refs = [0, 16].map(start => ({ start, end: start + 6, text: 'Madrid' }));
+  const groups = refs.map((focus, i) => { const candidate = { candidateId: `a${i}`, extractorId: 'e1', fieldId: 'city', subjectRef: { scope: 'case' as const, id: 'c' }, value: 'Madrid', precision: 'explicit' as const, occurrence: { messageId: 'm', statementSpan: { start: 0, end: text.length, text }, focusSpan: focus }, evidenceRefs: [{ messageId: 'm', quote: 'Madrid', start: focus.start, end: focus.end }] }; return { groupId: `g${i}`, fieldId: 'city', occurrence: candidate.occurrence, semanticAtomicity: 'context_review_required' as const, candidates: [candidate] }; });
+  const reviews = groups.map((g, i) => ({ groupId: g.groupId, candidateId: g.candidates[0].candidateId, atomicity: 'atomic' as const, support: 'supported' as const, evidenceRefs: g.candidates[0].evidenceRefs, justification: 'distinct mention', identitySpan: refs[i] }));
+  const result = reconcile({ groups, reviews, messages: [message], materialFieldIds: [], ...validationContext, schemaVersion: '1', safety: { scanStatus: 'complete', reviewStatus: 'complete', candidates: [], verdicts: [], historicalBlockers: [] } });
+  expect(result.status).toBe('consolidated');
+  if (result.status === 'consolidated') expect(new Set(result.interpretation.assertions.map(a => a.assertionId)).size).toBe(2);
+});
+it('requires human review for overlapping textual identity anchors', () => {
+  const text = 'Madrid capital';
+  const message = { messageId: 'm', conversationId: 'c', role: 'customer' as const, occurredAt: '2026-01-01T00:00:00Z', content: { type: 'text' as const, text } };
+  const refs = [{ start: 0, end: 6, text: 'Madrid' }, { start: 0, end: text.length, text }];
+  const groups = refs.map((focus, i) => { const candidate = { candidateId: `a${i}`, extractorId: 'e1', fieldId: 'city', subjectRef: { scope: 'case' as const, id: 'c' }, value: 'Madrid', precision: 'explicit' as const, occurrence: { messageId: 'm', statementSpan: { start: 0, end: text.length, text }, focusSpan: focus }, evidenceRefs: [{ messageId: 'm', quote: text }] }; return { groupId: `g${i}`, fieldId: 'city', occurrence: candidate.occurrence, semanticAtomicity: 'context_review_required' as const, candidates: [candidate] }; });
+  const reviews = groups.map((g, i) => ({ groupId: g.groupId, candidateId: g.candidates[0].candidateId, atomicity: 'atomic' as const, support: 'supported' as const, evidenceRefs: g.candidates[0].evidenceRefs, justification: 'ambiguous', identitySpan: refs[i] }));
+  const result = reconcile({ groups, reviews, messages: [message], materialFieldIds: [], ...validationContext, schemaVersion: '1', safety: { scanStatus: 'complete', reviewStatus: 'complete', candidates: [], verdicts: [], historicalBlockers: [] } });
+  expect(result.status).toBe('human_review_required');
+});
+it('uses a stable reviewed text anchor for an implicit numeric fact', () => {
+  const text = 'Compro solo, sin nadie más';
+  const message = { messageId: 'm', conversationId: 'c', role: 'customer' as const, occurredAt: '2026-01-01T00:00:00Z', content: { type: 'text' as const, text } };
+  const run = (focus: { start: number; end: number; text: string }) => {
+    const a = { candidateId: 'a', extractorId: 'e1', fieldId: 'income', subjectRef: { scope: 'participant' as const, id: 'p' }, value: 1, precision: 'explicit' as const, occurrence: { messageId: 'm', statementSpan: { start: 0, end: text.length, text }, focusSpan: focus }, evidenceRefs: [{ messageId: 'm', quote: text }] };
+    return reconcile({ groups: [{ groupId: 'g', fieldId: 'income', occurrence: a.occurrence, semanticAtomicity: 'context_review_required', candidates: [a] }], reviews: [{ groupId: 'g', candidateId: 'a', atomicity: 'atomic', support: 'supported', evidenceRefs: a.evidenceRefs, justification: 'individual', identitySpan: { start: 7, end: 11, text: 'solo' } }], messages: [message], materialFieldIds: [], ...validationContext, schemaVersion: '1', safety: { scanStatus: 'complete', reviewStatus: 'complete', candidates: [], verdicts: [], historicalBlockers: [] } });
+  };
+  const a = run({ start: 7, end: 11, text: 'solo' }); const b = run({ start: 7, end: text.length, text: 'solo, sin nadie más' });
+  expect(a.status).toBe('consolidated'); expect(b.status).toBe('consolidated');
+  if (a.status === 'consolidated' && b.status === 'consolidated') expect(a.interpretation.assertions[0].assertionId).toBe(b.interpretation.assertions[0].assertionId);
+});
+it('abstains if supported reviewers disagree about the canonical textual anchor', () => {
+  const text = 'Madrid capital';
+  const message = { messageId: 'm', conversationId: 'c', role: 'customer' as const, occurredAt: '2026-01-01T00:00:00Z', content: { type: 'text' as const, text } };
+  const a = { candidateId: 'a', extractorId: 'e1', fieldId: 'city', subjectRef: { scope: 'case' as const, id: 'c' }, value: 'Madrid', precision: 'explicit' as const, occurrence: { messageId: 'm', statementSpan: { start: 0, end: text.length, text } }, evidenceRefs: [{ messageId: 'm', quote: text }] };
+  const b = { ...a, candidateId: 'b', extractorId: 'e2' };
+  const reviews = [a, b].map((c, i) => ({ groupId: 'g', candidateId: c.candidateId, atomicity: 'atomic' as const, support: 'supported' as const, evidenceRefs: c.evidenceRefs, justification: 'supported', identitySpan: i ? { start: 7, end: 14, text: 'capital' } : { start: 0, end: 6, text: 'Madrid' } }));
+  const input = { groups: [{ groupId: 'g', fieldId: 'city', occurrence: a.occurrence, semanticAtomicity: 'context_review_required' as const, candidates: [a, b] }], reviews, messages: [message], materialFieldIds: [], ...validationContext, schemaVersion: '1', safety: { scanStatus: 'complete' as const, reviewStatus: 'complete' as const, candidates: [], verdicts: [], historicalBlockers: [] } };
+  expect(reconcile(input).status).toBe('human_review_required');
+  expect(reconcile({ ...input, groups: [{ ...input.groups[0], candidates: [b, a] }], reviews: [...reviews].reverse() }).status).toBe('human_review_required');
+});
+it('keeps two different declarations of the same field in the same message', () => {
+  const text = 'Madrid o Sevilla';
+  const message = { messageId: 'm', conversationId: 'c', role: 'customer' as const, occurredAt: '2026-01-01T00:00:00Z', content: { type: 'text' as const, text } };
+  const groups = ['Madrid', 'Sevilla'].map((value, i) => { const start = text.indexOf(value); const candidate = { candidateId: `a${i}`, extractorId: 'e1', fieldId: 'city', subjectRef: { scope: 'case' as const, id: 'c' }, value, precision: 'explicit' as const, occurrence: { messageId: 'm', statementSpan: { start: 0, end: text.length, text }, focusSpan: { start, end: start + value.length, text: value } }, evidenceRefs: [{ messageId: 'm', quote: value, start, end: start + value.length }] }; return { groupId: `g${i}`, fieldId: 'city', occurrence: candidate.occurrence, semanticAtomicity: 'context_review_required' as const, candidates: [candidate] }; });
+  const reviews = groups.map(g => ({ groupId: g.groupId, candidateId: g.candidates[0].candidateId, atomicity: 'atomic' as const, support: 'supported' as const, evidenceRefs: g.candidates[0].evidenceRefs, justification: 'separate declaration' }));
+  const result = reconcile({ groups, reviews, messages: [message], materialFieldIds: [], ...validationContext, schemaVersion: '1', safety: { scanStatus: 'complete', reviewStatus: 'complete', candidates: [], verdicts: [], historicalBlockers: [] } });
+  expect(result.status).toBe('consolidated');
+  if (result.status === 'consolidated') expect(result.interpretation.assertions.map(a => a.value).sort()).toEqual(['Madrid', 'Sevilla']);
+});
+it('abstains when a historical assertion overlaps but does not identify the same occurrence uniquely', () => {
+  const text = 'Madrid o Sevilla';
+  const message = { messageId: 'm', conversationId: 'c', role: 'customer' as const, occurredAt: '2026-01-01T00:00:00Z', content: { type: 'text' as const, text } };
+  const prior = { assertionId: 'prior', fieldId: 'city', subjectRef: { scope: 'case' as const, id: 'c' }, value: 'Madrid', rawValue: text, source: 'customer_message' as const, evidenceRefs: [{ messageId: 'm', quote: text }], observedAt: message.occurredAt, precision: 'explicit' as const, reviewStatus: 'unreviewed' as const, schemaVersion: '1' };
+  const candidate = { candidateId: 'a', extractorId: 'e1', fieldId: 'city', subjectRef: prior.subjectRef, value: 'Madrid', precision: 'explicit' as const, occurrence: { messageId: 'm', statementSpan: { start: 0, end: text.length, text }, focusSpan: { start: 0, end: 6, text: 'Madrid' } }, evidenceRefs: [{ messageId: 'm', quote: 'Madrid', start: 0, end: 6 }] };
+  const result = reconcile({ groups: [{ groupId: 'g', fieldId: 'city', occurrence: candidate.occurrence, semanticAtomicity: 'context_review_required', candidates: [candidate] }], reviews: [{ groupId: 'g', candidateId: 'a', atomicity: 'atomic', support: 'supported', evidenceRefs: candidate.evidenceRefs, justification: 'location' }], messages: [message], materialFieldIds: [], ...validationContext, historicalAssertions: [prior], schemaVersion: '1', safety: { scanStatus: 'complete', reviewStatus: 'complete', candidates: [], verdicts: [], historicalBlockers: [] } });
+  expect(result.status).toBe('human_review_required');
+});
+it('rejects an identity anchor that omits part of a literal collection', () => {
+  const text = 'Madrid y Sevilla';
+  const message = { messageId: 'm', conversationId: 'c', role: 'customer' as const, occurredAt: '2026-01-01T00:00:00Z', content: { type: 'text' as const, text } };
+  const a = { candidateId: 'a', extractorId: 'e1', fieldId: 'cities', subjectRef: { scope: 'case' as const, id: 'c' }, value: ['Madrid', 'Sevilla'], precision: 'explicit' as const, occurrence: { messageId: 'm', statementSpan: { start: 0, end: text.length, text } }, evidenceRefs: [{ messageId: 'm', quote: text }] };
+  const result = reconcile({ groups: [{ groupId: 'g', fieldId: 'cities', occurrence: a.occurrence, semanticAtomicity: 'context_review_required', candidates: [a] }], reviews: [{ groupId: 'g', candidateId: 'a', atomicity: 'atomic', support: 'supported', evidenceRefs: a.evidenceRefs, justification: 'collection', identitySpan: { start: 0, end: 6, text: 'Madrid' } }], messages: [message], materialFieldIds: [], ...validationContext, schemaVersion: '1', safety: { scanStatus: 'complete', reviewStatus: 'complete', candidates: [], verdicts: [], historicalBlockers: [] } });
+  expect(result.status).toBe('human_review_required');
+});
+it('reanalyzes a recorded text declaration without adding a new assertion', () => {
+  const text = 'Vivo en Madrid capital';
+  const message = { messageId: 'm', conversationId: 'c', role: 'customer' as const, occurredAt: '2026-01-01T00:00:00Z', content: { type: 'text' as const, text } };
+  const start = text.indexOf('Madrid'); const ref = { messageId: 'm', quote: 'Madrid', start, end: start + 6 };
+  const run = (candidateId: string, historicalAssertions: import('../../../src/contracts').FactAssertion[]) => {
+    const a = { candidateId, extractorId: 'e1', fieldId: 'city', subjectRef: { scope: 'case' as const, id: 'c' }, value: 'Madrid', precision: 'explicit' as const, occurrence: { messageId: 'm', statementSpan: { start: 0, end: text.length, text }, focusSpan: { start, end: start + 6, text: 'Madrid' } }, evidenceRefs: [ref] };
+    return reconcile({ groups: [{ groupId: 'g', fieldId: 'city', occurrence: a.occurrence, semanticAtomicity: 'context_review_required', candidates: [a] }], reviews: [{ groupId: 'g', candidateId, atomicity: 'atomic', support: 'supported', evidenceRefs: [ref], justification: 'location' }], messages: [message], materialFieldIds: [], ...validationContext, historicalAssertions, schemaVersion: '1', safety: { scanStatus: 'complete', reviewStatus: 'complete', candidates: [], verdicts: [], historicalBlockers: [] } });
+  };
+  const first = run('old', []); expect(first.status).toBe('consolidated');
+  if (first.status !== 'consolidated') return;
+  const second = run('new', first.interpretation.assertions); expect(second.status).toBe('consolidated');
+  if (second.status === 'consolidated') expect(second.interpretation.assertions).toEqual(first.interpretation.assertions);
+});
+it('normalizes different reviewed boundaries around one unique literal occurrence', () => {
+  const text = 'Madrid capital';
+  const message = { messageId: 'm', conversationId: 'c', role: 'customer' as const, occurredAt: '2026-01-01T00:00:00Z', content: { type: 'text' as const, text } };
+  const a = { candidateId: 'a', extractorId: 'e1', fieldId: 'city', subjectRef: { scope: 'case' as const, id: 'c' }, value: 'Madrid', precision: 'explicit' as const, occurrence: { messageId: 'm', statementSpan: { start: 0, end: text.length, text } }, evidenceRefs: [{ messageId: 'm', quote: text }] };
+  const b = { ...a, candidateId: 'b', extractorId: 'e2' };
+  const reviews = [a, b].map((c, i) => ({ groupId: 'g', candidateId: c.candidateId, atomicity: 'atomic' as const, support: 'supported' as const, evidenceRefs: c.evidenceRefs, justification: 'same location', identitySpan: i ? { start: 0, end: text.length, text } : { start: 0, end: 6, text: 'Madrid' } }));
+  const input = { groups: [{ groupId: 'g', fieldId: 'city', occurrence: a.occurrence, semanticAtomicity: 'context_review_required' as const, candidates: [a, b] }], reviews, messages: [message], materialFieldIds: [], ...validationContext, schemaVersion: '1', safety: { scanStatus: 'complete' as const, reviewStatus: 'complete' as const, candidates: [], verdicts: [], historicalBlockers: [] } };
+  const result = reconcile(input); expect(result.status).toBe('consolidated');
+  expect(reconcile({ ...input, reviews: [...reviews].reverse(), groups: [{ ...input.groups[0], candidates: [b, a] }] })).toEqual(result);
+});
+it('does not accept agreement whose candidate focuses point at different textual occurrences', () => {
+  const text = 'Madrid y Sevilla';
+  const message = { messageId: 'm', conversationId: 'c', role: 'customer' as const, occurredAt: '2026-01-01T00:00:00Z', content: { type: 'text' as const, text } };
+  const a = { candidateId: 'a', extractorId: 'e1', fieldId: 'city', subjectRef: { scope: 'case' as const, id: 'c' }, value: 'Madrid', precision: 'explicit' as const, occurrence: { messageId: 'm', statementSpan: { start: 0, end: text.length, text }, focusSpan: { start: 0, end: text.length, text } }, evidenceRefs: [{ messageId: 'm', quote: text }] };
+  const b = { ...a, candidateId: 'b', extractorId: 'e2', occurrence: { ...a.occurrence, focusSpan: { start: 9, end: 16, text: 'Sevilla' } } };
+  const reviews = [a, b].map(c => ({ groupId: 'g', candidateId: c.candidateId, atomicity: 'atomic' as const, support: 'supported' as const, evidenceRefs: c.evidenceRefs, justification: 'simulated' }));
+  const result = reconcile({ groups: [{ groupId: 'g', fieldId: 'city', occurrence: a.occurrence, semanticAtomicity: 'context_review_required', candidates: [a, b] }], reviews, messages: [message], materialFieldIds: [], ...validationContext, schemaVersion: '1', safety: { scanStatus: 'complete', reviewStatus: 'complete', candidates: [], verdicts: [], historicalBlockers: [] } });
+  expect(result.status).toBe('human_review_required');
 });

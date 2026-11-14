@@ -36,6 +36,7 @@ export function reconcile(input: Input) {
   const ids = new Set<string>();
   const occurrenceIds = new Set<string>();
   const candidateIds = new Set<string>();
+  const canonicalIds = new Set<string>();
   for (const group of [...input.groups].sort((a, b) => a.groupId.localeCompare(b.groupId))) {
     if (!ClaimGroupSchema.safeParse(group).success || ids.has(group.groupId) || group.candidates.some(c => c.fieldId !== group.fieldId || c.occurrence.messageId !== group.occurrence.messageId || !validateOccurrence(c.occurrence, input.messages) || !validCandidate(c, input) || !input.knownSubjects.some(s => s.scope === c.subjectRef.scope && s.id === c.subjectRef.id) || input.diagnostics.some(d => d.candidateId === c.candidateId && !['subject_unverified', 'subject_disagreement'].includes(d.code)) || !evidenceAnchored(c.evidenceRefs, input.messages))) return ReconciliationResultSchema.parse({ status: 'failed', code: 'invalid_input', message: 'Invalid group or evidence' });
     const groupFocus = group.occurrence.focusSpan;
@@ -51,7 +52,13 @@ export function reconcile(input: Input) {
     const anchor = source?.content.type === 'text' && group.occurrence.focusSpan ? occurrenceKey(group.fieldId, group.occurrence, source.content.text) : undefined;
     if (anchor && !anchor.key) return ReconciliationResultSchema.parse({ status: 'failed', code: 'invalid_group', message: 'Ambiguous occurrence anchor' });
     const occurrenceId = anchor?.key ?? JSON.stringify([group.occurrence.messageId, group.fieldId, focus.start, focus.end]);
-    if (occurrenceIds.has(occurrenceId) || new Set(group.candidates.map(c => c.candidateId)).size !== group.candidates.length || group.candidates.some(c => candidateIds.has(c.candidateId))) return ReconciliationResultSchema.parse({ status: 'failed', code: 'duplicate_occurrence', message: 'Duplicate occurrence or candidate' });
+    if (new Set(group.candidates.map(c => c.candidateId)).size !== group.candidates.length || group.candidates.some(c => candidateIds.has(c.candidateId))) return ReconciliationResultSchema.parse({ status: 'failed', code: 'duplicate_candidate', message: 'Duplicate candidate' });
+    if (occurrenceIds.has(occurrenceId)) {
+      disputes.push({ disputeId: group.groupId, groupId: group.groupId, candidateIds: group.candidates.map(c => c.candidateId).sort(), reason: 'Duplicate occurrence requires review' });
+      reasons.push(`Ambiguous identity: ${group.groupId}`);
+      for (const c of [...group.candidates].sort((a, b) => a.candidateId.localeCompare(b.candidateId))) trace.push({ groupId: group.groupId, candidateId: c.candidateId, decision: 'pending', reason: 'Duplicate occurrence requires review' });
+      continue;
+    }
     occurrenceIds.add(occurrenceId);
     for (const c of group.candidates) candidateIds.add(c.candidateId);
     const candidates = [...group.candidates].sort((a, b) => a.candidateId.localeCompare(b.candidateId));
@@ -86,7 +93,94 @@ export function reconcile(input: Input) {
       continue;
     }
     const message = input.messages.find(m => m.messageId === selected.occurrence.messageId)!;
-    assertions.push({ assertionId: `mp-${createHash('sha256').update(occurrenceId).digest('hex')}`, fieldId: selected.fieldId, subjectRef: selected.subjectRef, value: selected.value, unit: selected.unit, period: selected.period, incomeBasis: selected.incomeBasis, rawValue: selected.occurrence.statementSpan.text, source: 'customer_message', evidenceRefs: selected.evidenceRefs, observedAt: message.occurredAt, precision: selected.precision, reviewStatus: 'unreviewed', schemaVersion: input.schemaVersion });
+    let canonicalId = occurrenceId;
+    const equivalentCandidates = supported.filter(c => dimensions(c) === dimensions(selected));
+    const equivalentReviews = equivalentCandidates.map(c => input.reviews.find(r => r.groupId === group.groupId && r.candidateId === c.candidateId)!);
+    const identitySpans = equivalentReviews.map(r => r.identitySpan);
+    const text = message.content.type === 'text' ? message.content.text : '';
+    const values = Array.isArray(selected.value) ? selected.value : typeof selected.value === 'string' ? [selected.value] : typeof selected.value === 'number' ? [String(selected.value)] : [];
+    const positions = values.map(value => ({ value, start: text.indexOf(value) }));
+    let literalSpan: { start: number; end: number; text: string } | undefined;
+    if (positions.length && positions.every(p => p.value.length > 0 && p.start >= 0 && text.indexOf(p.value, p.start + 1) < 0)) {
+      const start = Math.min(...positions.map(p => p.start));
+      const end = Math.max(...positions.map(p => p.start + p.value.length));
+      literalSpan = { start, end, text: text.slice(start, end) };
+    }
+    const invalidReviewerSpan = identitySpans.some((span, i) => {
+      if (!span) return false;
+      const occurrence = equivalentCandidates[i].occurrence;
+      const focus = occurrence.focusSpan ?? occurrence.statementSpan;
+      return span.start >= focus.end || focus.start >= span.end || !validateOccurrence({ ...occurrence, focusSpan: span }, input.messages);
+    });
+    const normalizedByLiteral = literalSpan && identitySpans.every(span => span && span.start <= literalSpan!.start && span.end >= literalSpan!.end);
+    if (invalidReviewerSpan || (identitySpans.some(Boolean) && (identitySpans.some(s => !s) || (new Set(identitySpans.map(s => JSON.stringify(s))).size !== 1 && !normalizedByLiteral)))) {
+      disputes.push({ ...dispute, reason: 'Context reviewers disagree on occurrence identity' });
+      reasons.push(`Ambiguous identity: ${group.groupId}`);
+      for (const c of candidates) trace.push({ groupId: group.groupId, candidateId: c.candidateId, decision: 'pending', reason: 'Context reviewers disagree on occurrence identity' });
+      continue;
+    }
+    const selectedReview = input.reviews.find(r => r.groupId === group.groupId && r.candidateId === selected.candidateId)!;
+    if (selectedReview.identitySpan || typeof selected.value === 'string' || Array.isArray(selected.value) || !anchor?.numeric) {
+      const span = normalizedByLiteral ? literalSpan : selectedReview.identitySpan ?? literalSpan;
+      const original = selected.occurrence.statementSpan;
+      const selectedFocus = selected.occurrence.focusSpan ?? original;
+      const coversCollection = !Array.isArray(selected.value) || selected.value.every(value => !text.includes(value) || span?.text.includes(value));
+      const validSpan = coversCollection && span && span.start >= original.start && span.end <= original.end && span.start < selectedFocus.end && selectedFocus.start < span.end && validateOccurrence({ messageId: message.messageId, statementSpan: original, focusSpan: span }, input.messages);
+      if (!validSpan || !span) {
+        disputes.push({ ...dispute, reason: 'Textual occurrence identity is ambiguous' });
+        reasons.push(`Ambiguous identity: ${group.groupId}`);
+        for (const c of candidates) trace.push({ groupId: group.groupId, candidateId: c.candidateId, decision: 'pending', reason: 'Textual occurrence identity is ambiguous' });
+        continue;
+      }
+      canonicalId = JSON.stringify([message.messageId, group.fieldId, span.start, span.end]);
+    }
+    const identity = JSON.parse(canonicalId) as [string, string, number, number];
+    if (equivalentCandidates.some(c => {
+      const occurrence = c.occurrence;
+      const focus = occurrence.focusSpan ?? occurrence.statementSpan;
+      const canonicalSpan = { start: identity[2], end: identity[3], text: text.slice(identity[2], identity[3]) };
+      return identity[2] >= focus.end || focus.start >= identity[3] || !validateOccurrence({ ...occurrence, focusSpan: canonicalSpan }, input.messages);
+    })) {
+      disputes.push({ ...dispute, reason: 'Candidates do not share a validated occurrence' });
+      reasons.push(`Ambiguous identity: ${group.groupId}`);
+      for (const c of candidates) trace.push({ groupId: group.groupId, candidateId: c.candidateId, decision: 'pending', reason: 'Candidates do not share a validated occurrence' });
+      continue;
+    }
+    const overlapsCanonical = [...canonicalIds].some(key => {
+      const prior = JSON.parse(key) as [string, string, number, number];
+      return prior[0] === identity[0] && prior[1] === identity[1] && prior[2] < identity[3] && identity[2] < prior[3];
+    });
+    if (overlapsCanonical) {
+      disputes.push({ ...dispute, reason: 'Canonical occurrence is duplicated' });
+      reasons.push(`Ambiguous identity: ${group.groupId}`);
+      for (const c of candidates) trace.push({ groupId: group.groupId, candidateId: c.candidateId, decision: 'pending', reason: 'Canonical occurrence is duplicated' });
+      continue;
+    }
+    canonicalIds.add(canonicalId);
+    const [, , identityStart, identityEnd] = JSON.parse(canonicalId) as [string, string, number, number];
+    const sourceText = message.content.type === 'text' ? message.content.text : '';
+    const identityRef = { messageId: message.messageId, start: identityStart, end: identityEnd, quote: sourceText.slice(identityStart, identityEnd) };
+    const relatedHistory = input.historicalAssertions.filter(a => a.fieldId === group.fieldId && a.evidenceRefs.some(e => e.messageId === message.messageId));
+    const overlappingHistory = relatedHistory.filter(a => a.evidenceRefs.some(e => {
+      if (e.messageId !== message.messageId) return false;
+      const start = e.start ?? (e.quote ? sourceText.indexOf(e.quote) : -1);
+      if (start < 0 || (e.start === undefined && e.quote && sourceText.indexOf(e.quote, start + 1) >= 0)) return true;
+      const end = e.end ?? start + (e.quote?.length ?? 0);
+      return start < identityEnd && identityStart < end;
+    }));
+    const exactHistory = overlappingHistory.filter(a => sameEvidence(a.evidenceRefs, [identityRef], input.messages));
+    if (overlappingHistory.length && (overlappingHistory.length !== 1 || exactHistory.length !== 1 || !validateAssertions(exactHistory, input.messages, input.factSchema).ok || exactHistory[0].source !== 'customer_message' || exactHistory[0].reviewStatus !== 'unreviewed' || JSON.stringify([exactHistory[0].subjectRef.scope, exactHistory[0].subjectRef.id, exactHistory[0].value, exactHistory[0].unit, exactHistory[0].period, exactHistory[0].incomeBasis, exactHistory[0].precision]) !== JSON.stringify([selected.subjectRef.scope, selected.subjectRef.id, selected.value, selected.unit, selected.period, selected.incomeBasis, selected.precision]))) {
+      disputes.push({ ...dispute, reason: 'Historical occurrence identity or value is ambiguous', previousAssertionIds: overlappingHistory.map(a => a.assertionId), evidenceRefs: overlappingHistory.flatMap(a => a.evidenceRefs) });
+      reasons.push(`Ambiguous historical identity: ${group.groupId}`);
+      for (const c of candidates) trace.push({ groupId: group.groupId, candidateId: c.candidateId, decision: 'pending', reason: 'Historical identity requires review' });
+      continue;
+    }
+    if (exactHistory.length === 1) {
+      assertions.push(exactHistory[0]);
+      for (const c of candidates) trace.push({ groupId: group.groupId, candidateId: c.candidateId, decision: c.candidateId === selected.candidateId ? 'accepted' : 'excluded', reason: 'Reused validated historical occurrence' });
+      continue;
+    }
+    assertions.push({ assertionId: `mp-${createHash('sha256').update(canonicalId).digest('hex')}`, fieldId: selected.fieldId, subjectRef: selected.subjectRef, value: selected.value, unit: selected.unit, period: selected.period, incomeBasis: selected.incomeBasis, rawValue: selected.occurrence.statementSpan.text, source: 'customer_message', evidenceRefs: selected.evidenceRefs, observedAt: message.occurredAt, precision: selected.precision, reviewStatus: 'unreviewed', schemaVersion: input.schemaVersion });
     for (const c of candidates) trace.push({ groupId: group.groupId, candidateId: c.candidateId, decision: c.candidateId === selected.candidateId ? 'accepted' : 'excluded', reason: c.candidateId === selected.candidateId ? 'Contextually supported' : 'Duplicate or unselected candidate' });
   }
   if (reasons.length) return ReconciliationResultSchema.parse({ status: 'human_review_required', disputes, reasons, trace, safetyFindings: safety?.findings ?? [] });
@@ -95,6 +189,6 @@ export function reconcile(input: Input) {
   const candidate = { assertions, blockers: freshBlockers, warnings: disputes.map(d => `Unresolved: ${d.groupId}`) };
   const checked = validateInterpretation(candidate, { messages: input.messages, factSchema: input.factSchema } as Parameters<typeof validateInterpretation>[1]);
   if (!checked.ok) return ReconciliationResultSchema.parse({ status: 'failed', code: 'invalid_interpretation', message: 'Interpretation validation failed' });
-  const interpretation = InterpretationSchema.safeParse({ ...checked.value, blockers: safety?.blockers ?? [] });
+  const interpretation = InterpretationSchema.safeParse(checked.value);
   return interpretation.success ? ReconciliationResultSchema.parse({ status: 'consolidated', interpretation: interpretation.data, trace, safetyFindings: safety?.findings ?? [] }) : ReconciliationResultSchema.parse({ status: 'failed', code: 'invalid_interpretation', message: 'Interpretation validation failed' });
 }
