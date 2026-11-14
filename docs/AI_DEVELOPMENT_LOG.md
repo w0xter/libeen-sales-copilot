@@ -94,3 +94,9 @@ No almacenar API keys, transcripciones de clientes reales ni secretos. No invent
 
 - User authorized advisor-recorded simulated agreement after selecting, reading and explicitly confirming a customer's message. Updated the event contract, workflow and UI to require an advisor attestation, simulation flag and quoted customer evidence; old unreviewed payloads are rejected. The reviewer is a symbolic advisor; production authentication is outside V0.
 - Integrator ran `pnpm test` (82 tests), `pnpm typecheck`, `pnpm lint`, `pnpm build`, and `git diff --check`; all passed. Integration tests cover reviewed Laura agreement, invalid evidence and prerequisite checks. No appointment or message delivery is created. LIB-010's previous agreement blocker is resolved; G2 checks pass.
+
+### 2026-11-14 — LIB-011 / LIB-012 acceptance and G3
+
+- Added Laura replay acceptance for evidenced facts, both debt clarifications, interest, reviewed drafts and agreement, R10 and gross correction. Added Javier/Rosa and adversarial/failure coverage for trust, unavailable audio, explicit zero, urgency, opt-out, invalid model output/evidence, revisions and stale proposals.
+- Integrator ran `pnpm test` (101 tests), `pnpm typecheck`, `pnpm lint`, `pnpm build`, and `git diff --check`; all passed. G3 acceptance checks pass. Earlier LIB-010 browser smoke covered the Laura initial, approval and debt paths; the new suites did not repeat browser smoke.
+- Prompt-injection coverage demonstrates that replay fails closed on unknown text; live OpenAI resistance was not tested. Human-edited draft content remains unscreened for prohibited claims, and there is no external delivery.
