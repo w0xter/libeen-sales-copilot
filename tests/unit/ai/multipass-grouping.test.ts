@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { groupClaims as groupWithContext } from '../../../src/adapters/ai/multipass/grouping';
 import type { FactSchema, FactAssertion } from '../../../src/contracts';
-import type { ClaimCandidate } from '../../../src/adapters/ai/multipass/contracts';
+import { ClaimGroupSchema, type ClaimCandidate } from '../../../src/adapters/ai/multipass/contracts';
 
 const text = 'Yo gano 2.000 € y ella 2.000 €.';
 const message = { messageId: 'm1', conversationId: 'c', role: 'customer' as const, occurredAt: '2026-01-01T00:00:00Z', content: { type: 'text' as const, text } };
@@ -146,4 +146,61 @@ it('does not mistake a historical change from one amount to another for a range'
   const result = groupClaims([a], [msg]);
   expect(result.groups).toHaveLength(0);
   expect(result.diagnostics).toContainEqual({ candidateId: 'a', code: 'ambiguous_occurrence' });
+});
+
+describe('structural groups require semantic review', () => {
+  const content = 'Madrid y Sevilla';
+  const msg = { ...message, content: { type: 'text' as const, text: content } };
+  const make = (id: string, extractorId: string, start: number, end: number, value: string | string[] = content): ClaimCandidate => ({ ...claim(id, extractorId, 8), fieldId: 'location', value, occurrence: { messageId: 'm1', statementSpan: { start: 0, end: content.length, text: content }, focusSpan: { start, end, text: content.slice(start, end) } } });
+  const schema: FactSchema = { id: 's', version: '1', fields: [{ ...defaultSchema.fields[0], id: 'location', type: 'text' }] };
+  const context = { factSchema: schema, assertions: [previous] };
+  it('retains an isolated broad focus as unconfirmed', () => {
+    const result = groupClaims([make('a', 'e1', 0, 16)], [msg], context);
+    expect(result.groups).toHaveLength(1);
+    expect(result.groups[0].semanticAtomicity).toBe('context_review_required');
+    expect(ClaimGroupSchema.safeParse(result.groups[0]).success).toBe(true);
+    const { semanticAtomicity: ignored, ...withoutReview } = result.groups[0];
+    void ignored;
+    expect(ClaimGroupSchema.safeParse(withoutReview).success).toBe(false);
+  });
+  it('retains separate mentions as separate groups', () => {
+    const result = groupClaims([make('a', 'e1', 0, 6), make('b', 'e1', 9, 16)], [msg], context);
+    expect(result.groups).toHaveLength(2);
+    expect(result.groups.every(g => g.semanticAtomicity === 'context_review_required')).toBe(true);
+  });
+  it('preserves a valid collection with multiple values for review', () => {
+    const collectionSchema: FactSchema = { ...schema, fields: [{ ...schema.fields[0], type: 'collection' }] };
+    const result = groupClaims([make('a', 'e1', 0, 16, ['Madrid', 'Sevilla'])], [msg], { factSchema: collectionSchema, assertions: [] });
+    expect(result.groups[0].candidates[0].value).toEqual(['Madrid', 'Sevilla']);
+    expect(result.groups[0].semanticAtomicity).toBe('context_review_required');
+  });
+  it('does not let agreement confirm atomicity or mutate persisted assertions', () => {
+    const assertions = [previous];
+    const before = structuredClone(assertions);
+    const inputs = [make('a', 'e1', 0, 16), make('b', 'e2', 0, 16), make('c', 'e3', 0, 16)];
+    const result = groupClaims(inputs, [msg], { factSchema: schema, assertions });
+    expect(result.groups[0].semanticAtomicity).toBe('context_review_required');
+    expect(result).toEqual(groupClaims([...inputs].reverse(), [msg], { factSchema: schema, assertions }));
+    expect(assertions).toEqual(before);
+    expect(result).not.toHaveProperty('assertions');
+  });
+  it('aligns partially overlapping focuses when correspondence is unique', () => {
+    const input = [make('a', 'e1', 0, 10), make('b', 'e2', 3, 16)];
+    const result = groupClaims(input, [msg], context);
+    expect(result).toEqual(groupClaims([...input].reverse(), [msg], context));
+    expect(result.groups).toHaveLength(1);
+    expect(result.groups[0].candidates).toHaveLength(2);
+    expect(result.groups[0].semanticAtomicity).toBe('context_review_required');
+  });
+});
+it('keeps a chain of competing partial overlaps ambiguous across permutations', () => {
+  const text = 'abcdefghijklmnop';
+  const msg = { ...message, content: { type: 'text' as const, text } };
+  const make = (id: string, extractorId: string, start: number, end: number): ClaimCandidate => ({ ...claim(id, extractorId, 8), fieldId: 'location', value: text.slice(start, end), occurrence: { messageId: 'm1', statementSpan: { start: 0, end: text.length, text }, focusSpan: { start, end, text: text.slice(start, end) } } });
+  const schema: FactSchema = { id: 's', version: '1', fields: [{ ...defaultSchema.fields[0], id: 'location', type: 'text' }] };
+  const input = [make('a', 'e1', 0, 6), make('b', 'e2', 4, 12), make('c', 'e3', 10, 16)];
+  const result = groupClaims(input, [msg], { factSchema: schema, assertions: [] });
+  expect(result.groups).toHaveLength(0);
+  expect(result.diagnostics.filter(d => d.code === 'ambiguous_occurrence')).toHaveLength(3);
+  expect(result).toEqual(groupClaims([...input].reverse(), [msg], { factSchema: schema, assertions: [] }));
 });

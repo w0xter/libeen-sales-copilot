@@ -21,7 +21,7 @@ export function groupClaims(candidates: ClaimCandidate[], messages: Message[], c
     const result = occurrenceKey(candidate.fieldId, candidate.occurrence, message.content.text);
     if (!result.key || result.numeric) return [];
     const focus = candidate.occurrence.focusSpan!;
-    return [{ fieldId: candidate.fieldId, messageId: candidate.occurrence.messageId, start: focus.start, end: focus.end }];
+    return [{ fieldId: candidate.fieldId, messageId: candidate.occurrence.messageId, start: focus.start, end: focus.end, extractorId: candidate.extractorId }];
   });
   for (const candidate of sorted) {
     const reject = (code: Diagnostic['code']) => { rejected.push(candidate); diagnostics.push({ candidateId: candidate.candidateId, code }); };
@@ -38,9 +38,19 @@ export function groupClaims(candidates: ClaimCandidate[], messages: Message[], c
       const peers = textual.filter(p => p.messageId === candidate.occurrence.messageId && p.fieldId === candidate.fieldId);
       const minimal = peers.filter(p => !peers.some(q => q.start >= p.start && q.end <= p.end && (q.start > p.start || q.end < p.end)));
       const overlaps = new Map(minimal.filter(p => p.start < focus.end && p.end > focus.start).map(p => [JSON.stringify([p.start, p.end]), p]));
-      if (overlaps.size !== 1) { reject('ambiguous_occurrence'); continue; }
-      const anchor = [...overlaps.values()][0];
-      if (anchor.start < focus.start || anchor.end > focus.end) { reject('ambiguous_occurrence'); continue; }
+      let anchor: { start: number; end: number };
+      if (overlaps.size === 1) {
+        anchor = [...overlaps.values()][0];
+        if (anchor.start < focus.start || anchor.end > focus.end) { reject('ambiguous_occurrence'); continue; }
+      } else if (overlaps.size === 2) {
+        const [a, b] = [...overlaps.values()];
+        const related = minimal.filter(p => (p.start < a.end && p.end > a.start) || (p.start < b.end && p.end > b.start));
+        const uniqueSpans = new Set(related.map(p => JSON.stringify([p.start, p.end])));
+        const aExtractors = new Set(related.filter(p => p.start === a.start && p.end === a.end).map(p => p.extractorId));
+        const bExtractors = new Set(related.filter(p => p.start === b.start && p.end === b.end).map(p => p.extractorId));
+        if (uniqueSpans.size !== 2 || a.end <= b.start || b.end <= a.start || [...aExtractors].some(id => bExtractors.has(id))) { reject('ambiguous_occurrence'); continue; }
+        anchor = { start: Math.max(a.start, b.start), end: Math.min(a.end, b.end) };
+      } else { reject('ambiguous_occurrence'); continue; }
       key = JSON.stringify([candidate.occurrence.messageId, candidate.fieldId, anchor.start, anchor.end]);
     }
     const group = groups.get(key);
@@ -64,7 +74,7 @@ export function groupClaims(candidates: ClaimCandidate[], messages: Message[], c
     if (!context.assertions.some(a => a.subjectRef.scope === candidate.subjectRef.scope && a.subjectRef.id === candidate.subjectRef.id) && !(candidate.subjectRef.scope === 'case' && candidate.subjectRef.id === context.caseId)) diagnostics.push({ candidateId: candidate.candidateId, code: 'subject_unverified' });
     if (group && group.candidates.some(c => c.subjectRef.scope !== candidate.subjectRef.scope || c.subjectRef.id !== candidate.subjectRef.id)) diagnostics.push({ candidateId: candidate.candidateId, code: 'subject_disagreement' });
     if (group) group.candidates.push(candidate);
-    else groups.set(key, { groupId: key, fieldId: candidate.fieldId, occurrence: candidate.occurrence, candidates: [candidate] });
+    else groups.set(key, { groupId: key, fieldId: candidate.fieldId, occurrence: candidate.occurrence, semanticAtomicity: 'context_review_required', candidates: [candidate] });
   }
   return { groups: [...groups.values()].sort((a, b) => {
     const x = JSON.parse(a.groupId) as [string, string, number, number];
