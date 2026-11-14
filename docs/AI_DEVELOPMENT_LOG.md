@@ -82,3 +82,10 @@ No almacenar API keys, transcripciones de clientes reales ni secretos. No invent
 - Integrated modular case orchestration and approved a repository-port change: stable receipts now include a separate duplicate indicator, and non-message events commit atomically with their projections. Incoming messages still commit before interpretation; tests exercise conflicting and repeated events.
 - Integrator ran `pnpm test` (72 tests), `pnpm typecheck`, `pnpm lint`, `pnpm build`, and `git diff --check`; all passed. Focused cases cover replay, AI and draft failures, stale proposals, R10, source authority, evidence fragments, duplicate simulated sends and delayed-model CAS.
 - Human-edited draft text is not semantically screened for prohibited claims; generated text uses constrained templates and no external delivery exists. This remains an integration limitation. G2 remains open until API/UI wiring and end-to-end verification.
+
+### 2026-11-14 — LIB-010 live API/UI, partial
+
+- Wired the advisor workspace to in-memory case operations, replaced mock rendering, and added API tests and stable retry payloads. Browser smoke exercised Laura initial replay, draft approval without agreement, debt clarification, and retained message on unsupported replay input.
+- Corrected R05 evidence to include the known debt message (with a regression), and changed safe draft selection to ask about missing SmartHousing interest after debt clarification.
+- Integrator ran `pnpm test` (79 tests), `pnpm typecheck`, `pnpm lint`, `pnpm build`, and `git diff --check`; all passed. A concurrent build attempt in the UI workstream hit a build lock; the subsequent integrator build passed.
+- **Incomplete:** the contract accepts a customer-confirmation event based on an existing customer message reference but cannot establish that the message actually expresses agreement. The HTTP operation and UI control fail closed rather than allowing an unrelated message to complete M5. LIB-010's simulated-agreement capability and G2 are not fully verified; LIB-011–013 have not started. Human-edited draft text is also not semantically screened for prohibited claims; no external delivery exists.

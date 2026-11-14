@@ -82,4 +82,21 @@ describe('AI adapters', () => {
     expect(await a.value.interpreter.interpret(corrected)).toMatchObject({ ok: true, value: { assertions: expect.arrayContaining([expect.objectContaining({ fieldId: 'declared_monthly_income', incomeBasis: 'gross', precision: 'ambiguous' })]) } });
   });
 
+  it('asks about product interest when unknown while preserving debt and month priority', async () => {
+    const a = createAIAdapters({ AI_MODE: 'replay' }); if (!a.ok) throw Error('mode');
+    const caseSnapshot = snapshot('laura');
+    const common = { caseSnapshot, proposal, agentProfile: demoBundle.agentProfile, policyDecision: { ...policy, ruleIds: ['R03'] } };
+    const unknown = await a.value.draftGenerator.generate(common);
+    expect(unknown).toMatchObject({ ok: true, value: { text: expect.stringContaining('SmartHousing') } });
+    caseSnapshot.knowledge.facts = [{ fieldId: 'product_intent', subjectRef: { scope: 'case', id: 'case' }, status: 'ambiguous', evidenceRefs: [] }];
+    expect(await a.value.draftGenerator.generate(common)).toMatchObject({ ok: true, value: { text: expect.stringContaining('SmartHousing') } });
+    const debt = await a.value.draftGenerator.generate({ ...common, policyDecision: { ...policy, ruleIds: ['R05', 'R03'] } });
+    expect(debt).toMatchObject({ ok: true, value: { text: expect.stringContaining('cuota') } });
+    const month = await a.value.draftGenerator.generate({ ...common, policyDecision: { ...policy, ruleIds: ['R10', 'R03'] } });
+    expect(month).toMatchObject({ ok: true, value: { text: expect.stringContaining('mes') } });
+    caseSnapshot.knowledge.facts = [{ fieldId: 'product_intent', subjectRef: { scope: 'case', id: 'case' }, status: 'known', value: 'explore_smart_housing', evidenceRefs: [{ messageId: 'laura-m1' }] }];
+    const known = await a.value.draftGenerator.generate(common);
+    expect(known).toMatchObject({ ok: true, value: { text: expect.not.stringContaining('SmartHousing') } });
+  });
+
 });

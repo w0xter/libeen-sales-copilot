@@ -17,6 +17,8 @@ export function optionsFor(input: DraftInput): string[] {
   if (action === 'CLARIFY') {
     if (input.policyDecision.ruleIds.includes('R05')) return ['debt'];
     if (input.policyDecision.ruleIds.includes('R10')) return ['month'];
+    const interest = input.caseSnapshot.knowledge.facts.find(f => f.fieldId === 'product_intent' && f.subjectRef.scope === 'case');
+    if (!interest || ['unknown', 'ambiguous', 'conflicting'].includes(interest.status)) return ['interest'];
     return ['general'];
   }
   return Object.keys(templates[action] ?? {});
@@ -32,5 +34,5 @@ export function chooseReplayTemplate(input: DraftInput): string {
   if (input.proposal.actionType === 'ANSWER_QUESTION') return 'handoff';
   if (input.policyDecision.ruleIds.includes('R05')) return 'debt';
   if (input.policyDecision.ruleIds.includes('R10')) return 'month';
-  return 'general';
+  return optionsFor(input)[0] ?? 'general';
 }

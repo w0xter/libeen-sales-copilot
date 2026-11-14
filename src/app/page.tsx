@@ -1,5 +1,5 @@
-import { MockWorkspace } from '../components/case-workspace/mock-workspace';
+import { LiveWorkspace } from '../components/case-workspace/live-workspace';
 
 export default function Home() {
-  return <MockWorkspace />;
+  return <LiveWorkspace />;
 }

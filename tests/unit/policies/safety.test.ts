@@ -33,3 +33,11 @@ describe('protected policy precedence', () => {
     expect(evaluatePolicy({ ...base, policy, events: [event], blockers: [blocker('BINDING_CLAIM')] })).toMatchObject({ result: 'STOP_CONTACT', allowedActions: ['STOP_CONTACT'] });
   });
 });
+
+describe('debt clarification evidence', () => {
+  it('retains the source of a known payment when its deduction is unclear', () => {
+    const decision = evaluatePolicy({ ...base, knowledge: { facts: [{ fieldId: 'monthly_debt', subjectRef: { scope: 'buying_unit', id: 'buying_unit' }, status: 'known', value: 250, unit: 'EUR', evidenceRefs: [{ messageId: 'laura-m4' }] }] } });
+    expect(decision.ruleIds).toContain('R05');
+    expect(decision.evidenceRefs).toContainEqual({ messageId: 'laura-m4' });
+  });
+});
