@@ -54,3 +54,9 @@ No almacenar API keys, transcripciones de clientes reales ni secretos. No invent
 
 - User approved the shared contracts and requested cohesive modules for all subsequent code. Split the contracts into focused files while retaining the existing public barrel and contract semantics.
 - Integrator reran `pnpm test` (16 tests), `pnpm typecheck`, `pnpm lint`, `pnpm build`, and `git diff --check`; all passed. Human contract review and G0 foundation checks are complete. G1 work may begin; scenario outcomes are still unverified until the domain and integration work is implemented.
+
+### 2026-11-14 — LIB-004 in-memory repository
+
+- Added a single-process repository with defensive copies, conditional revision writes, stable event fingerprints, idempotent receipts, message persistence before analysis, and fixture reset. No production persistence is claimed.
+- `pnpm test` passed 20 tests (including four repository tests), `pnpm typecheck`, `pnpm lint`, and `git diff --check` passed. Concurrent calls were exercised as sequential competing writes from the same revision; multi-process concurrency and orchestration failure paths remain untested and outside this adapter's scope.
+- G1 remains open. Additional worktree creation stalled; continuing safely with isolated or sequential work within the available worktrees.
