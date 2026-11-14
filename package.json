@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "typecheck": "next typegen && tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit",
+    "eval:openai": "node scripts/eval-openai.mjs",
+    "eval:recorded": "vitest run tests/evaluation/f01-recorded.test.ts"
   },
   "dependencies": {
     "next": "16.4.6",
