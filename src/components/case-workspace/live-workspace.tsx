@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { demoBundle } from '../../config';
 import type { ApplicationError, CaseEvent, CaseView } from '../../contracts';
 import { CaseWorkspace } from './case-workspace';
+import { hasCurrentHandoff } from './intents';
 import { AgreementReview } from './agreement-review';
 import { fetchCase, sendOperation, type Operation } from './api-client';
 import styles from './workspace.module.css';
@@ -49,6 +50,9 @@ export function LiveWorkspace() {
   const base = () => ({ eventId: crypto.randomUUID(), caseId: selected, actor: 'advisor' as const, occurredAt: new Date().toISOString(), expectedRevision: view!.snapshot.revision });
   const analyze = () => { if (view) dispatch({ ...base(), type: 'CASE_ANALYSIS_REQUESTED', payload: {} }); };
   const reset = async () => { if (await apply({ operation: 'reset', caseId: selected }, selected)) await load(selected); };
+  const sent = view?.snapshot.events.some(e => e.type === 'MESSAGE_SIMULATED_AS_SENT' && e.payload.draftId === view.draft?.draftId && e.payload.proposalId === view.activeProposal?.proposalId);
+  const handoffDone = view && hasCurrentHandoff(view);
+  const handoff = () => { if (view) dispatch({ ...base(), type: 'HUMAN_HANDOFF_CONFIRMED', simulated: true, payload: { reason: 'Derivación simulada registrada por el asesor' } }); };
   const simulateSent = () => { if (view?.draft && view.activeProposal) dispatch({ ...base(), type: 'MESSAGE_SIMULATED_AS_SENT', simulated: true, payload: { draftId: view.draft.draftId, proposalId: view.activeProposal.proposalId } }); };
   return <main className={styles.shell}>
     <header className={styles.header}><div><div className={styles.brand}>LIBEEN <span> / SALES COPILOT</span></div><h1>Tu espacio de asesoría</h1><p>Entiende cada conversación y prepara el siguiente paso con contexto.</p></div><div className={styles.mode}><span className={styles.dot} /> Datos sintéticos · Sin envío real</div></header>
@@ -58,6 +62,7 @@ export function LiveWorkspace() {
     {error && <div role="alert" className={styles.error}><p>{error}</p>{retry && <button type="button" disabled={loading} onClick={() => void apply(retry, selected)}>Reintentar operación</button>}</div>}
     <CaseWorkspace view={view} onIntent={dispatch} loading={loading} fieldLabels={labels} />
     {view && <AgreementReview key={view.snapshot.caseId} view={view} onIntent={dispatch} loading={loading} />}
-    {view?.draft?.status === 'approved' && <section className={styles.panel}><h2>Acciones simuladas</h2><p>La aprobación no indica que se haya enviado un mensaje ni que el cliente haya aceptado.</p><button disabled={loading} onClick={simulateSent}>Registrar envío simulado</button></section>}
+    {view?.activeProposal?.actionType === 'HANDOFF' && !handoffDone && <section className={styles.panel}><h2>Derivación pendiente</h2><p>Registra una derivación simulada para revisión humana; no se contactará a nadie.</p><button type="button" disabled={loading} onClick={handoff}>Registrar derivación simulada</button></section>}
+    {view?.draft?.status === 'approved' && !sent && <section className={styles.panel}><h2>Acciones simuladas</h2><p>La aprobación no indica que se haya enviado un mensaje ni que el cliente haya aceptado.</p><button disabled={loading} onClick={simulateSent}>Registrar envío simulado</button></section>}
   </main>;
 }

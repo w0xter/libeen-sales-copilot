@@ -16,13 +16,27 @@ export function createMessageIntent(view: CaseView, text: string): CaseEvent | n
   return { eventId: crypto.randomUUID(), caseId: view.snapshot.caseId, actor: 'customer', occurredAt: now, expectedRevision: view.snapshot.revision, simulated: true, type: 'MESSAGE_RECEIVED', payload: { message: { messageId: crypto.randomUUID(), conversationId: view.snapshot.messages[0]?.conversationId ?? `${view.snapshot.caseId}-conversation`, role: 'customer', occurredAt: now, content: { type: 'text', text }, simulated: true } } };
 }
 
+export function eligibleAgreementMessages(view: CaseView) {
+  const events = view.snapshot.events;
+  const sentIndex = events.findLastIndex(e => e.type === 'MESSAGE_SIMULATED_AS_SENT' && view.snapshot.proposals.some(p => p.proposalId === e.payload.proposalId && p.actionType === 'PROPOSE_CALL'));
+  if (sentIndex < 0) return [];
+  const ids = new Set(events.slice(sentIndex + 1).filter(e => e.type === 'MESSAGE_RECEIVED').map(e => e.payload.message.messageId));
+  return view.snapshot.messages.filter(m => ids.has(m.messageId) && m.role === 'customer' && m.content.type === 'text');
+}
+
 /** An advisor explicitly reviews a quoted synthetic customer message before recording agreement. */
 export function createAgreementIntent(view: CaseView, messageId: string, reviewed: boolean): CaseEvent | null {
-  const message = view.snapshot.messages.find(item => item.messageId === messageId);
+  const message = eligibleAgreementMessages(view).find(item => item.messageId === messageId);
   if (!reviewed || !message || message.role !== 'customer' || message.content.type !== 'text' || !message.content.text.trim()) return null;
   return {
     eventId: crypto.randomUUID(), caseId: view.snapshot.caseId, actor: 'advisor', occurredAt: new Date().toISOString(),
     expectedRevision: view.snapshot.revision, type: 'CUSTOMER_CONFIRMED_NEXT_STEP', simulated: true,
     payload: { description: 'Aceptación revisada por el asesor', reviewedByAdvisor: true, evidenceRefs: [{ messageId, quote: message.content.text }] },
   };
+}
+
+export function hasCurrentHandoff(view: CaseView): boolean {
+  const events = view.snapshot.events;
+  const index = events.findLastIndex(e => e.type === 'HUMAN_HANDOFF_CONFIRMED');
+  return index >= 0 && !events.slice(index + 1).some(e => e.type === 'MESSAGE_RECEIVED' || e.type === 'FACT_CORRECTED');
 }

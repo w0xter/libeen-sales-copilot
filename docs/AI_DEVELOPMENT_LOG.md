@@ -127,3 +127,7 @@ No almacenar API keys, transcripciones de clientes reales ni secretos. No invent
 ### 2026-11-14 — F-01, tercera iteración limitada
 
 Se investigaron límites de evidencia, precisión y correcciones; se añadieron salvaguardas conservadoras en el adaptador y dos regresiones deterministas. Doce intentos de interpretación real devolvieron `MODEL_UNAVAILABLE`; no se recibió respuesta. El verificador independiente de bloqueos y la evaluación semántica real quedan pendientes. Detalles y resultados en `docs/evaluation/F01_OPENAI_REMEDIATION.md`; F-01 sigue abierto.
+
+## Estabilización de entrega — 14 de noviembre de 2026
+
+Se partió de `1a09a1a`. Se diagnosticó DNS restringido en sandbox y se comprobó una única petición autenticada al endpoint de modelos fuera de sandbox (HTTP 200), sin nuevas inferencias ni cambios semánticos. Se corrigieron presentación del fallo, envío y derivación simulados, revisión de acuerdo en UI y configuración JSON de R10. Se verificaron los tres casos y R10 off/on en navegador aislado; las pruebas y limitaciones concretas están en [DELIVERY_READINESS.md](evaluation/DELIVERY_READINESS.md). F-01 permanece PARTIALLY FIXED y F-06 pendiente. No se hizo push ni merge.

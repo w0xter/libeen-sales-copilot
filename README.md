@@ -32,7 +32,7 @@ Sí, queremos explorar SmartHousing y los 3.800 € ya son después del coche.
 
 Replay es una reproducción determinista de los mensajes y variantes definidos, **no inferencia de un modelo**. Un texto que no tiene replay se conserva como mensaje, pero el análisis falla de forma explícita; no inventa una interpretación. Las variantes están identificadas como añadidos sintéticos. Javier conserva un audio sin transcripción; Rosa conserva ahorro cero y su solicitud de aprobación escrita se deriva a revisión.
 
-El asesor puede editar, aprobar o descartar un borrador y registrar un envío **simulado**. Para registrar un acuerdo simulado, selecciona y lee el mensaje del cliente y confirma expresamente que acepta el siguiente paso. El evento conserva la cita y la revisión del asesor; no reserva una cita. Los textos editados por una persona **no se analizan semánticamente para detectar promesas prohibidas**, por lo que requieren revisión humana cuidadosa. La V0 no autentica al asesor y no es adecuada para datos reales.
+El asesor puede editar, aprobar o descartar un borrador y registrar un envío **simulado**. Para registrar un acuerdo simulado, primero registra el envío simulado de una propuesta de llamada; después selecciona un mensaje posterior y confirma expresamente que acepta esa llamada. El sistema no verifica el significado: la revisión es responsabilidad del asesor. El evento conserva la cita y la revisión del asesor; no reserva una cita. Los textos editados por una persona **no se analizan semánticamente para detectar promesas prohibidas**, por lo que requieren revisión humana cuidadosa. La V0 no autentica al asesor y no es adecuada para datos reales.
 
 ## Modos de IA
 
@@ -43,7 +43,7 @@ El adaptador OpenAI extrae candidatos estructurados que pasan validación y sele
 
 ## Configuración R10
 
-En [src/config/index.ts](src/config/index.ts), `businessPolicy.advisoryCall.requireSpecificMoveMonthBeforeCall` empieza en `false`. Para demostrar R10, cambia a `true`, incrementa `businessPolicy.version` y actualiza `workflow.businessPolicyVersion` al mismo valor; reinicia el servidor y vuelve a evaluar el caso. Con interés informado y deuda aclarada, la ruta solicita un mes concreto antes de proponer llamada, sin reabrir el hito financiero M3. Las restricciones protegidas siguen teniendo prioridad. La suite de aceptación comprueba ambas configuraciones.
+Edita [config/business-policy.json](config/business-policy.json): cambia `requireSpecificMoveMonthBeforeCall` entre `false` y `true`, cambia `version` para identificar la nueva política y reinicia el servidor. No hay que editar TypeScript. El archivo se carga al iniciar el runtime y se valida; un archivo inválido impide su arranque. El reinicio borra los expedientes en memoria. Con interés informado y deuda aclarada, R10 pide un mes concreto antes de proponer llamada, sin reabrir M3. Solo esta opción se ha externalizado; las demás reglas siguen en configuración TypeScript y las protecciones conservan su prioridad.
 
 ## Comprobación
 
@@ -61,7 +61,7 @@ pnpm test tests/acceptance/laura
 pnpm test tests/acceptance/safety tests/acceptance/failures
 ```
 
-La última validación integrada registrada ejecutó 105 tests con éxito, junto con lint, typecheck y build; consulta [el registro real de desarrollo](docs/AI_DEVELOPMENT_LOG.md) para los comandos, revisiones y limitaciones. El test de prompt injection cubre el rechazo de texto desconocido en replay, no una prueba contra un modelo real.
+Consulta [preparación de entrega](docs/evaluation/DELIVERY_READINESS.md) y [el registro de desarrollo](docs/AI_DEVELOPMENT_LOG.md) para resultados y límites reales. El test de prompt injection cubre el rechazo de texto desconocido en replay, no una prueba contra un modelo real.
 
 ## Decisiones y límites
 

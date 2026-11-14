@@ -31,6 +31,8 @@ describe('case orchestrator', () => {
     const stored = await repository.get('laura');
     expect(stored.ok && stored.value.messages.some(m => m.messageId === 'new-message')).toBe(true);
     expect(stored.ok && stored.value.knowledge.facts).toEqual([]);
+    const refreshed = await orchestrator.getCase('laura');
+    expect(refreshed.ok && refreshed.value.warnings[0]).toContain('análisis');
   });
   it('preserves evaluated facts and proposal when draft generation fails', async () => {
     const failing: DraftGenerator = { generate: async () => ({ ok: false, error: { code: 'DRAFT_GENERATION_FAILED', message: 'Sin borrador', retryable: true } }) };

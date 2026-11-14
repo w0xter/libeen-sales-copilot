@@ -79,3 +79,18 @@ describe('case API', () => {
     expect(JSON.stringify(body)).not.toContain('OPENAI_API_KEY');
   });
 });
+
+describe('simulated handoff', () => {
+  it('records a handoff while preserving open safety blockers and review status', async () => {
+    const reset = await result(await POST(request({ operation: 'reset', caseId: 'rosa' })));
+    if (!reset.ok) throw Error('reset');
+    const analyzed = await result(await POST(request({ operation: 'event', event: { eventId: 'handoff-analysis', caseId: 'rosa', actor: 'advisor', occurredAt: '2026-05-02T10:00:00Z', expectedRevision: 0, type: 'CASE_ANALYSIS_REQUESTED', payload: {} } })));
+    if (!analyzed.ok) throw Error('analysis');
+    expect(analyzed.value.activeProposal?.actionType).toBe('HANDOFF');
+    const recorded = await result(await POST(request({ operation: 'event', event: { eventId: 'handoff-recorded', caseId: 'rosa', actor: 'advisor', occurredAt: '2026-05-02T10:01:00Z', expectedRevision: analyzed.value.snapshot.revision, type: 'HUMAN_HANDOFF_CONFIRMED', simulated: true, payload: { reason: 'Derivación simulada' } } })));
+    if (!recorded.ok) throw Error('handoff');
+    expect(recorded.value.snapshot.status).toBe('ON_HOLD_REVIEW');
+    expect(recorded.value.snapshot.events.some(e => e.type === 'HUMAN_HANDOFF_CONFIRMED')).toBe(true);
+    expect(recorded.value.snapshot.blockers.filter(b => b.status === 'open').map(b => b.type)).toEqual(expect.arrayContaining(['URGENT', 'BINDING_CLAIM']));
+  });
+});

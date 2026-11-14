@@ -2,18 +2,18 @@
 
 import { useState } from 'react';
 import type { CaseEvent, CaseView } from '../../contracts';
-import { createAgreementIntent } from './intents';
+import { createAgreementIntent, eligibleAgreementMessages } from './intents';
 import styles from './workspace.module.css';
 
 /** Human judgment is explicit; the system does not infer acceptance from text. */
 export function AgreementReview({ view, onIntent, loading }: { view: CaseView; onIntent: (event: CaseEvent) => void; loading: boolean }) {
   const [messageId, setMessageId] = useState('');
   const [reviewed, setReviewed] = useState(false);
-  const messages = view.snapshot.messages.filter(message => message.role === 'customer' && message.content.type === 'text');
+  const messages = eligibleAgreementMessages(view);
   const selected = messages.find(message => message.messageId === messageId);
   return <section className={styles.panel}>
     <h2>Registrar acuerdo simulado</h2>
-    <p>Selecciona y lee el mensaje del cliente que confirma el siguiente paso. Esto no reserva ninguna cita.</p>
+    <p>Tras registrar el envío simulado de una propuesta de llamada, selecciona un mensaje posterior que acepte esa llamada. El sistema no verifica su significado: la decisión es responsabilidad del asesor. Esto no reserva ninguna cita.</p>
     <label htmlFor="agreement-message">Mensaje del cliente</label>
     <select id="agreement-message" value={messageId} onChange={event => { setMessageId(event.target.value); setReviewed(false); }}>
       <option value="">Selecciona un mensaje</option>

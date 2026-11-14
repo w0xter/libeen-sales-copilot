@@ -74,7 +74,7 @@ export class CaseOrchestrator {
       if (previous && JSON.stringify(previous) !== JSON.stringify(blocker)) return this.markAnalysisFailed(snapshot, { code: 'MODEL_OUTPUT_INVALID', message: 'Identificador de aviso incompatible', retryable: false });
       blockers.set(blocker.id, blocker);
     }
-    return this.commitEvaluation({ ...snapshot, assertions: [...assertions.values()], blockers: [...blockers.values()] }, eventId, config, valid.value.warnings);
+    return this.commitEvaluation({ ...snapshot, analysisStatus: 'complete', assertions: [...assertions.values()], blockers: [...blockers.values()] }, eventId, config, valid.value.warnings);
   }
   private async markAnalysisFailed(snapshot: CaseSnapshot, error: import('../../contracts').ApplicationError): Promise<ApplicationResult> {
     const next: CaseSnapshot = { ...snapshot, revision: snapshot.revision + 1, analysisStatus: 'analysis_failed', proposals: snapshot.proposals.map(p => ({ ...p, status: 'superseded' })) };

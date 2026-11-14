@@ -7,7 +7,8 @@ export function bundleRef(config: ConfigBundle): ConfigBundleRef {
 }
 export const sameRef = (a: ConfigBundleRef, b: ConfigBundleRef) => Object.keys(a).every(key => a[key as keyof ConfigBundleRef] === b[key as keyof ConfigBundleRef]);
 export function project(snapshot: CaseSnapshot, mode: 'replay' | 'openai', errors: ApplicationError[] = [], warnings: string[] = []): CaseView {
-  const proposal = snapshot.proposals.findLast(p => p.status === 'active') ?? null;
+  const proposal = snapshot.analysisStatus === 'analysis_failed' ? null : snapshot.proposals.findLast(p => p.status === 'active') ?? null;
+  if (snapshot.analysisStatus === 'analysis_failed' && !errors.length) warnings = [...warnings, 'El último análisis falló. Revisa el mensaje y vuelve a analizar; en replay solo se admiten entradas preparadas.'];
   return { snapshot, activeProposal: proposal, draft: proposal ? snapshot.drafts.findLast(d => d.proposalId === proposal.proposalId) ?? null : null, errors, warnings, aiMode: mode };
 }
 /** Adapters are untrusted: neither shape nor claimed provenance confer advisor authority. */
