@@ -94,3 +94,46 @@ describe('source authority', () => {
     expect(run([customerClaim])).toMatchObject({ ok: false, error: { code: 'EVIDENCE_INVALID' } });
   });
 });
+
+describe('explicit customer amount correction', () => {
+  it('uses a clearly revised amount while retaining both assertions and evidence', () => {
+    const message = { ...laura[2], messageId: 'revised', occurredAt: '2026-05-02T10:00:00Z', content: { type: 'text' as const, text: 'Me equivoqué al sumar, son 2800 € netos mensuales, no la cantidad anterior.' } };
+    const correction: FactAssertion = { ...base, assertionId: 'revised-amount', value: 2800, precision: 'explicit', rawValue: message.content.text, evidenceRefs: [{ messageId: message.messageId }], observedAt: message.occurredAt };
+    const result = run([base, correction], [...laura, message]);
+    expect(result.ok && result.value.facts[0]).toMatchObject({ status: 'known', value: 2800, incomeBasis: 'net', assertionIds: ['a', 'revised-amount'], evidenceRefs: expect.arrayContaining([{ messageId: 'laura-m3', quote: '3.800 € netos' }, { messageId: 'revised' }]) });
+  });
+  it('keeps independent incompatible customer statements conflicting', () => {
+    const message = { ...laura[2], messageId: 'other', occurredAt: '2026-05-02T10:00:00Z', content: { type: 'text' as const, text: 'Ingresamos 2800 euros netos al mes.' } };
+    const other: FactAssertion = { ...base, assertionId: 'other-amount', value: 2800, rawValue: message.content.text, evidenceRefs: [{ messageId: 'other' }], observedAt: message.occurredAt };
+    expect(run([base, other], [...laura, message])).toMatchObject({ ok: true, value: { facts: [{ status: 'conflicting', values: [3800, 2800] }] } });
+  });
+});
+
+describe('repeated extraction of historical text', () => {
+  it('marks alternative renderings of one message ambiguous without fabricating a conflict between customer statements', () => {
+    const one: FactAssertion = { ...base, assertionId: 'intent-one', fieldId: 'initial_intent', subjectRef: { scope: 'case', id: 'case' }, value: 'buscar vivienda', unit: undefined, period: undefined, incomeBasis: undefined, rawValue: 'buscamos piso', evidenceRefs: [{ messageId: 'laura-m1', quote: 'buscamos piso' }], observedAt: laura[0].occurredAt };
+    const two = { ...one, assertionId: 'intent-two', value: 'looking for housing' };
+    const result = run([one, two]);
+    expect(result).toMatchObject({ ok: true, value: { facts: [{ status: 'ambiguous', assertionIds: ['intent-one', 'intent-two'] }] } });
+    if (result.ok) expect(result.value.facts[0]).not.toHaveProperty('value');
+  });
+});
+
+describe('correction scope guards', () => {
+  it('does not supersede when the same message can refer to multiple monetary fields', () => {
+    const message = { ...laura[2], messageId: 'revised-two-fields', occurredAt: '2026-05-02T10:00:00Z', content: { type: 'text' as const, text: 'Me equivoqué al sumar, son 2800 € netos mensuales, no la cantidad anterior.' } };
+    const debt: FactAssertion = { ...base, assertionId: 'debt-prior', fieldId: 'monthly_debt', value: 250, incomeBasis: undefined, rawValue: '250', evidenceRefs: [{ messageId: 'laura-m4' }], observedAt: laura[3].occurredAt };
+    const revised: FactAssertion = { ...base, assertionId: 'revised-ambiguous', value: 2800, precision: 'explicit', rawValue: message.content.text, evidenceRefs: [{ messageId: message.messageId }], observedAt: message.occurredAt };
+    const result = run([base, debt, revised], [...laura, message]);
+    expect(result.ok && result.value.facts.find(f => f.fieldId === 'declared_monthly_income')).toMatchObject({ status: 'conflicting', values: [3800, 2800] });
+  });
+});
+
+describe('basis-only projection', () => {
+  it('shows the corrected gross basis as uncertain while retaining the earlier amount and evidence', () => {
+    const message = { ...laura[2], messageId: 'basis-gross', occurredAt: '2026-05-02T10:00:00Z', content: { type: 'text' as const, text: 'Perdona, los ingresos que os dije eran brutos.' } };
+    const basis: FactAssertion = { ...base, assertionId: 'basis-gross', value: undefined, incomeBasis: 'gross', precision: 'ambiguous', rawValue: message.content.text, evidenceRefs: [{ messageId: message.messageId }], observedAt: message.occurredAt };
+    const result = run([base, basis], [...laura, message]);
+    expect(result.ok && result.value.facts[0]).toMatchObject({ status: 'ambiguous', value: 3800, incomeBasis: 'gross', assertionIds: ['a', 'basis-gross'], evidenceRefs: expect.arrayContaining([{ messageId: 'basis-gross' }]) });
+  });
+});
