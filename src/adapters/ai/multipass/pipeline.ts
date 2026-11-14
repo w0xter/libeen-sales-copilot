@@ -28,7 +28,21 @@ export async function runPipeline(options: { runId: string; snapshot: Snapshot; 
     }
     return undefined;
   };
-  const initial = await Promise.all((['E1', 'E2', 'E3', 'S1'] as const).map(role => call(role, freeze({ snapshot }), role === 'S1' ? scan : extraction)));
+  // Wait for every initial pass before choosing repair: multiple failures are
+  // ambiguous and cannot be recovered with the single global repair budget.
+  const roles = ['E1', 'E2', 'E3', 'S1'] as const;
+  const initialInput = freeze({ snapshot });
+  const initial = await Promise.all(roles.map(role => scheduler.call(role, initialInput, v => (role === 'S1' ? scan : extraction).safeParse(v).success)));
+  const failed = initial.flatMap((value, index) => value === undefined ? [index] : []);
+  if (failed.length === 1) {
+    const index = failed[0];
+    const role = roles[index];
+    if (trace.operations.find(op => op.role === role)?.status === 'invalid') {
+      repaired = true;
+      const schema = role === 'S1' ? scan : extraction;
+      initial[index] = await scheduler.call('Repair', freeze({ snapshot, targetRole: role, originalInput: initialInput }), v => schema.safeParse(v).success);
+    }
+  }
   const fail = (code: string) => { trace.finalStatus = 'failed'; trace.abstentionCauses.push(code); return { result: ReconciliationResultSchema.parse({ status: 'failed', code, message: 'Pipeline could not safely complete' }), trace, diagnostics: [] }; };
   if (initial.some(v => v === undefined)) return fail('initial_pass_failed');
   const candidates: ClaimCandidate[] = initial.slice(0, 3).flatMap((value, i) => extraction.parse(value).claims.map((claim, n) => ({ ...claim, extractorId: `E${i + 1}`, candidateId: `E${i + 1}-${n}` })));
@@ -45,7 +59,16 @@ export async function runPipeline(options: { runId: string; snapshot: Snapshot; 
   }
   const input = { factSchema: snapshot.factSchema, knownSubjects: snapshot.knownSubjects, historicalAssertions: snapshot.historicalAssertions, diagnostics: grouped.diagnostics, groups: grouped.groups, reviews: contextual.reviews, messages: snapshot.messages, materialFieldIds: snapshot.materialFieldIds, schemaVersion: snapshot.factSchema.version, safety: { scanStatus: 'complete' as const, reviewStatus: 'complete' as const, candidates: [...scanResult.candidates, ...(contextual.candidates ?? [])], verdicts: contextual.verdicts, historicalBlockers: snapshot.historicalBlockers } };
   let result = reconcile(input);
-  if (result.status === 'human_review_required' && result.disputes.length && trace.consumed < 7) {
+  // Conflicting contextual verdicts for the same occurrence require human review;
+  // corroborating votes do not erase an explicit refutation.
+  const conflictingReview = grouped.groups.some(group => {
+    const reviews = contextual.reviews.filter(r => r.groupId === group.groupId);
+    return reviews.some(r => r.support === 'supported') && reviews.some(r => r.support === 'refuted');
+  });
+  if (conflictingReview && result.status === 'consolidated') {
+    result = ReconciliationResultSchema.parse({ status: 'human_review_required', disputes: [], reasons: ['Conflicting contextual reviews'], trace: result.trace, safetyFindings: result.safetyFindings });
+  }
+  if (!conflictingReview && result.status === 'human_review_required' && result.disputes.length && trace.consumed < 7) {
     const dispute = result.disputes[0];
     const answer = await call('J', freeze({ snapshot, dispute, group: grouped.groups.find(g => g.groupId === dispute.groupId), reviews: contextual.reviews, safetyFindings: result.safetyFindings }), AdjudicationResponseSchema);
     if (answer !== undefined) { const adjudication = AdjudicationResponseSchema.parse(answer); const next = reconcile({ ...input, adjudications: [adjudication] }); if (next.status !== 'failed') { result = next; trace.resolutions = adjudication.resolution.status === 'selected' ? 1 : 0; } }
