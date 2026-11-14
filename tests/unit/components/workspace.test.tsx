@@ -33,3 +33,16 @@ describe('advisor workspace', () => {
     expect(createDraftIntent({ ...view, activeProposal: view.activeProposal && { ...view.activeProposal, status: 'superseded' } }, 'DRAFT_APPROVED')).toBeNull();
   });
 });
+
+describe('agreement review intent', () => {
+  it('requires a selected customer text message and explicit advisor review', async () => {
+    const { createAgreementIntent } = await import('../../../src/components/case-workspace/intents');
+    const { mockViews } = await import('../../../src/components/case-workspace/mock-views');
+    const view = mockViews.laura;
+    expect(createAgreementIntent(view, 'laura-m1', false)).toBeNull();
+    expect(createAgreementIntent(view, 'laura-m2', true)).toBeNull();
+    expect(createAgreementIntent(view, 'missing', true)).toBeNull();
+    const event = createAgreementIntent(view, 'laura-m1', true);
+    expect(event).toMatchObject({ type: 'CUSTOMER_CONFIRMED_NEXT_STEP', actor: 'advisor', simulated: true, payload: { reviewedByAdvisor: true, evidenceRefs: [{ messageId: 'laura-m1', quote: expect.any(String) }] } });
+  });
+});

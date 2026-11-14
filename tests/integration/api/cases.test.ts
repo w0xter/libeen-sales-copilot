@@ -34,10 +34,30 @@ describe('case API', () => {
     expect(await result(response)).toMatchObject({ ok: false, error: { code: 'REVISION_CONFLICT' } });
   });
   it('does not accept an unvalidated customer agreement through the public route', async () => {
-    const event: CaseEvent = { eventId: 'unverified-agreement', caseId: 'laura', actor: 'customer', occurredAt: '2026-05-02T10:00:00Z', expectedRevision: 0, type: 'CUSTOMER_CONFIRMED_NEXT_STEP', simulated: true, payload: { description: 'Acepta llamada', evidenceRefs: [{ messageId: 'laura-m1' }] } };
+    const event = { eventId: 'unverified-agreement', caseId: 'laura', actor: 'customer', occurredAt: '2026-05-02T10:00:00Z', expectedRevision: 0, type: 'CUSTOMER_CONFIRMED_NEXT_STEP', simulated: true, payload: { description: 'Acepta llamada', evidenceRefs: [{ messageId: 'laura-m1' }] } };
     const response = await POST(request({ operation: 'event', event }));
-    expect(response.status).toBe(403);
-    expect(await result(response)).toMatchObject({ ok: false, error: { code: 'POLICY_DENIED' } });
+    expect(response.status).toBe(400);
+    expect(await result(response)).toMatchObject({ ok: false, error: { code: 'INVALID_INPUT' } });
+  });
+  it('records an advisor-reviewed simulated agreement with an exact customer quote', async () => {
+    const reset = await result(await POST(request({ operation: 'reset', caseId: 'laura' })));
+    if (!reset.ok) throw new Error(reset.error.code);
+    const time = '2026-05-02T10:00:00Z';
+    const analyze: CaseEvent = { eventId: 'review-analyze', caseId: 'laura', actor: 'advisor', occurredAt: time, expectedRevision: 0, type: 'CASE_ANALYSIS_REQUESTED', payload: {} };
+    const analyzed = await result(await POST(request({ operation: 'event', event: analyze })));
+    if (!analyzed.ok) throw new Error(analyzed.error.code);
+    const messageEvent = (id: string, text: string, revision: number): CaseEvent => ({ eventId: `event-${id}`, caseId: 'laura', actor: 'customer', occurredAt: time, expectedRevision: revision, type: 'MESSAGE_RECEIVED', simulated: true, payload: { message: { messageId: id, conversationId: 'laura-conversation', role: 'customer', occurredAt: time, simulated: true, content: { type: 'text', text } } } });
+    const interest = await result(await POST(request({ operation: 'event', event: messageEvent('review-interest', 'Sí, queremos explorar SmartHousing y los 3.800 € ya son después del coche.', analyzed.value.snapshot.revision) })));
+    if (!interest.ok) throw new Error(interest.error.code);
+    const quote = 'Sí, acepto una llamada.';
+    const accepted = await result(await POST(request({ operation: 'event', event: messageEvent('review-acceptance', quote, interest.value.snapshot.revision) })));
+    if (!accepted.ok) throw new Error(accepted.error.code);
+    const review: CaseEvent = { eventId: 'review-confirmation', caseId: 'laura', actor: 'advisor', occurredAt: time, expectedRevision: accepted.value.snapshot.revision, type: 'CUSTOMER_CONFIRMED_NEXT_STEP', simulated: true, payload: { description: 'Aceptación revisada por asesor', reviewedByAdvisor: true, evidenceRefs: [{ messageId: 'review-acceptance', quote }] } };
+    const output = await result(await POST(request({ operation: 'event', event: review })));
+    if (!output.ok) throw new Error(output.error.code);
+    expect(output.value.snapshot.workflowProgress.milestones.find(m => m.milestoneId === 'M5')?.status).toBe('completed');
+    expect(output.value.snapshot.events).toContainEqual(review);
+    expect(output.value.snapshot.events.some(e => e.type === 'MESSAGE_SIMULATED_AS_SENT')).toBe(false);
   });
   it('keeps a new message when replay cannot interpret it', async () => {
     const before = await result(await get('javier'));

@@ -62,7 +62,7 @@ describe('workflow conditions and milestones', () => {
     expect(evaluate(knowledge).progress.milestones.find(m => m.milestoneId === 'M3')?.status).toBe('blocked');
   });
   it('completes the next step only on an independent confirmed event', () => {
-    const confirmed: CaseEvent = { ...eventBase, type: 'CUSTOMER_CONFIRMED_NEXT_STEP', actor: 'customer', payload: { description: 'Acepta llamada', evidenceRefs: ref } };
+    const confirmed: CaseEvent = { ...eventBase, type: 'CUSTOMER_CONFIRMED_NEXT_STEP', actor: 'advisor', simulated: true, payload: { description: 'Acepta llamada', reviewedByAdvisor: true, evidenceRefs: [{ messageId: 'm1', quote: 'Acepto' }] } };
     expect(evaluate(context('included'), [confirmed]).progress.milestones.find(m => m.milestoneId === 'M5')?.status).toBe('completed');
   });
   it('allows an explicitly confirmed advisor handoff as an alternate terminal route', () => {
@@ -72,11 +72,11 @@ describe('workflow conditions and milestones', () => {
     expect(missing.progress.milestones.find(m => m.milestoneId === 'M5')?.status).toBe('completed');
     const spoofed: CaseEvent = { ...handoff, actor: 'customer' };
     expect(evaluate({ facts: [] }, [spoofed]).progress.milestones.find(m => m.milestoneId === 'M5')?.status).not.toBe('completed');
-    const customer: CaseEvent = { ...eventBase, actor: 'customer', type: 'CUSTOMER_CONFIRMED_NEXT_STEP', payload: { description: 'Acepta llamada', evidenceRefs: ref } };
+    const customer: CaseEvent = { ...eventBase, actor: 'advisor', type: 'CUSTOMER_CONFIRMED_NEXT_STEP', simulated: true, payload: { description: 'Acepta llamada', reviewedByAdvisor: true, evidenceRefs: [{ messageId: 'm1', quote: 'Acepto' }] } };
     expect(evaluate({ facts: [] }, [customer]).progress.milestones.find(m => m.milestoneId === 'M5')?.status).not.toBe('completed');
   });
-  it('does not accept an advisor event as a customer confirmation', () => {
-    const spoofed: CaseEvent = { ...eventBase, type: 'CUSTOMER_CONFIRMED_NEXT_STEP', payload: { description: 'Accepted', evidenceRefs: ref } };
+  it('does not accept an unreviewed customer event as a confirmation', () => {
+    const spoofed = { ...eventBase, actor: 'customer', type: 'CUSTOMER_CONFIRMED_NEXT_STEP', payload: { description: 'Accepted', evidenceRefs: ref } } as unknown as CaseEvent;
     expect(evaluate(context('included'), [spoofed]).progress.milestones.find(m => m.milestoneId === 'M5')?.status).not.toBe('completed');
   });
   it('treats explicit zero as known but never merges distinct subjects', () => {

@@ -60,7 +60,7 @@ export function evaluateCondition(condition: Condition, context: EvaluationConte
   if (condition.op === 'event_confirmed') {
     // Only independent confirmation events can satisfy agreement predicates.
     if (!['CUSTOMER_CONFIRMED_NEXT_STEP', 'HUMAN_HANDOFF_CONFIRMED'].includes(condition.eventType)) return output('unsatisfied');
-    const found = context.events.filter(e => e.type === condition.eventType && ((e.type === 'CUSTOMER_CONFIRMED_NEXT_STEP' && e.actor === 'customer') || (e.type === 'HUMAN_HANDOFF_CONFIRMED' && e.actor === 'advisor')));
+    const found = context.events.filter(e => e.type === condition.eventType && ((e.type === 'CUSTOMER_CONFIRMED_NEXT_STEP' && e.actor === 'advisor' && e.simulated && e.payload.reviewedByAdvisor) || (e.type === 'HUMAN_HANDOFF_CONFIRMED' && e.actor === 'advisor')));
     return output(found.length ? 'satisfied' : 'unknown', found.flatMap(e => 'evidenceRefs' in e.payload ? e.payload.evidenceRefs : []));
   }
   if (condition.op === 'policy_result') return output(!context.policyDecision ? 'unknown' : context.policyDecision.result === condition.result ? 'satisfied' : 'unsatisfied', context.policyDecision?.evidenceRefs);

@@ -15,3 +15,14 @@ export function createMessageIntent(view: CaseView, text: string): CaseEvent | n
   const now = new Date().toISOString();
   return { eventId: crypto.randomUUID(), caseId: view.snapshot.caseId, actor: 'customer', occurredAt: now, expectedRevision: view.snapshot.revision, simulated: true, type: 'MESSAGE_RECEIVED', payload: { message: { messageId: crypto.randomUUID(), conversationId: view.snapshot.messages[0]?.conversationId ?? `${view.snapshot.caseId}-conversation`, role: 'customer', occurredAt: now, content: { type: 'text', text }, simulated: true } } };
 }
+
+/** An advisor explicitly reviews a quoted synthetic customer message before recording agreement. */
+export function createAgreementIntent(view: CaseView, messageId: string, reviewed: boolean): CaseEvent | null {
+  const message = view.snapshot.messages.find(item => item.messageId === messageId);
+  if (!reviewed || !message || message.role !== 'customer' || message.content.type !== 'text' || !message.content.text.trim()) return null;
+  return {
+    eventId: crypto.randomUUID(), caseId: view.snapshot.caseId, actor: 'advisor', occurredAt: new Date().toISOString(),
+    expectedRevision: view.snapshot.revision, type: 'CUSTOMER_CONFIRMED_NEXT_STEP', simulated: true,
+    payload: { description: 'Aceptación revisada por el asesor', reviewedByAdvisor: true, evidenceRefs: [{ messageId, quote: message.content.text }] },
+  };
+}

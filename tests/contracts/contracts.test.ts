@@ -23,7 +23,7 @@ describe('public contract boundaries', () => {
     expect(CaseEventSchema.safeParse(approval).success).toBe(true);
     expect(CaseEventSchema.safeParse({ ...approval, type: 'MESSAGE_SIMULATED_AS_SENT' }).success).toBe(false);
     expect(CaseEventSchema.safeParse({ ...base, type: 'MESSAGE_SIMULATED_AS_SENT', simulated: true, payload: { draftId: 'd1', proposalId: 'p1' } }).success).toBe(true);
-    expect(CaseEventSchema.safeParse({ ...base, type: 'CUSTOMER_CONFIRMED_NEXT_STEP', simulated: true, payload: { evidenceRefs: [ref], description: 'Accepts call' } }).success).toBe(true);
+    expect(CaseEventSchema.safeParse({ ...base, type: 'CUSTOMER_CONFIRMED_NEXT_STEP', simulated: true, payload: { evidenceRefs: [ref], description: 'Accepts call', reviewedByAdvisor: true } }).success).toBe(true);
     expect(CaseEventSchema.safeParse({ ...base, type: 'MILESTONE_COMPLETED', payload: {} }).success).toBe(false);
   });
   it('requires a versioned proposal and stable error codes', () => {
@@ -81,5 +81,16 @@ describe('public contract boundaries', () => {
     expect(MessageSchema.safeParse({ ...message, content: { type: 'audio_unavailable', durationSeconds: 72 } }).success).toBe(true);
     expect(MessageSchema.safeParse({ ...message, content: { type: 'audio_unavailable', durationSeconds: -1 } }).success).toBe(false);
     expect(MessageSchema.safeParse({ ...message, content: { type: 'audio_unavailable', text: 'invented' } }).success).toBe(false);
+  });
+});
+
+describe('advisor-reviewed simulated agreement', () => {
+  const reviewed = { ...base, actor: 'advisor', type: 'CUSTOMER_CONFIRMED_NEXT_STEP', simulated: true, payload: { description: 'Acepta llamada', reviewedByAdvisor: true, evidenceRefs: [{ messageId: 'm1', quote: 'Sí, acepto una llamada.' }] } };
+  it('requires explicit advisor review, simulation and a quoted customer message', () => {
+    expect(CaseEventSchema.safeParse(reviewed).success).toBe(true);
+    expect(CaseEventSchema.safeParse({ ...reviewed, actor: 'customer' }).success).toBe(false);
+    expect(CaseEventSchema.safeParse({ ...reviewed, simulated: false }).success).toBe(false);
+    expect(CaseEventSchema.safeParse({ ...reviewed, payload: { description: 'Acepta', evidenceRefs: [{ messageId: 'm1' }] } }).success).toBe(false);
+    expect(CaseEventSchema.safeParse({ ...reviewed, payload: { ...reviewed.payload, reviewedByAdvisor: false } }).success).toBe(false);
   });
 });

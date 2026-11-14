@@ -133,7 +133,7 @@ describe('concurrent interpretation', () => {
 describe('evidence and simulated delivery', () => {
   it('rejects a confirmation with a mismatched evidence quotation', async () => {
     const { orchestrator } = setup();
-    const result = await orchestrator.handleEvent({ eventId: 'bad-confirm', caseId: 'laura', actor: 'customer', occurredAt: '2026-05-03T10:00:00Z', expectedRevision: 0, type: 'CUSTOMER_CONFIRMED_NEXT_STEP', payload: { description: 'call', evidenceRefs: [{ messageId: 'laura-m1', quote: 'No aparece' }] } });
+    const result = await orchestrator.handleEvent({ eventId: 'bad-confirm', caseId: 'laura', actor: 'advisor', occurredAt: '2026-05-03T10:00:00Z', expectedRevision: 0, type: 'CUSTOMER_CONFIRMED_NEXT_STEP', simulated: true, payload: { description: 'call', reviewedByAdvisor: true, evidenceRefs: [{ messageId: 'laura-m1', quote: 'No aparece' }] } });
     expect(result).toMatchObject({ ok: false, error: { code: 'EVIDENCE_INVALID' } });
   });
   it('does not record two simulated sends for one approved draft', async () => {

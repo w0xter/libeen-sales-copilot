@@ -42,7 +42,7 @@ export function applyLifecycle(snapshot: CaseSnapshot, event: CaseEvent, config:
     if (next.assertions.some(a => a.assertionId === event.payload.assertion.assertionId)) return failure('INVALID_INPUT', 'La afirmación ya existe');
     next.assertions.push(event.payload.assertion);
   }
-  if (event.type === 'CUSTOMER_CONFIRMED_NEXT_STEP' && (event.actor !== 'customer' || !customerEvidenceValid(snapshot, event.payload.evidenceRefs))) return failure('EVIDENCE_INVALID', 'La confirmación requiere evidencia del cliente');
+  if (event.type === 'CUSTOMER_CONFIRMED_NEXT_STEP' && (event.actor !== 'advisor' || !event.simulated || !event.payload.reviewedByAdvisor || !customerEvidenceValid(snapshot, event.payload.evidenceRefs))) return failure('EVIDENCE_INVALID', 'La confirmación requiere evidencia del cliente');
   if (event.type === 'CUSTOMER_CONFIRMED_NEXT_STEP' && snapshot.events.some(e => e.type === 'CUSTOMER_CONFIRMED_NEXT_STEP' && e.payload.evidenceRefs.some(existing => event.payload.evidenceRefs.some(ref => ref.messageId === existing.messageId)))) return failure('POLICY_DENIED', 'La confirmación ya está registrada');
   if (event.type === 'HUMAN_HANDOFF_CONFIRMED' && event.actor !== 'advisor') return failure('INVALID_INPUT', 'La derivación requiere un asesor');
   if (event.type === 'DO_NOT_CONTACT_REQUESTED' && !customerEvidenceValid(snapshot, event.payload.evidenceRefs)) return failure('EVIDENCE_INVALID', 'La solicitud requiere evidencia del cliente');

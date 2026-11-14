@@ -21,7 +21,6 @@ export async function POST(request: Request): Promise<Response> {
   try { body = await request.json(); } catch { return invalid(); }
   const parsed = requestSchema.safeParse(body);
   if (!parsed.success) return invalid();
-  if (parsed.data.operation === 'event' && parsed.data.event.type === 'CUSTOMER_CONFIRMED_NEXT_STEP') return Response.json({ ok: false, error: { code: 'POLICY_DENIED', message: 'La confirmación del cliente requiere una validación adicional', retryable: false } }, { status: 403 });
   const runtime = getRuntime();
   return respond(parsed.data.operation === 'event' ? await runtime.handleEvent(parsed.data.event) : await runtime.resetCase(parsed.data.caseId));
 }

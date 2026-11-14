@@ -57,10 +57,13 @@ export const CaseEventSchema = z.discriminatedUnion('type', [
   }),
   z.strictObject({
     ...eventBase,
+    actor: z.literal('advisor'),
     type: z.literal('CUSTOMER_CONFIRMED_NEXT_STEP'),
-    simulated: z.boolean().optional(),
+    simulated: z.literal(true),
     payload: z.strictObject({
-      description: Id, evidenceRefs: z.array(EvidenceRefSchema).min(1)
+      description: Id,
+      reviewedByAdvisor: z.literal(true),
+      evidenceRefs: z.array(EvidenceRefSchema.refine(ref => !!ref.quote, 'Reviewed agreement requires a quote')).min(1)
     })
   }),
   z.strictObject({

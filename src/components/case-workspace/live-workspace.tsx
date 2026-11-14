@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { demoBundle } from '../../config';
 import type { ApplicationError, CaseEvent, CaseView } from '../../contracts';
 import { CaseWorkspace } from './case-workspace';
+import { AgreementReview } from './agreement-review';
 import { fetchCase, sendOperation, type Operation } from './api-client';
 import styles from './workspace.module.css';
 
@@ -56,6 +57,7 @@ export function LiveWorkspace() {
     <div className={styles.buttons}><button type="button" onClick={analyze} disabled={!view || loading}>Analizar conversación</button><button type="button" onClick={() => void load(selected)} disabled={loading}>Actualizar</button><button type="button" onClick={() => void reset()} disabled={loading}>Restablecer caso</button></div>
     {error && <div role="alert" className={styles.error}><p>{error}</p>{retry && <button type="button" disabled={loading} onClick={() => void apply(retry, selected)}>Reintentar operación</button>}</div>}
     <CaseWorkspace view={view} onIntent={dispatch} loading={loading} fieldLabels={labels} />
+    {view && <AgreementReview key={view.snapshot.caseId} view={view} onIntent={dispatch} loading={loading} />}
     {view?.draft?.status === 'approved' && <section className={styles.panel}><h2>Acciones simuladas</h2><p>La aprobación no indica que se haya enviado un mensaje ni que el cliente haya aceptado.</p><button disabled={loading} onClick={simulateSent}>Registrar envío simulado</button></section>}
   </main>;
 }

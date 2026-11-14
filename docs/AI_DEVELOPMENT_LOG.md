@@ -89,3 +89,8 @@ No almacenar API keys, transcripciones de clientes reales ni secretos. No invent
 - Corrected R05 evidence to include the known debt message (with a regression), and changed safe draft selection to ask about missing SmartHousing interest after debt clarification.
 - Integrator ran `pnpm test` (79 tests), `pnpm typecheck`, `pnpm lint`, `pnpm build`, and `git diff --check`; all passed. A concurrent build attempt in the UI workstream hit a build lock; the subsequent integrator build passed.
 - **Incomplete:** the contract accepts a customer-confirmation event based on an existing customer message reference but cannot establish that the message actually expresses agreement. The HTTP operation and UI control fail closed rather than allowing an unrelated message to complete M5. LIB-010's simulated-agreement capability and G2 are not fully verified; LIB-011–013 have not started. Human-edited draft text is also not semantically screened for prohibited claims; no external delivery exists.
+
+### 2026-11-14 — LIB-010 agreement review and G2
+
+- User authorized advisor-recorded simulated agreement after selecting, reading and explicitly confirming a customer's message. Updated the event contract, workflow and UI to require an advisor attestation, simulation flag and quoted customer evidence; old unreviewed payloads are rejected. The reviewer is a symbolic advisor; production authentication is outside V0.
+- Integrator ran `pnpm test` (82 tests), `pnpm typecheck`, `pnpm lint`, `pnpm build`, and `git diff --check`; all passed. Integration tests cover reviewed Laura agreement, invalid evidence and prerequisite checks. No appointment or message delivery is created. LIB-010's previous agreement blocker is resolved; G2 checks pass.
