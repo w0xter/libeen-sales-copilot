@@ -1,0 +1,186 @@
+{
+  "package": "libeen-repository-documentation",
+  "version": "v0.1-2026-11-13",
+  "purpose": "Extract over the existing repository root; docs and approved AGENTS only, no product code",
+  "task_count": 13,
+  "project_status": "Next.js scaffold, no implemented Libeen behavior or verified product tests at packaging time",
+  "no_notion_dependency": true,
+  "source": "original PDF and previously agreed project specifications; no live Notion retrieval used",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "bytes": 6988,
+      "sha256": "967f2740b8f091fef7cf87524a76b0155f525825a2926479a186546027f38a72"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2873,
+      "sha256": "b77218caf07b3f4b4b8f8f045fc70e1b06cf47f5bd4664023a8cf37d6fb358ab"
+    },
+    {
+      "path": "docs/AI_DEVELOPMENT_LOG.md",
+      "bytes": 1121,
+      "sha256": "93fee417d25458c935c515bd9f04d2faf629a16525b2187ef1b5949f1a461c68"
+    },
+    {
+      "path": "docs/DECISIONS_AND_STATUS.md",
+      "bytes": 3760,
+      "sha256": "0f101b320e194c8c22da560e003fa1192b35d55e54b6eebb43a4c67831904f2d"
+    },
+    {
+      "path": "docs/README.md",
+      "bytes": 3363,
+      "sha256": "664fbacaf4ae7147e4c6686bc9f4607a9b00bfcd6f1604de66c7000f77575200"
+    },
+    {
+      "path": "docs/contracts/INTEGRATION_V0.md",
+      "bytes": 9873,
+      "sha256": "b66cc9bc05b0daa4bb05bd5e2cee149d57ec04313c918f012e6f584ae22fa2cf"
+    },
+    {
+      "path": "docs/implementation/ACCEPTANCE_MATRIX.md",
+      "bytes": 3346,
+      "sha256": "a632451f92ebd3f2b7f58465ec76ca6710e6157b9498a8a7961e49fe3da6cfe1"
+    },
+    {
+      "path": "docs/implementation/AI_TASK_BRIEF_TEMPLATE.md",
+      "bytes": 2193,
+      "sha256": "7b812cd585f2ab1d728863213a421e2970236b7eeed40b2d8343cf99ab43c6a1"
+    },
+    {
+      "path": "docs/implementation/CODEX_PROTOCOL.md",
+      "bytes": 3866,
+      "sha256": "00d12d68d5500f6ab1f5ace61b1e07df99775e591314be5e132ee610d5ef497b"
+    },
+    {
+      "path": "docs/implementation/DAG.md",
+      "bytes": 5081,
+      "sha256": "e52b36278f211dd773297a0a83b4eadef2db70cf1cb4cb1b0282408dc4419635"
+    },
+    {
+      "path": "docs/implementation/tasks/LIB-001.md",
+      "bytes": 5345,
+      "sha256": "93636ee11a22184b9be3f14c95c5a9839f63a3617e2f0a20688d2667fef36331"
+    },
+    {
+      "path": "docs/implementation/tasks/LIB-002.md",
+      "bytes": 5348,
+      "sha256": "b8392aacfd7bb3b2a2ee2753f653540e2939cdb6f00fbfff763d866b71752607"
+    },
+    {
+      "path": "docs/implementation/tasks/LIB-003.md",
+      "bytes": 5310,
+      "sha256": "4be0d4ea572b6971466355a124960074442e64e9fe74250ac648760bd9289784"
+    },
+    {
+      "path": "docs/implementation/tasks/LIB-004.md",
+      "bytes": 4935,
+      "sha256": "fe639fd1cf3cf922bbbe40d1767efb47e055cc067517f61c4a7604e840ed78bb"
+    },
+    {
+      "path": "docs/implementation/tasks/LIB-005.md",
+      "bytes": 4824,
+      "sha256": "0cb4f1849094327c81aa3b5feb1519f9edb91838ca866c19fce2d995eb69d7ae"
+    },
+    {
+      "path": "docs/implementation/tasks/LIB-006.md",
+      "bytes": 5092,
+      "sha256": "dfdd219d0d777f183ff0b1fa1a803e53a00447b7a810b630c1939708973ee1d2"
+    },
+    {
+      "path": "docs/implementation/tasks/LIB-007.md",
+      "bytes": 5074,
+      "sha256": "55be3f85bde3ca8f7103bbb56d0a423b21ed6dcb34cdade53bed4810ca6a8d2c"
+    },
+    {
+      "path": "docs/implementation/tasks/LIB-008.md",
+      "bytes": 4803,
+      "sha256": "bb5dd814bea5d7f9eaf64fd6b39720a61aa65c4ffc9b756b31f1b293feaa23ab"
+    },
+    {
+      "path": "docs/implementation/tasks/LIB-009.md",
+      "bytes": 5087,
+      "sha256": "0a630b22884713c8da6449835b36cf1ecb32a50b76e846464fcf1dd41196b3a4"
+    },
+    {
+      "path": "docs/implementation/tasks/LIB-010.md",
+      "bytes": 4837,
+      "sha256": "9187e3c6b83a40593df6dac905dc578587872f8f52ed74da276b7c2b39a6d552"
+    },
+    {
+      "path": "docs/implementation/tasks/LIB-011.md",
+      "bytes": 4632,
+      "sha256": "bc999d49a76800dfd8d055b2bd3d93b0217776ec63e1839010ab6975f2d4bc11"
+    },
+    {
+      "path": "docs/implementation/tasks/LIB-012.md",
+      "bytes": 4862,
+      "sha256": "40edb952552e11a1782e31edbba8ba5db91fdacb2876e60aa0c57759cd64e7d6"
+    },
+    {
+      "path": "docs/implementation/tasks/LIB-013.md",
+      "bytes": 5096,
+      "sha256": "d9cd2afbce8e99edf70612eb83481f574b91413a4bbc72503005ece957ac1176"
+    },
+    {
+      "path": "docs/reference/Prueba_tecnica_AI_Product_Engineer.pdf",
+      "bytes": 99757,
+      "sha256": "13092ac9e0620cb2eb714bf0fc9a97277f655b3ae28662e2f1dc4d2ed7380c88"
+    },
+    {
+      "path": "docs/specs/01_CHALLENGE_AND_SOURCES.md",
+      "bytes": 4815,
+      "sha256": "b4a754c3c997b74c8cbd3120048583ac8f81b06642d5aab59f8b287a19d43b04"
+    },
+    {
+      "path": "docs/specs/02_PRODUCT_SCOPE_AND_USER_JOURNEY.md",
+      "bytes": 6064,
+      "sha256": "38f2bbbb6575f6a7555e9c84fbb61acfd01d75e2c7ad8990eb0bc71377264e8f"
+    },
+    {
+      "path": "docs/specs/03_DOMAIN_MODEL.md",
+      "bytes": 5647,
+      "sha256": "37db778225f1ae7af210f24ce182fff93003e5e865ff0ceb112762958ab01805"
+    },
+    {
+      "path": "docs/specs/04_WORKFLOW_DEFINITION.md",
+      "bytes": 7348,
+      "sha256": "6ff672448157787f91c86dd31af6a51061b02d77931213ed9f6d883fc77977f4"
+    },
+    {
+      "path": "docs/specs/05_FACT_SCHEMA_AND_CASE_KNOWLEDGE.md",
+      "bytes": 6796,
+      "sha256": "cabd39f1f41512131581df3cf9fdde7266cf2728a83be1c4610469cac48db43b"
+    },
+    {
+      "path": "docs/specs/06_AGENT_PROFILE_AND_RUNTIME.md",
+      "bytes": 6481,
+      "sha256": "223e4014bf2f4f3d6b0780a21c3ac94482a5f7de01ec59ad70ee0a8d16fdb004"
+    },
+    {
+      "path": "docs/specs/07_SYNTHETIC_BUSINESS_POLICY.md",
+      "bytes": 7528,
+      "sha256": "31193b591967c795001eddb3bde04e8785840d8ac45e34b51f3a4a85a386c3fb"
+    },
+    {
+      "path": "docs/specs/08_MINIMAL_TECHNICAL_ARCHITECTURE.md",
+      "bytes": 7991,
+      "sha256": "2d12c1d2d58f2b51fecf401e9de2c78a09d19e7bf71b28ac779e9ffcc1e39360"
+    },
+    {
+      "path": "docs/specs/09_CASE_WORKSPACE_AND_DEMO.md",
+      "bytes": 5295,
+      "sha256": "368b9d7d45522ce2cfe43baaa7bd515e9ed7df8baf33879d9770a0fc0be3238e"
+    },
+    {
+      "path": "docs/specs/10_SYNTHETIC_CASES_AND_ACCEPTANCE.md",
+      "bytes": 8295,
+      "sha256": "cefad0a3901d202e9a13c1301c716eca7dea4b8566624727f6a804f8a3dd699d"
+    },
+    {
+      "path": "docs/specs/11_QUALITY_TESTING_AND_DELIVERY.md",
+      "bytes": 5941,
+      "sha256": "b3f1807b4e6c38db75da252775c0106a7814008da0ef910d48826e530038823a"
+    }
+  ]
+}
