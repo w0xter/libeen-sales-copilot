@@ -10,7 +10,14 @@ export function evaluate(snapshot: CaseSnapshot, config: ConfigBundle, eventId: 
   if (!facts.ok) return facts;
   const context = { knowledge: facts.value, events: snapshot.events, blockers: snapshot.blockers, policyOptions: config.businessPolicy.advisoryCall };
   const decision = evaluatePolicy({ ...context, policy: config.businessPolicy, actionCatalog: config.actionCatalog });
-  const workflow = evaluateWorkflow({ ...context, policyDecision: decision, definition: config.workflow });
+  // The current action can be WAIT after agreement while the prior orientation
+  // remains satisfied. Re-evaluate that orientation against current facts and
+  // protections; never infer readiness solely from the confirmation event.
+  const priorReady = config.workflow.milestones.some(m => m.terminalRoute && m.prerequisites.length > 0 && m.prerequisites.every(id => snapshot.workflowProgress.milestones.some(previous => previous.milestoneId === id && previous.status === 'completed')));
+  const orientation = decision.result === 'WAIT' && decision.ruleIds.includes('R08') && priorReady
+    ? evaluatePolicy({ ...context, events: context.events.filter(e => !['CUSTOMER_CONFIRMED_NEXT_STEP', 'HUMAN_HANDOFF_CONFIRMED', 'DRAFT_APPROVED', 'DRAFT_EDITED', 'DRAFT_DISCARDED', 'MESSAGE_SIMULATED_AS_SENT'].includes(e.type)), policy: config.businessPolicy, actionCatalog: config.actionCatalog })
+    : decision;
+  const workflow = evaluateWorkflow({ ...context, policyDecision: orientation, definition: config.workflow });
   const ref = bundleRef(config);
   const revision = snapshot.revision + 1;
   const proposal = planAction({ decision, catalog: config.actionCatalog, profile: config.agentProfile, proposalId: `proposal-${eventId}`, caseRevision: revision, configBundleRef: ref });

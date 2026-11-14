@@ -27,6 +27,12 @@ describe('protected policy precedence', () => {
     expect(evaluatePolicy({ ...base, policy, blockers: [blocker('BINDING_CLAIM')] })).toMatchObject({ result: 'HUMAN_REVIEW_REQUIRED', allowedActions: ['HANDOFF'] });
     expect(evaluatePolicy({ ...base, policy, blockers: [blocker('URGENT')] })).toMatchObject({ result: 'HUMAN_REVIEW_REQUIRED', allowedActions: ['HANDOFF'] });
   });
+  it('preserves opt-out, urgent, and trust precedence after a reviewed agreement', () => {
+    const agreement: CaseEvent = { eventId: 'agreement', caseId: 'c', actor: 'advisor', occurredAt: '2026-01-01T00:00:00Z', expectedRevision: 0, type: 'CUSTOMER_CONFIRMED_NEXT_STEP', simulated: true, payload: { description: 'Acepta', reviewedByAdvisor: true, evidenceRefs: [{ messageId: 'm1', quote: 'Acepta' }] } };
+    const event: CaseEvent = { eventId: 'stop', caseId: 'c', actor: 'advisor', occurredAt: '2026-01-01T00:00:01Z', expectedRevision: 1, type: 'DO_NOT_CONTACT_REQUESTED', payload: { evidenceRefs: [{ messageId: 'm2' }] } };
+    expect(evaluatePolicy({ ...base, events: [agreement, event], blockers: [blocker('URGENT')] })).toMatchObject({ result: 'STOP_CONTACT' });
+    for (const type of ['URGENT', 'BINDING_CLAIM', 'TRUST']) expect(evaluatePolicy({ ...base, events: [agreement], blockers: [blocker(type)] })).toMatchObject({ result: 'HUMAN_REVIEW_REQUIRED', allowedActions: ['HANDOFF'] });
+  });
   it('protects opt-out even if editable rule priorities or rules change', () => {
     const event: CaseEvent = { eventId: 'e', caseId: 'c', actor: 'customer', occurredAt: '2026-01-01T00:00:00Z', expectedRevision: 0, type: 'DO_NOT_CONTACT_REQUESTED', payload: { evidenceRefs: [{ messageId: 'm1' }] } };
     const policy = { ...demoBundle.businessPolicy, rules: [] };

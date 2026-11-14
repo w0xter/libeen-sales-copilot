@@ -1,5 +1,7 @@
 # Decisiones y estado real — corte 13/11/2026
 
+> **Actualización de ejecución — 14/11/2026:** LIB-001 a LIB-012 están implementadas en la rama local de integración y G0–G3 se han verificado. La suite integrada registró 101 tests, lint, typecheck y build correctos. LIB-013 y G4 permanecen pendientes de comprobación de entrega limpia. El modo OpenAI real no se ha ejecutado. Las tablas siguientes conservan el corte histórico de planificación del 13/11; no describen el estado actual del código. Consulta [AI_DEVELOPMENT_LOG.md](AI_DEVELOPMENT_LOG.md) para la evidencia y limitaciones.
+
 | ID | Decisión o hecho | Estado |
 | --- | --- | --- |
 | D-01 | Copiloto interno para asesores, no chatbot autónomo | Confirmado |

@@ -57,8 +57,49 @@ describe('Laura qualification in deterministic replay', () => {
     const event: CaseEvent = { eventId: 'reviewed-acceptance', caseId: 'laura', actor: 'advisor', occurredAt: '2026-05-04T11:00:00Z', expectedRevision: withAcceptance.snapshot.revision, type: 'CUSTOMER_CONFIRMED_NEXT_STEP', simulated: true, payload: { description: 'Acepta llamada', reviewedByAdvisor: true, evidenceRefs: [{ messageId: 'laura-confirmed-addition', quote: 'Sí, acepto una llamada.' }] } };
     const agreed = unwrap(await orchestrator.handleEvent(event));
     expect(milestone(agreed, 'M5')?.status).toBe('completed');
+    expect(agreed.activeProposal?.actionType).toBe('WAIT');
+    expect(agreed.draft).toBeNull();
+    expect(agreed.snapshot.status).toBe('NEXT_STEP_AGREED');
+    expect(agreed.snapshot.decisions.at(-1)?.outcome).toBe('WAIT');
     expect(agreed.snapshot.events).toContainEqual(event);
     expect(agreed.snapshot.events.some(e => e.type === 'MESSAGE_SIMULATED_AS_SENT')).toBe(false);
+  });
+
+  it('does not complete agreement when the prior call route was not ready', async () => {
+    const { orchestrator } = makeCase();
+    const initial = unwrap(await orchestrator.handleEvent(analysis()));
+    const message = unwrap(await orchestrator.handleEvent(customerMessage('laura-confirmed', initial.snapshot.revision)));
+    const event: CaseEvent = { eventId: 'premature-review', caseId: 'laura', actor: 'advisor', occurredAt: '2026-05-04T11:00:00Z', expectedRevision: message.snapshot.revision, type: 'CUSTOMER_CONFIRMED_NEXT_STEP', simulated: true, payload: { description: 'Acepta llamada', reviewedByAdvisor: true, evidenceRefs: [{ messageId: 'laura-confirmed-addition', quote: 'Sí, acepto una llamada.' }] } };
+    const reviewed = unwrap(await orchestrator.handleEvent(event));
+    expect(milestone(reviewed, 'M5')?.status).not.toBe('completed');
+    expect(reviewed.snapshot.status).not.toBe('NEXT_STEP_AGREED');
+  });
+
+  it('reopens the financial route after an agreement if income is corrected', async () => {
+    const { orchestrator } = makeCase();
+    const initial = unwrap(await orchestrator.handleEvent(analysis()));
+    const ready = unwrap(await orchestrator.handleEvent(customerMessage('laura-r10-off', initial.snapshot.revision)));
+    const accepted = unwrap(await orchestrator.handleEvent(customerMessage('laura-confirmed', ready.snapshot.revision)));
+    const event: CaseEvent = { eventId: 'reviewed-before-correction', caseId: 'laura', actor: 'advisor', occurredAt: '2026-05-04T11:00:00Z', expectedRevision: accepted.snapshot.revision, type: 'CUSTOMER_CONFIRMED_NEXT_STEP', simulated: true, payload: { description: 'Acepta llamada', reviewedByAdvisor: true, evidenceRefs: [{ messageId: 'laura-confirmed-addition', quote: 'Sí, acepto una llamada.' }] } };
+    const agreed = unwrap(await orchestrator.handleEvent(event));
+    const corrected = unwrap(await orchestrator.handleEvent(customerMessage('laura-gross-correction', agreed.snapshot.revision)));
+    expect(milestone(corrected, 'M3')?.status).not.toBe('completed');
+    expect(milestone(corrected, 'M5')?.status).not.toBe('completed');
+    expect(corrected.activeProposal?.actionType).toBe('CLARIFY');
+  });
+
+  it('reevaluates R10 after an agreement without losing protected policy precedence', async () => {
+    const { orchestrator, setR10 } = makeCase();
+    const initial = unwrap(await orchestrator.handleEvent(analysis()));
+    const ready = unwrap(await orchestrator.handleEvent(customerMessage('laura-r10-off', initial.snapshot.revision)));
+    const accepted = unwrap(await orchestrator.handleEvent(customerMessage('laura-confirmed', ready.snapshot.revision)));
+    const event: CaseEvent = { eventId: 'reviewed-before-r10', caseId: 'laura', actor: 'advisor', occurredAt: '2026-05-04T11:00:00Z', expectedRevision: accepted.snapshot.revision, type: 'CUSTOMER_CONFIRMED_NEXT_STEP', simulated: true, payload: { description: 'Acepta llamada', reviewedByAdvisor: true, evidenceRefs: [{ messageId: 'laura-confirmed-addition', quote: 'Sí, acepto una llamada.' }] } };
+    const agreed = unwrap(await orchestrator.handleEvent(event));
+    setR10(true);
+    const result = unwrap(await orchestrator.handleEvent({ eventId: 'r10-after-agreement', caseId: 'laura', actor: 'advisor', occurredAt: '2026-05-04T12:00:00Z', expectedRevision: agreed.snapshot.revision, type: 'CASE_REEVALUATION_REQUESTED', payload: {} }));
+    expect(milestone(result, 'M3')?.status).toBe('completed');
+    expect(milestone(result, 'M5')?.status).not.toBe('completed');
+    expect(result.activeProposal?.actionType).toBe('CLARIFY');
   });
 
   it('changes only the call route when R10 is enabled after financial clarification', async () => {

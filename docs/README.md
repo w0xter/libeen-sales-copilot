@@ -51,7 +51,7 @@ No es necesario leer toda la documentación al iniciar cada sesión. `AGENTS.md`
 - [`implementation/AI_TASK_BRIEF_TEMPLATE.md`](implementation/AI_TASK_BRIEF_TEMPLATE.md): plantilla del formato Nomu Labs adaptada.
 - [`implementation/ACCEPTANCE_MATRIX.md`](implementation/ACCEPTANCE_MATRIX.md): AC-01 a AC-15 → tareas y pruebas.
 - [`implementation/tasks/`](implementation/tasks/): 13 briefs LIB-001–LIB-013.
-- [`AI_DEVELOPMENT_LOG.md`](AI_DEVELOPMENT_LOG.md): registro **vacío hasta que se ejecute trabajo real**, no inventar entradas.
+- [`AI_DEVELOPMENT_LOG.md`](AI_DEVELOPMENT_LOG.md): registro **registro de ejecución real**; no inventar entradas.
 - [`reference/Prueba_tecnica_AI_Product_Engineer.pdf`](reference/Prueba_tecnica_AI_Product_Engineer.pdf): enunciado y conversaciones originales, PDF de cuatro páginas.
 
 ## Precedencia

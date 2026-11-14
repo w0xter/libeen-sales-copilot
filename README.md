@@ -1,37 +1,73 @@
-# Libeen Sales Copilot
+# Libeen Sales Copilot V0
 
-**Estado al preparar este paquete (13/11/2026):** repositorio privado con **scaffold inicial solamente**. Todavía no se ha implementado el copilot, no se han instalado Zod/Vitest/OpenAI ni se han ejecutado tests de producto. Los documentos de `docs/` son especificaciones y planes; **no evidencia de funcionalidad existente**.
+Copiloto local para asesores que trabajan con **conversaciones ficticias**. Extrae hechos con evidencia, conserva incertidumbres, evalúa un workflow y propone una acción y, cuando procede, un borrador para revisión humana. La política `demo-v1` es sintética: orienta hacia una aclaración, una llamada propuesta o revisión humana; **no aprueba ni rechaza financiación**. No hay envío real, CRM, calendario ni reserva de citas.
 
-Esta V0 es un copiloto para asesores comerciales que interpreta conversaciones **ficticias**, consolida hechos con evidencia y ambigüedad, evalúa hitos configurables y propone la siguiente acción con revisión humana. No es un sistema de concesión de financiación ni un agente que envía mensajes automáticamente.
+## Arranque local
 
-## Empezar con el scaffold
-
-Requiere Node.js compatible con la versión de Next.js instalada y pnpm. En la versión inicial inspeccionada: Next.js 16.4.6, React 19.3.0 y pnpm 12.16.1.
+Requisitos: Node.js 22 y pnpm 12.16.1. La versión de pnpm está indicada en `package.json`.
 
 ```bash
 pnpm install --frozen-lockfile
+cp .env.example .env.local
 pnpm dev
 ```
 
-Este comando arranca **la página base de Next.js**, todavía no la interfaz del copiloto. Actualmente existen `pnpm lint` y `pnpm build`; **`pnpm test` y `pnpm typecheck` no están disponibles** hasta completar LIB-001.
+Abre [http://localhost:3000](http://localhost:3000). El ejemplo configura `AI_MODE=replay` sin clave. `.env.local` está ignorado por Git; mantén cualquier credencial fuera del repositorio. Los expedientes viven en memoria en un único proceso: se pierden al reiniciar el servidor y no se garantiza consistencia entre procesos. El botón **Restablecer caso** vuelve al fixture original.
 
-## Documentación y ejecución con Codex
+## Recorrido de la demo
 
-1. Lee [AGENTS.md](AGENTS.md), que define las restricciones globales para Codex.
-2. Entra en [docs/README.md](docs/README.md) para encontrar producto, contratos y criterios.
-3. Revisa el [DAG de implementación](docs/implementation/DAG.md) y el [brief de tu tarea](docs/implementation/tasks/).
-4. Trabaja solo dentro de las rutas permitidas por el brief y valida el gate correspondiente antes de integrar.
+Selecciona Laura, Javier o Rosa. La aplicación analiza inicialmente el caso seleccionado y muestra conversación, hechos y fuentes, hitos, recomendación y borrador si corresponde. Laura declara ingresos conjuntos, ahorro y una cuota de coche cuya inclusión en los ingresos no está clara. El primer borrador pregunta por esa cuota; aprobarlo no registra envío ni acuerdo.
 
-## OpenAI (planificado, no implementado)
+En replay las respuestas adicionales reconocidas deben coincidir con las variantes de [fixtures](src/fixtures/index.ts). Por ejemplo, para Laura se puede añadir exactamente:
 
-El proveedor confirmado para las pruebas es **OpenAI**, con `gpt-4.1-mini` como modelo inicial, configurable por `OPENAI_MODEL`. La integración prevista usará `OPENAI_API_KEY` exclusivamente en el servidor y `AI_MODE=openai|replay`. LIB-001 preparará `.env.example` y las dependencias; LIB-007 implementará el adaptador. Nunca publiques un `.env` con claves.
+```text
+Sí, los 3.800 € ya son después del coche.
+```
 
-## Límites
+Después sigue sin constar interés informado en SmartHousing, por lo que se pregunta antes de proponer una llamada. Otra variante combina la aclaración y el interés:
 
-- Solo expedientes y mensajes inventados de Laura, Javier y Rosa y variantes claramente etiquetadas.
-- Todo mensaje dirigido al cliente queda pendiente de revisión humana; en V0 solo se simula el envío.
-- La política comercial `demo-v1` es **ficticia**. Su máximo resultado es orientar hacia una llamada o derivación, nunca aprobar o rechazar financiación.
-- La demo imprescindible: **Laura pasa de M3 bloqueado por deuda ambigua a M3 aclarado y siguiente acción propuesta**; Javier y Rosa comprueban el comportamiento seguro.
-- La prueba técnica original sugiere unas cuatro horas de esfuerzo y prioriza un proyecto pequeño y verificable. No presentar futuras capacidades como completadas.
+```text
+Sí, queremos explorar SmartHousing y los 3.800 € ya son después del coche.
+```
 
-**Fuente oficial:** [Prueba técnica, PDF](docs/reference/Prueba_tecnica_AI_Product_Engineer.pdf). **Plan local:** [DAG y 13 AI Task Briefs](docs/implementation/DAG.md).
+Replay es una reproducción determinista de los mensajes y variantes definidos, **no inferencia de un modelo**. Un texto que no tiene replay se conserva como mensaje, pero el análisis falla de forma explícita; no inventa una interpretación. Las variantes están identificadas como añadidos sintéticos. Javier conserva un audio sin transcripción; Rosa conserva ahorro cero y su solicitud de aprobación escrita se deriva a revisión.
+
+El asesor puede editar, aprobar o descartar un borrador y registrar un envío **simulado**. Para registrar un acuerdo simulado, selecciona y lee el mensaje del cliente y confirma expresamente que acepta el siguiente paso. El evento conserva la cita y la revisión del asesor; no reserva una cita. Los textos editados por una persona **no se analizan semánticamente para detectar promesas prohibidas**, por lo que requieren revisión humana cuidadosa. La V0 no autentica al asesor y no es adecuada para datos reales.
+
+## Modos de IA
+
+- `AI_MODE=replay`: funciona sin credenciales y está etiquetado en la interfaz. Solo admite las conversaciones y variantes sintéticas reconocidas.
+- `AI_MODE=openai`: configura `OPENAI_API_KEY` en `.env.local` y opcionalmente `OPENAI_MODEL` (por defecto `gpt-4.1-mini`). La clave solo se lee en el servidor. Reinicia el servidor tras cambiar el entorno. La falta de clave o un error del proveedor se comunica sin cambiar a replay silenciosamente.
+
+El adaptador OpenAI extrae candidatos estructurados que pasan validación y selecciona entre plantillas de borrador permitidas; no redacta libremente. **No se ha realizado una ejecución con OpenAI real ni se ha verificado la resistencia del modelo a instrucciones maliciosas.** Las pruebas deterministas no hacen llamadas reales.
+
+## Configuración R10
+
+En [src/config/index.ts](src/config/index.ts), `businessPolicy.advisoryCall.requireSpecificMoveMonthBeforeCall` empieza en `false`. Para demostrar R10, cambia a `true`, incrementa `businessPolicy.version` y actualiza `workflow.businessPolicyVersion` al mismo valor; reinicia el servidor y vuelve a evaluar el caso. Con interés informado y deuda aclarada, la ruta solicita un mes concreto antes de proponer llamada, sin reabrir el hito financiero M3. Las restricciones protegidas siguen teniendo prioridad. La suite de aceptación comprueba ambas configuraciones.
+
+## Comprobación
+
+```bash
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+```
+
+Para una suite concreta:
+
+```bash
+pnpm test tests/acceptance/laura
+pnpm test tests/acceptance/safety tests/acceptance/failures
+```
+
+La última validación integrada registrada ejecutó 105 tests con éxito, junto con lint, typecheck y build; consulta [el registro real de desarrollo](docs/AI_DEVELOPMENT_LOG.md) para los comandos, revisiones y limitaciones. El test de prompt injection cubre el rechazo de texto desconocido en replay, no una prueba contra un modelo real.
+
+## Decisiones y límites
+
+- Los hechos retienen fuente, sujeto y precisión; desconocido no equivale a cero ni la declaración del cliente a verificación documental. No se reparte el ingreso conjunto ni se resta dos veces la cuota.
+- La decisión de una persona, el borrador aprobado, el envío simulado y el acuerdo del cliente son estados distintos. Los errores de interpretación conservan el mensaje recibido.
+- No hay transcripción de audio, asesoramiento financiero, promesas de vivienda, persistencia de producción ni efectos externos. No hay fuentes comerciales verificadas para contestar la objeción de confianza de Javier, así que se deriva.
+- Con más tiempo: evaluar el adaptador con un modelo real y casos adversariales, revisar la seguridad del texto editado por humanos, incorporar autenticación y persistencia adecuadas, y mejorar la cobertura visual y de concurrencia antes de cualquier uso real.
+
+La [documentación local](docs/README.md) contiene las especificaciones y contratos; el [registro de desarrollo](docs/AI_DEVELOPMENT_LOG.md) documenta el trabajo y las correcciones de Codex. El [enunciado original](docs/reference/Prueba_tecnica_AI_Product_Engineer.pdf) proporciona las conversaciones ficticias.

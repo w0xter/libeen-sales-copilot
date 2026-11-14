@@ -1,6 +1,8 @@
 # DAG de implementación V0 — LIB-001 a LIB-013
 
-**Estado:** planificación aprobable, **ninguna tarea ejecutada** por añadir estos documentos. Repo principal privado: `w0xter/libeen-sales-copilot`; stack existente Next.js/React/TypeScript/pnpm. OpenAI con `gpt-4.1-mini` seleccionable mediante `OPENAI_MODEL` en `.env` (por implementar). **Última actualización documental:** 2026-11-13.
+**Corte histórico (13/11/2026):** planificación; ninguna tarea se había ejecutado al añadir estos documentos. Repo principal privado: `w0xter/libeen-sales-copilot`; stack existente Next.js/React/TypeScript/pnpm. OpenAI con `gpt-4.1-mini` seleccionable mediante `OPENAI_MODEL` en `.env` (por implementar). **Última actualización documental:** 2026-11-13.
+
+> **Ejecución observada (14/11/2026):** LIB-001 a LIB-012 implementadas; G0–G3 verificados. LIB-013 y G4 siguen pendientes de validación de entrega limpia. Los resultados, riesgos y cambios de contrato reales están en [AI_DEVELOPMENT_LOG.md](../AI_DEVELOPMENT_LOG.md); no se ha ejecutado un modelo OpenAI real.
 
 ## Grafo
 
@@ -69,7 +71,7 @@ Un nodo solo está **Ready** cuando todas sus dependencias directas están integ
 
 Los scripts `pnpm test` / `pnpm typecheck` y dependencias se añaden en LIB-001. Hasta entonces, no se debe afirmar que estos comandos existen o han pasado. El repo del ejercicio no contiene integración productiva, aprobaciones financieras ni envío real.
 
-## Registro de progreso (pendiente de ejecución)
+## Registro histórico de progreso (13/11/2026)
 
 | Gate | Estado documental | Estado de código |
 | --- | --- | --- |

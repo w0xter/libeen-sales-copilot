@@ -63,7 +63,10 @@ describe('workflow conditions and milestones', () => {
   });
   it('completes the next step only on an independent confirmed event', () => {
     const confirmed: CaseEvent = { ...eventBase, type: 'CUSTOMER_CONFIRMED_NEXT_STEP', actor: 'advisor', simulated: true, payload: { description: 'Acepta llamada', reviewedByAdvisor: true, evidenceRefs: [{ messageId: 'm1', quote: 'Acepto' }] } };
-    expect(evaluate(context('included'), [confirmed]).progress.milestones.find(m => m.milestoneId === 'M5')?.status).toBe('completed');
+    const knowledge = context('included');
+    const policyDecision = evaluatePolicy({ knowledge, events: [], blockers: [], policy: demoBundle.businessPolicy, actionCatalog: demoBundle.actionCatalog });
+    const progress = evaluateWorkflow({ knowledge, events: [confirmed], blockers: [], definition: demoBundle.workflow, policyDecision });
+    expect(progress.milestones.find(m => m.milestoneId === 'M5')?.status).toBe('completed');
   });
   it('allows an explicitly confirmed advisor handoff as an alternate terminal route', () => {
     const handoff: CaseEvent = { ...eventBase, type: 'HUMAN_HANDOFF_CONFIRMED', payload: { reason: 'Revisión humana' } };

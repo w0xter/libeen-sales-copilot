@@ -11,8 +11,18 @@ function approvalPending(events: CaseEvent[]): boolean {
   return !events.slice(approval + 1).some(e => (e.type === 'MESSAGE_SIMULATED_AS_SENT' && e.payload.draftId === approved.payload.draftId && e.payload.proposalId === approved.payload.proposalId) || e.type === 'CUSTOMER_CONFIRMED_NEXT_STEP' || e.type === 'HUMAN_HANDOFF_CONFIRMED');
 }
 
+function agreementIsCurrent(events: CaseEvent[]): boolean {
+  const index = events.findLastIndex(event =>
+    (event.type === 'CUSTOMER_CONFIRMED_NEXT_STEP' && event.actor === 'advisor' && event.simulated && event.payload.reviewedByAdvisor) ||
+    (event.type === 'HUMAN_HANDOFF_CONFIRMED' && event.actor === 'advisor')
+  );
+  if (index < 0) return false;
+  return !events.slice(index + 1).some(event => event.type === 'MESSAGE_RECEIVED' || event.type === 'FACT_CORRECTED');
+}
+
 function matches(rule: PolicyRule, input: PolicyInput): { matches: boolean; evidenceRefs: EvidenceRef[] } {
   if (rule.requiredOption && !input.policy.advisoryCall[rule.requiredOption]) return { matches: false, evidenceRefs: [] };
+  if (rule.id === 'R08' && !agreementIsCurrent(input.events)) return { matches: false, evidenceRefs: [] };
   if (rule.id === 'R09' && !approvalPending(input.events)) return { matches: false, evidenceRefs: [] };
   const blockers = input.blockers.filter(b => b.status === 'open' && rule.blockerTypesAny?.includes(b.type));
   if (rule.blockerTypesAny && !blockers.length) return { matches: false, evidenceRefs: [] };
