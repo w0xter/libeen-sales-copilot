@@ -15,3 +15,7 @@ describe('occurrence evidence', () => {
     expect(validateOccurrence({ ...occurrence, statementSpan: { start: 3, end: 7, text: 'gano' } }, [message])).toBe(false);
   });
 });
+it('rejects offsets that split an emoji surrogate pair', () => {
+  const split = { messageId: 'm1', statementSpan: { start: 0, end: 1, text: message.content.text.slice(0, 1) } };
+  expect(validateOccurrence(split, [message])).toBe(false);
+});
