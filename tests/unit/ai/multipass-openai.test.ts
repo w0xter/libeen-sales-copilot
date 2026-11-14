@@ -126,3 +126,121 @@ it('does not turn a failed protected review into public success', async () => {
   expect(result).toMatchObject({ ok: false, error: { code: 'MODEL_UNAVAILABLE' } });
   expect(JSON.stringify(result)).not.toContain('provider secret');
 });
+
+type FullSpec = { fieldId: string; messageId: string; focus: string; value: unknown; scope: 'case' | 'buying_unit' | 'participant'; unit?: string; period?: string; incomeBasis?: string; precision?: string };
+const fullSpecs: Record<string, FullSpec[]> = {
+  laura: [
+    { fieldId: 'desired_locations', messageId: 'laura-m1', focus: 'Valencia', value: ['Valencia'], scope: 'case' },
+    { fieldId: 'declared_monthly_income', messageId: 'laura-m3', focus: '3.800 €', value: 3800, scope: 'buying_unit', unit: 'EUR', period: 'month', incomeBasis: 'net', precision: 'approximate' },
+    { fieldId: 'available_savings', messageId: 'laura-m3', focus: '18.000', value: 18000, scope: 'buying_unit', unit: 'EUR', precision: 'approximate' },
+    { fieldId: 'monthly_debt', messageId: 'laura-m4', focus: '250 €', value: 250, scope: 'buying_unit', unit: 'EUR', period: 'month' },
+  ],
+  javier: [
+    { fieldId: 'buyer_count', messageId: 'javier-m3', focus: 'solo', value: 1, scope: 'buying_unit' },
+    { fieldId: 'employment_context', messageId: 'javier-m3', focus: 'autonomo', value: 'autónomo', scope: 'participant' },
+    { fieldId: 'declared_monthly_income', messageId: 'javier-m3', focus: 'entre 2000 y 3000', value: { min: 2000, max: 3000 }, scope: 'participant', unit: 'EUR', incomeBasis: 'unknown', precision: 'approximate' },
+  ],
+  rosa: [
+    { fieldId: 'declared_monthly_income', messageId: 'rosa-m1', focus: '1.400 €', value: 1400, scope: 'buying_unit', unit: 'EUR', incomeBasis: 'unknown' },
+    { fieldId: 'available_savings', messageId: 'rosa-m1', focus: 'Ahorros no tenemos', value: 0, scope: 'buying_unit', unit: 'EUR' },
+    { fieldId: 'moving_horizon', messageId: 'rosa-m1', focus: 'dos semanas', value: 'dos semanas', scope: 'case' },
+  ],
+};
+function fullClient(name: string) {
+  const caseSnapshot = snapshot(name); const calls: string[] = [];
+  const wireRef = (messageId: string, quote: string) => ({ messageId, quote, start: null, end: null });
+  const signals = name === 'javier' ? [{ signalId: 'trust', category: 'TRUST', evidenceRefs: [wireRef('javier-m5', 'y esto es fiable? no sera una estafa no')] }] : name === 'rosa' ? [
+    { signalId: 'urgent', category: 'URGENT', evidenceRefs: [wireRef('rosa-m1', 'necesitamos salir del piso en dos semanas')] },
+    { signalId: 'binding', category: 'BINDING_CLAIM', evidenceRefs: [wireRef('rosa-m3', 'Mi hijo dice que os pida por escrito que estamos aprobados antes de seguir.')] },
+    { signalId: 'opt', category: 'OPT_OUT', evidenceRefs: [wireRef('rosa-m2', 'Si no podéis vendernos, ¿nos alquiláis algo solo de alquiler?')] },
+  ] : [];
+  const client = { responses: { create: async (body: never) => {
+    const b = body as { model: string; instructions: string; text: { format: { name: string } }; input: string }; const role = b.text.format.name; calls.push(role);
+    const input = JSON.parse(b.input);
+    if (role === 'multipass_s1') return response({ status: 'complete', candidates: signals });
+    if (role === 'multipass_s2') return response({ status: 'complete', candidates: [], verdicts: signals.map(s => ({ signalId: s.signalId, status: s.signalId === 'opt' ? 'dismissed' : 'confirmed', justification: 'contexto simulado', evidenceRefs: s.evidenceRefs })), reviews: input.groups.flatMap((g: { groupId: string; candidates: { candidateId: string; occurrence: { focusSpan: unknown }; evidenceRefs: { messageId: string; quote: string }[] }[] }) => g.candidates.map(c => ({ groupId: g.groupId, candidateId: c.candidateId, atomicity: 'atomic', support: 'supported', identitySpan: c.occurrence.focusSpan, evidenceRefs: c.evidenceRefs.map(e => wireRef(e.messageId, e.quote)), justification: 'contexto simulado' }))) });
+    if (role === 'multipass_j') return response({ disputeId: input.dispute.disputeId, resolution: { status: 'unresolved', candidateId: null, justification: 'incertidumbre', evidenceRefs: null } });
+    const claims = fullSpecs[name].map(s => {
+      const m = caseSnapshot.messages.find(m => m.messageId === s.messageId)!; if (m.content.type !== 'text') throw Error('expected text');
+      const text = m.content.text; const start = text.indexOf(s.focus); if (start < 0) throw Error('missing focus');
+      const id = s.scope === 'case' ? name : s.scope === 'buying_unit' ? `${name}:buying_unit` : `${name}:speaker:${s.messageId}`;
+      return { fieldId: s.fieldId, subjectRef: { scope: s.scope, id }, value: s.value, unit: s.unit ?? null, period: s.period ?? null, incomeBasis: s.incomeBasis ?? null, precision: s.precision ?? 'explicit', occurrence: { messageId: s.messageId, statementSpan: { start: 0, end: text.length, text }, focusSpan: { start, end: start + s.focus.length, text: s.focus }, previousAssertionId: null }, evidenceRefs: [wireRef(s.messageId, text)], correction: null };
+    });
+    return response({ claims });
+  } } };
+  return { client, calls, caseSnapshot };
+}
+it.each(['laura', 'javier', 'rosa'])('consolidates full %s through the SDK without historical subjects', async name => {
+  const { client, calls, caseSnapshot } = fullClient(name);
+  const a = createAIAdapters({ AI_MODE: 'openai', OPENAI_API_KEY: 'test', AI_INTERPRETER_STRATEGY: 'multipass' }, { complete: async () => null }, openAIMultipassTransport('test', 'model', client));
+  if (!a.ok) throw Error('factory');
+  const result = await a.value.interpreter.interpret({ caseSnapshot, messages: caseSnapshot.messages, factSchema: demoBundle.factSchema, agentProfile: demoBundle.agentProfile });
+  expect(result.ok).toBe(true);
+  if (!result.ok) return;
+  expect(result.value.assertions).toHaveLength(fullSpecs[name].length);
+  for (const spec of fullSpecs[name]) expect(result.value.assertions).toContainEqual(expect.objectContaining({ fieldId: spec.fieldId, value: spec.value }));
+  expect(calls).toHaveLength(5);
+  expect(result.value.blockers.map(b => b.type).sort()).toEqual(name === 'javier' ? ['TRUST'] : name === 'rosa' ? ['BINDING_CLAIM', 'URGENT'] : []);
+});
+
+it('uses six SDK calls when one malformed extraction is regenerated', async () => {
+  const calls: string[] = [];
+  const client = { responses: { create: async (body: never) => {
+    const b = body as { instructions: string; text: { format: { name: string } } }; const role = b.text.format.name; calls.push(role);
+    if (role === 'multipass_e1' && !b.instructions.includes('Regenerate')) return response({ claims: 'invalid' });
+    if (role === 'multipass_s1') return response({ status: 'complete', candidates: [] });
+    if (role === 'multipass_s2') return response({ status: 'complete', reviews: [], candidates: [], verdicts: [] });
+    return response({ claims: [] });
+  } } };
+  const a = createAIAdapters({ AI_MODE: 'openai', OPENAI_API_KEY: 'test', AI_INTERPRETER_STRATEGY: 'multipass' }, { complete: async () => null }, openAIMultipassTransport('test', 'model', client));
+  if (!a.ok) throw Error('factory'); const caseSnapshot = snapshot('laura');
+  const result = await a.value.interpreter.interpret({ caseSnapshot, messages: caseSnapshot.messages, factSchema: demoBundle.factSchema, agentProfile: demoBundle.agentProfile });
+  expect(result.ok).toBe(true); expect(calls).toHaveLength(6); expect(calls.filter(c => c === 'multipass_e1')).toHaveLength(2);
+});
+
+it('does not choose an arbitrary regeneration after two invalid SDK responses', async () => {
+  const calls: string[] = [];
+  const client = { responses: { create: async (body: never) => {
+    const role = (body as { text: { format: { name: string } } }).text.format.name; calls.push(role);
+    return response(role === 'multipass_s1' ? { status: 'complete', candidates: [] } : { claims: role === 'multipass_e3' ? [] : 'invalid' });
+  } } };
+  const a = createAIAdapters({ AI_MODE: 'openai', OPENAI_API_KEY: 'test', AI_INTERPRETER_STRATEGY: 'multipass' }, { complete: async () => null }, openAIMultipassTransport('test', 'model', client));
+  if (!a.ok) throw Error('factory'); const caseSnapshot = snapshot('rosa');
+  const result = await a.value.interpreter.interpret({ caseSnapshot, messages: caseSnapshot.messages, factSchema: demoBundle.factSchema, agentProfile: demoBundle.agentProfile });
+  expect(result.ok).toBe(false); expect(calls).toHaveLength(4);
+});
+
+it.each(['S1', 'S2'] as const)('fails safely when SDK %s outputs remain invalid', async failing => {
+  const calls: string[] = [];
+  const client = { responses: { create: async (body: never) => {
+    const role = (body as { text: { format: { name: string } } }).text.format.name; calls.push(role);
+    if (role === `multipass_${failing.toLowerCase()}`) return response({ unexpected: true });
+    if (role === 'multipass_s1') return response({ status: 'complete', candidates: [] });
+    if (role === 'multipass_s2') return response({ status: 'complete', reviews: [], candidates: [], verdicts: [] });
+    return response({ claims: [] });
+  } } };
+  const a = createAIAdapters({ AI_MODE: 'openai', OPENAI_API_KEY: 'test', AI_INTERPRETER_STRATEGY: 'multipass' }, { complete: async () => null }, openAIMultipassTransport('test', 'model', client));
+  if (!a.ok) throw Error('factory'); const caseSnapshot = snapshot('rosa');
+  const result = await a.value.interpreter.interpret({ caseSnapshot, messages: caseSnapshot.messages, factSchema: demoBundle.factSchema, agentProfile: demoBundle.agentProfile });
+  expect(result.ok).toBe(false); expect(calls.length).toBeLessThanOrEqual(6);
+});
+
+it.each(['operation timeout', 'global timeout', 'cancellation'] as const)('aborts SDK requests on %s', async kind => {
+  const { runPipeline } = await import('../../../src/adapters/ai/multipass/pipeline');
+  const seen: AbortSignal[] = []; const controller = new AbortController();
+  const client = { responses: { create: async (_body: never, options: { signal: AbortSignal }) => { seen.push(options.signal); return new Promise<ReturnType<typeof response>>(() => {}); } } };
+  const caseSnapshot = snapshot('laura');
+  const pending = runPipeline({ runId: 'abort-test', snapshot: { caseId: 'laura', messages: caseSnapshot.messages, factSchema: demoBundle.factSchema, agentProfile: demoBundle.agentProfile, knownSubjects: [], historicalAssertions: [], historicalBlockers: [], materialFieldIds: [] }, transport: openAIMultipassTransport('test', 'model', client), timeoutMs: kind === 'operation timeout' ? 10 : 1000, totalTimeoutMs: kind === 'global timeout' ? 10 : 1000, signal: controller.signal });
+  if (kind === 'cancellation') { await new Promise(resolve => setTimeout(resolve, 0)); controller.abort(); }
+  const { result, trace } = await pending;
+  expect(result.status).toBe('failed'); expect(seen).toHaveLength(4); expect(seen.every(s => s.aborted)).toBe(true);
+  expect(trace.operations.every(op => op.status === (kind === 'cancellation' ? 'cancelled' : 'timeout'))).toBe(true);
+  expect(JSON.stringify(trace)).not.toContain('laura-m3');
+});
+
+it('rejects unexpected fields, malformed evidence and invalid adjudication variants', () => {
+  expect(() => normalizeWire('E1', { claims: [{ ...claim, extra: 'invented' }] })).toThrow();
+  expect(() => normalizeWire('E1', { claims: [{ ...claim, evidenceRefs: [{ ...ref, end: null }] }] })).toThrow();
+  expect(() => normalizeWire('J', { disputeId: 'd', resolution: { status: 'selected', candidateId: null, justification: 'x', evidenceRefs: null } })).toThrow();
+  expect(() => normalizeWire('J', { disputeId: 'd', resolution: { status: 'unresolved', candidateId: 'invented', justification: 'x', evidenceRefs: null } })).toThrow();
+});
