@@ -1,10 +1,39 @@
-import type { Message } from '../../../contracts';
+import type { EvidenceRef, Message } from '../../../contracts';
 import { OccurrenceRefSchema, type OccurrenceRef } from './contracts';
 
 function isBoundary(text: string, position: number): boolean {
   const previous = text.charCodeAt(position - 1);
   const next = text.charCodeAt(position);
   return !(previous >= 0xd800 && previous <= 0xdbff && next >= 0xdc00 && next <= 0xdfff);
+}
+
+export function locateEvidenceRef(ref: EvidenceRef, messages: Message[]): EvidenceRef | undefined {
+  const matches = messages.filter(m => m.messageId === ref.messageId);
+  if (!ref.quote || matches.length !== 1 || matches[0].role !== 'customer' || matches[0].content.type !== 'text') return undefined;
+  const text = matches[0].content.text;
+  const start = text.indexOf(ref.quote);
+  if (start < 0 || text.indexOf(ref.quote, start + 1) >= 0 || !isBoundary(text, start) || !isBoundary(text, start + ref.quote.length)) return undefined;
+  return { ...ref, start, end: start + ref.quote.length };
+}
+
+export function locateOccurrence(value: OccurrenceRef, messages: Message[]): OccurrenceRef | undefined {
+  const matches = messages.filter(m => m.messageId === value.messageId);
+  if (matches.length !== 1 || matches[0].role !== 'customer' || matches[0].content.type !== 'text') return undefined;
+  const text = matches[0].content.text;
+  const locate = (source: string, quote: string) => {
+    if (!quote) return undefined;
+    const start = source.indexOf(quote);
+    return start < 0 || source.indexOf(quote, start + 1) >= 0 ? undefined : start;
+  };
+  const statementStart = locate(text, value.statementSpan.text);
+  if (statementStart === undefined) return undefined;
+  const statementSpan = { text: value.statementSpan.text, start: statementStart, end: statementStart + value.statementSpan.text.length };
+  const focus = value.focusSpan;
+  const focusStart = focus ? locate(statementSpan.text, focus.text) : undefined;
+  if (focus && focusStart === undefined) return undefined;
+  const focusSpan = focus && focusStart !== undefined ? { text: focus.text, start: statementStart + focusStart, end: statementStart + focusStart + focus.text.length } : undefined;
+  const result = { ...value, statementSpan, ...(focusSpan && { focusSpan }) };
+  return validateOccurrence(result, messages) ? result : undefined;
 }
 
 export function validateOccurrence(value: OccurrenceRef, messages: Message[]): boolean {

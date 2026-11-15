@@ -18,9 +18,24 @@ import type { Snapshot } from '../../../src/adapters/ai/multipass/pipeline';
 
 const base = (): Snapshot => ({ caseId: 'case', messages: [], factSchema: demoBundle.factSchema, agentProfile: demoBundle.agentProfile, knownSubjects: [{ scope: 'case', id: 'case' }, { scope: 'buying_unit', id: 'unit' }, { scope: 'participant', id: 'person' }], historicalAssertions: [], historicalBlockers: [], materialFieldIds: ['declared_monthly_income', 'available_savings', 'monthly_debt'] });
 const empty = (role: Request['role']) => role === 'S1' ? { status: 'complete', candidates: [] } : role === 'S2' ? { status: 'complete', reviews: [], verdicts: [] } : { claims: [] };
-const run = (transport: FakeTransport, snapshot = base(), extra: { signal?: AbortSignal; timeoutMs?: number; totalTimeoutMs?: number } = {}) => runPipeline({ runId: 'test', snapshot, transport, ...extra });
+const run = (transport: FakeTransport, snapshot = base(), extra: { signal?: AbortSignal; timeoutMs?: number; totalTimeoutMs?: number; locateSpans?: boolean } = {}) => runPipeline({ runId: 'test', snapshot, transport, ...extra });
 
 describe('pipeline boundaries', () => {
+  it('validates a confirmed safety signal repeated by S2 using uniquely located quotes', async () => {
+    const snapshot = base(); const text = 'No me llaméis.';
+    snapshot.messages = [{ messageId: 'm', conversationId: 'c', role: 'customer', occurredAt: '2026-01-01T00:00:00Z', content: { type: 'text', text } }];
+    const signal = { signalId: 's', category: 'OPT_OUT', evidenceRefs: [{ messageId: 'm', quote: text, start: 1, end: 3 }] };
+    const result = await run({ execute: async r => r.role === 'S1' ? { status: 'complete', candidates: [signal] } : r.role === 'S2' ? { status: 'complete', reviews: [], candidates: [signal], verdicts: [{ signalId: 's', status: 'confirmed', justification: 'no contact', evidenceRefs: signal.evidenceRefs }] } : empty(r.role) }, snapshot, { locateSpans: true });
+    expect(result.result.status).toBe('consolidated');
+    if (result.result.status === 'consolidated') expect(result.result.interpretation.blockers.map(b => b.type)).toContain('OPT_OUT');
+  });
+  it('requires review if S2 repeats a safety id with different content', async () => {
+    const snapshot = base(); const text = 'No me llaméis. Necesito ayuda.';
+    snapshot.messages = [{ messageId: 'm', conversationId: 'c', role: 'customer', occurredAt: '2026-01-01T00:00:00Z', content: { type: 'text', text } }];
+    const signal = { signalId: 's', category: 'OPT_OUT', evidenceRefs: [{ messageId: 'm', quote: 'No me llaméis.' }] };
+    const result = await run({ execute: async r => r.role === 'S1' ? { status: 'complete', candidates: [signal] } : r.role === 'S2' ? { status: 'complete', reviews: [], candidates: [{ ...signal, category: 'URGENT' }], verdicts: [{ signalId: 's', status: 'dismissed', justification: 'ambiguous', evidenceRefs: signal.evidenceRefs }] } : empty(r.role) }, snapshot, { locateSpans: true });
+    expect(result.result.status).toBe('human_review_required');
+  });
   it('allows 20-second operations across a 40-second stage by default', async () => {
     vi.useFakeTimers();
     try {

@@ -15,8 +15,8 @@ Options: --dataset f01 --split development|validation|holdout --category NAME|al
 The dataset is frozen provisionally but lacks independent human annotation sign-off.
 `;
 const die=(error)=>{console.error(`Error: ${error}\n${help}`);process.exit(2);};
-const opts={split:null,category:'all',sample:5,seed:42,repeat:1,mode:'end-to-end',maxRequests:20,output:'.eval-results',unlockHoldout:false,allowFailures:false,dryRun:false,dataset:'f01'};
-const optNames=new Map([['--dataset','dataset'],['--split','split'],['--category','category'],['--sample','sample'],['--seed','seed'],['--repeat','repeat'],['--mode','mode'],['--max-requests','maxRequests'],['--output','output']]);
+const opts={split:null,category:'all',sample:5,seed:42,repeat:1,mode:'end-to-end',strategy:'single',maxRequests:20,output:'.eval-results',unlockHoldout:false,allowFailures:false,dryRun:false,dataset:'f01'};
+const optNames=new Map([['--dataset','dataset'],['--split','split'],['--category','category'],['--sample','sample'],['--seed','seed'],['--repeat','repeat'],['--mode','mode'],['--strategy','strategy'],['--max-requests','maxRequests'],['--output','output']]);
 for(let i=2;i<process.argv.length;i++){
   const arg=process.argv[i];
   if(arg==='--help'){console.log(help);process.exit(0);}
@@ -30,6 +30,7 @@ for(let i=2;i<process.argv.length;i++){
 }
 if(opts.dataset!=='f01'||!['development','validation','holdout'].includes(opts.split))die('Specify --dataset f01 and a valid --split');
 if(!['interpreter','end-to-end'].includes(opts.mode))die('Invalid mode');
+if(!['single','multipass'].includes(opts.strategy))die('Invalid strategy');
 if(!Number.isSafeInteger(opts.seed)||opts.seed<0||!Number.isSafeInteger(opts.sample)||opts.sample<1||opts.sample>352)die('Invalid sampling configuration');
 if(!Number.isSafeInteger(opts.repeat)||opts.repeat<1||opts.repeat>10)die('Invalid repeat count');
 if(!Number.isSafeInteger(opts.maxRequests)||opts.maxRequests<1||opts.maxRequests>20)die('Request budget must be between 1 and 20');
@@ -65,9 +66,9 @@ while(selected.length<opts.sample){
   if(!advanced)die('Sampling selection exhausted');
 }
 if(opts.mode==='interpreter'&&selected.some(x=>x.gold.transitions?.length))die('Corrections require --mode end-to-end to preserve case history');
-const ceiling=selected.reduce((sum,x)=>sum+(x.gold.transitions?.length?4:2)*opts.repeat,0);
+const ceiling=selected.reduce((sum,x)=>sum+(x.gold.transitions?.length?2:1)*(opts.strategy==='multipass'?7+(opts.mode==='end-to-end'?1:0):2)*opts.repeat,0);
 if(ceiling>opts.maxRequests)die(`Selected cases may require ${ceiling} API calls; budget is ${opts.maxRequests}. Reduce --sample/repeat.`);
-console.log(JSON.stringify({version:manifest.version,split:opts.split,category:opts.category,seed:opts.seed,mode:opts.mode,selected:selected.map(x=>({id:x.id,category:x.category,cluster:x.clusterId})),repeat:opts.repeat,requestCeiling:ceiling,requestBudget:opts.maxRequests,labelStatus:manifest.labelStatus,independentSignoff:manifest.independentHumanSignOff},null,2));
+console.log(JSON.stringify({version:manifest.version,split:opts.split,category:opts.category,seed:opts.seed,mode:opts.mode,strategy:opts.strategy,selected:selected.map(x=>({id:x.id,category:x.category,cluster:x.clusterId})),repeat:opts.repeat,requestCeiling:ceiling,requestBudget:opts.maxRequests,labelStatus:manifest.labelStatus,independentSignoff:manifest.independentHumanSignOff},null,2));
 if(opts.dryRun){console.log('DRY RUN: no OpenAI calls.');process.exit(0);}
 for(const filename of ['.env.local','.env'])if(existsSync(filename))process.loadEnvFile(filename);
 if(!process.env.OPENAI_MODEL?.trim()||!process.env.OPENAI_API_KEY?.trim())die('OPENAI_MODEL and OPENAI_API_KEY are required');
@@ -77,7 +78,7 @@ const target=resolve(opts.output);
 const timestamp=new Date().toISOString().replace(/[:.]/g,'-');
 const outputFile=extname(target)==='.json'?target:join(target,`f01-dataset-${opts.split}-${timestamp}.json`);
 mkdirSync(dirname(outputFile),{recursive:true});
-const configuration={datasetVersion:manifest.version,split:opts.split,recordIds:selected.map(x=>x.id),mode:opts.mode,repeat:opts.repeat,maxRequests:opts.maxRequests,seed:opts.seed,allowFailures:opts.allowFailures,manifestHash:blob};
+const configuration={datasetVersion:manifest.version,split:opts.split,recordIds:selected.map(x=>x.id),mode:opts.mode,strategy:opts.strategy,repeat:opts.repeat,maxRequests:opts.maxRequests,seed:opts.seed,allowFailures:opts.allowFailures,manifestHash:blob};
 const run=spawnSync(process.execPath,[vitest,'run','tests/evaluation/f01-dataset-cli.test.ts','--reporter=verbose'],{cwd:process.cwd(),env:{...process.env,AI_MODE:'openai',F01_DATASET_EVAL:'1',F01_DATASET_CONFIG:JSON.stringify(configuration),F01_EVAL_OUTPUT_FILE:outputFile},stdio:'inherit'});
 if(run.error){console.error(`Runner process failed: ${run.error.code??'unknown'}`);process.exit(2);}
 if(!existsSync(outputFile)){console.error('Evaluation did not produce report');process.exit(run.status||1);}

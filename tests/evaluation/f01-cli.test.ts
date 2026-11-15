@@ -7,11 +7,15 @@ import { evaluate } from '../../src/application/cases/evaluate';
 import { CaseOrchestrator } from '../../src/application/cases/orchestrator';
 import { MemoryCaseRepository } from '../../src/adapters/persistence/memory-case-repository';
 import type { CaseEvent, CaseSnapshot, CaseView, Message } from '../../src/contracts';
+import type { Interpreter } from '../../src/contracts';
+import { MultipassInterpreter } from '../../src/adapters/ai/multipass/interpreter';
+import { openAIMultipassTransport } from '../../src/adapters/ai/multipass/openai-transport';
+import { RequestBudget } from './f01-request-budget';
 
 // Intentionally skipped by normal pnpm test. Enable via scripts/eval-openai.mjs only.
 const live = process.env.F01_EVAL_RUN === '1' ? it : it.skip;
 type Scenario = 'B01' | 'B05' | 'B08' | 'B06' | 'B10' | 'C01';
-type Settings = { scenarioIds: Scenario[]; repeat: number; mode: 'interpreter' | 'end-to-end'; maxRequests: number; allowFailures: boolean };
+type Settings = { scenarioIds: Scenario[]; repeat: number; mode: 'interpreter' | 'end-to-end'; strategy: 'single' | 'multipass'; maxRequests: number; allowFailures: boolean };
 type Check = { name: string; pass: boolean; expected: unknown; actual: unknown };
 type State = { snapshot: CaseSnapshot; action: string | null; errors: { code: string; message: string }[]; draft: string | null };
 type Call = { index: number; kind: string; latencyMs: number; status: 'response' | 'error'; output?: unknown; diagnostic?: ReturnType<typeof classifyModelError> };
@@ -50,10 +54,9 @@ const viewState = (v: CaseView): State => ({
   errors: v.errors.map(e => ({ code: e.code, message: e.message }))
 });
 
-async function execute(id: Scenario, index: number, transport: ModelTransport, mode: Settings['mode']): Promise<State> {
+async function execute(id: Scenario, index: number, transport: ModelTransport, mode: Settings['mode'], interpreter: Interpreter): Promise<State> {
   const { caseId, messages } = fixture(id);
   const initial = seed(caseId, messages);
-  const interpreter = new OpenAIInterpreter(transport);
   if (mode === 'interpreter') {
     if (id === 'C01') throw Error('C01 requires end-to-end');
     const interpreted = await interpreter.interpret({ caseSnapshot: initial, messages, factSchema: demoBundle.factSchema, agentProfile: demoBundle.agentProfile });
@@ -152,8 +155,9 @@ live('evaluates OpenAI backend against synthetic semantic oracle', async () => {
   if (!Array.isArray(cfg.scenarioIds) || cfg.scenarioIds.length < 1) throw Error('Missing scenarios');
   const model = process.env.OPENAI_MODEL;
   const provider = openAITransport(process.env.OPENAI_API_KEY, model, 25000);
+  const multipassProvider = cfg.strategy === 'multipass' ? openAIMultipassTransport(process.env.OPENAI_API_KEY, model) : undefined;
   const report = {
-    generatedAt: new Date().toISOString(), model, mode: cfg.mode, source: 'synthetic fixtures',
+    generatedAt: new Date().toISOString(), model, mode: cfg.mode, strategy: cfg.strategy ?? 'single', source: 'synthetic fixtures',
     limitations: ['Small sample; not a general reliability estimate', 'Transport does not expose tokens', 'A second LLM verification is not proof of meaning'],
     requestCount: 0, maxRequests: cfg.maxRequests,
     runs: [] as Array<{
@@ -164,13 +168,14 @@ live('evaluates OpenAI backend against synthetic semantic oracle', async () => {
     summary: { PASS: 0, PARTIAL: 0, FAIL: 0, BLOCKED: 0 }
   };
   const write = () => writeFileSync(outputFile, JSON.stringify(report, null, 2) + '\n', { mode: 0o600 });
+  const budget = new RequestBudget(cfg.maxRequests);
   try {
     for (const scenario of cfg.scenarioIds) for (let iteration = 1; iteration <= cfg.repeat; iteration++) {
       const calls: Call[] = [];
       let budgetExhausted = false;
       const transport: ModelTransport = { complete: async (instructions, input, kind, signal) => {
-        if (report.requestCount >= cfg.maxRequests) { budgetExhausted = true; throw Error('Evaluation budget exhausted'); }
-        const index = ++report.requestCount;
+        let index: number;
+        try { index = budget.reserve(); report.requestCount = budget.count; } catch (error) { budgetExhausted = true; throw error; }
         const started = Date.now();
         try {
           const output = await provider.complete(instructions, input, kind, signal);
@@ -181,7 +186,14 @@ live('evaluates OpenAI backend against synthetic semantic oracle', async () => {
           throw error;
         }
       } };
-      const state = await execute(scenario, iteration, transport, cfg.mode);
+      const interpreter: Interpreter = multipassProvider ? new MultipassInterpreter({ execute: async request => {
+        let index: number;
+        try { index = budget.reserve(); report.requestCount = budget.count; } catch (error) { budgetExhausted = true; throw error; }
+        const started = Date.now();
+        try { const output = await multipassProvider.execute(request); calls.push({ index, kind: `multipass_${request.role}`, latencyMs: Date.now() - started, status: 'response', output }); return output; }
+        catch (error) { calls.push({ index, kind: `multipass_${request.role}`, latencyMs: Date.now() - started, status: 'error', diagnostic: classifyModelError(error) }); throw error; }
+      } }) : new OpenAIInterpreter(transport);
+      const state = await execute(scenario, iteration, transport, cfg.mode, interpreter);
       const checks = evaluateChecks(scenario, state);
       if (cfg.mode === 'end-to-end' && state.action === 'CLARIFY') checks.push({ name: 'reviewable_draft', pass: state.draft === 'generated', expected: 'generated', actual: state.draft });
       const actionCheck = checks.find(c => c.name === 'commercial_action');

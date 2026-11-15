@@ -292,3 +292,71 @@ Se separaron guiones, fixtures y proyección del oráculo; se añadió el recorr
 ### 2026-11-15 — F-02 repetición C01 con timeouts alineados
 
 Se cambió el timeout predeterminado multipass a 25 s por operación y 75 s por etapa, sin modificar el presupuesto ni single-pass. Lint y typecheck pasaron; la suite pasó con 453 tests y 5 omitidos, incluidas pruebas de cancelación y presupuesto. Una única comparación real con `gpt-5.4-mini` consumió 9 de 18 intentos: single completó ambas etapas (4 intentos, 9,26 s); multipass terminó la primera con `MODEL_OUTPUT_INVALID` (5 intentos, 13,16 s). El informe local permanece ignorado por Git. El fallo anterior `MODEL_UNAVAILABLE` no demuestra que la causa fuera el timeout; multipass sigue sin ser evaluable para la corrección C01.
+
+### 2026-11-15 — F-02 investigación offline del fallo
+
+Se examinó el informe local, el mapeo de errores y las rutas de pipeline, sin nuevas llamadas reales. El informe no conserva trazas internas ni respuestas de las pasadas: cinco intentos son compatibles con una reparación inicial fallida o con S2 seguido de un rechazo de validación, por lo que no se puede identificar la causa concreta retrospectivamente. Las pruebas existentes de pipeline, transporte SDK y presupuesto pasaron: 105 tests. No se modificó el comportamiento; para discriminar causas en una futura ejecución haría falta conservar diagnósticos técnicos acotados, sujetos a autorización.
+
+### 2026-11-15 — F-02 diagnóstico técnico local
+
+Se añadió un observador opcional del resultado interno multipass y su proyección al informe local por etapa: estados, códigos técnicos, roles, duración y número de intentos, sin mensajes ni respuestas en la traza. Las pruebas offline distinguen reparación fallida de revisión contextual incompleta y comprueban que un fallo del observador no altera la interpretación. `pnpm lint` y `pnpm typecheck` pasaron; `pnpm test` pasó con 456 tests y 5 omitidos. No se ejecutó ninguna evaluación real adicional; los informes anteriores no contienen estos datos.
+
+### 2026-11-15 — F-02 C01 real con diagnóstico
+
+Tras pasar lint, typecheck y 456 tests (5 omitidos), se realizó una comparación real autorizada con `gpt-5.4-mini`: 8 de 18 intentos. Single completó la etapa inicial, pero la corrección falló con `EVIDENCE_INVALID` (3 intentos, 7,79 s). Multipass falló en la etapa inicial (5 intentos, 13,25 s); la traza registró E1/E2/E3/S1/S2 con formato válido y `incomplete_contextual_review`. La traza no precisa si faltaron, sobraron o se duplicaron revisiones. No se ejecutaron más evaluaciones; informe local ignorado por Git.
+
+### 2026-11-15 — F-02 conteos offline de revisión S2
+
+Para futuros fallos `incomplete_contextual_review` se incorporaron conteos de revisiones esperadas, recibidas, ausentes, duplicadas y ajenas, sin guardar identificadores ni contenido. Pruebas simuladas distinguen las tres condiciones; lint, typecheck y suite completa pasaron (459 tests, 5 omitidos). La validación no cambió y no se ejecutaron llamadas reales. Los conteos no permiten reconstruir el informe anterior.
+
+### 2026-11-15 — F-02 C01 real con conteos S2
+
+Tras lint, typecheck y 459 tests (5 omitidos), se ejecutó una comparación real autorizada con `gpt-5.4-mini`: 9 de 18 intentos. Single completó ambas etapas (4 intentos, 8,69 s); multipass falló en la inicial con `incomplete_contextual_review` (5 intentos, 12,28 s). S2 devolvió nueve revisiones frente a cero esperadas: nueve ajenas, ninguna duplicada o ausente. La traza no permite saber si se extrajeron candidatos ni por qué no hubo candidatos agrupados. Informe local ignorado por Git; ninguna ejecución real adicional.
+
+### 2026-11-15 — F-02 diagnóstico de extracción y agrupación
+
+Se instrumentaron conteos agregados por extractor, candidatos, grupos, rechazos y códigos de rechazo, sin contenido ni identificadores. Las pruebas offline distinguen extracción vacía, rechazo de todos los candidatos y agrupación correcta; no reproducen la respuesta real anterior ni establecen su causa. `invalid_candidate` sigue agrupando varias causas. Lint y typecheck pasaron; suite completa: 462 tests pasados y 5 omitidos. No hubo nuevas llamadas reales ni cambios en la validación.
+
+### 2026-11-15 — F-02 C01 real con diagnóstico de agrupación
+
+Tras lint, typecheck y 462 tests (5 omitidos), se ejecutó una comparación real autorizada con `gpt-5.4-mini`: 9 de 18 intentos. Single completó ambas etapas (4 intentos, 8,08 s); multipass falló en la inicial (5 intentos, 12,38 s). Cada extractor produjo tres candidatos; los nueve fueron rechazados como `invalid_candidate` y quedaron cero grupos. S2 entregó nueve revisiones ajenas a los grupos esperados; el resultado fue `incomplete_contextual_review`. La categoría de rechazo no identifica qué validación falló ni permite reconstruir las respuestas. Informe local ignorado por Git; ninguna ejecución real adicional.
+
+### 2026-11-15 — F-02 diagnóstico de rangos de evidencia
+
+Se añadieron conteos técnicos de primera causa de rechazo y presencia del texto, sin conservar contenido ni identificadores. Lint, typecheck y suite pasaron (463 tests y 5 omitidos). Dos comparaciones reales autorizadas con `gpt-5.4-mini` consumieron 9 intentos cada una. En ambas, multipass rechazó nueve candidatos: ocho por rango de declaración y uno por rango de foco. En la segunda se comprobó que los nueve fragmentos estaban presentes, pero sus offsets eran incorrectos: cinco con inicio correcto y fin incorrecto, cuatro con ambos extremos incorrectos. S2 devolvió nueve revisiones ajenas frente a cero esperadas; single completó ambas etapas en las dos comparaciones. La instrucción solicita offsets UTF-16 al modelo. No se alteraron prompts ni validaciones; queda por decidir cómo abordar esta frontera sin sobreajustar C01. Informes locales ignorados por Git.
+
+### 2026-11-15 — F-02 localización literal de rangos
+
+El intérprete calcula los rangos de extracción desde citas únicas en mensaje y declaración; rechaza citas ausentes o ambiguas y mantiene las validaciones de evidencia. Tests offline cubren UTF-16, importes iguales y ausencia/ambigüedad; lint, typecheck y suite pasaron (467 tests, 5 omitidos). Una comparación real autorizada consumió 7 de 18 intentos: single falló en su etapa inicial con `EVIDENCE_INVALID` (2 intentos); multipass produjo 9 candidatos, agrupó 5 en 3 grupos y rechazó 4 por `invalid_evidence`, después S2 devolvió 3 revisiones para 5 esperadas y terminó en `incomplete_contextual_review` (5 intentos). No se han modificado prompts. Se detiene el ajuste conductual para evaluar la instrucción de S2 y la validación de evidenceRefs; no se atribuye una causa concreta sin más evidencia. Informe local ignorado por Git.
+
+### 2026-11-15 — F-02 diagnóstico de evidencia y cobertura S2
+
+Se añadieron conteos agregados de tipos de error de evidencia y cobertura por grupo, sin citas ni identificadores. Una prueba offline comprueba offsets erróneos de citas presentes y una revisión por grupo; lint, typecheck y suite pasaron (468 tests, 5 omitidos). Una comparación real autorizada con `gpt-5.4-mini` consumió 9 de 18 intentos: single completó ambas etapas; multipass extrajo 10 candidatos, rechazó 9 (5 por offsets de evidencia inconsistentes con citas presentes y 4 por ámbito no permitido), agrupó 1 y S2 duplicó su única revisión esperada. El resultado fue `incomplete_contextual_review`. No se cambiaron prompts ni reglas. La causa de los ámbitos inválidos y revisiones duplicadas requiere evaluar instrucciones/salida del modelo; no se generaliza desde una muestra. Informe local ignorado por Git.
+
+### 2026-11-15 — F-02 evidencia, ámbitos y S2 v3
+
+Se localizaron las referencias de extracción por citas literales únicas y se aclararon las instrucciones generales sobre ámbitos permitidos y revisión individual, versionadas como `multipass-openai-3`, sin convertir sujetos ni rellenar revisiones. Lint, typecheck y suite pasaron (471 tests, 5 omitidos). Dos comparaciones reales autorizadas consumieron 9 intentos cada una; single completó ambas etapas en ambas, multipass completó las cinco operaciones iniciales y se detuvo para revisión humana. En la segunda ejecución se agruparon 14 de 14 candidatos y se identificaron categorías de seguridad protegida, material no resuelto y atribución de sujeto. No se ha establecido si las abstenciones son correctas ni se ha evaluado generalización real fuera de C01. Informes locales ignorados por Git.
+
+### 2026-11-15 — F-02 investigación de abstenciones
+
+Se añadió captura local autorizada de entradas y salidas sintéticas y detalles de revisión, sin claves ni texto de excepciones. Lint y typecheck pasaron; suite: 473 tests pasados y 5 omitidos. Una comparación real consumió 9 intentos: single completó ambas etapas; multipass solicitó revisión humana por seguridad y atribución, sin la categoría material no resuelto. S1 señaló TRUST, PRIVACY y URGENT; S2 repitió las cinco señales y las confirmó, con citas presentes pero offsets incorrectos en las seis referencias. El conciliador marca señales inciertas y detecta IDs duplicados. En la deuda, dos de tres atribuciones citaron texto fuera de su declaración y SubjectBinding rechazó el grupo. Los hallazgos TRUST y urgencia no se justifican por esas citas; la clasificación de privacidad requiere contrastar la política, no descartarla por su cuenta. Los motivos de la ejecución anterior no pueden reconstruirse. Informe sintético local ignorado por Git.
+
+### 2026-11-15 — F-02 protección y señales repetidas v4
+
+Se localizaron referencias de seguridad con citas únicas y se eliminó únicamente la copia idéntica de una señal S1 repetida una vez por S2; señales contradictorias o duplicaciones adicionales siguen requiriendo revisión. Las instrucciones `multipass-openai-4` piden valorar el contexto de confianza, privacidad y urgencia sin descartar señales genuinas. Tests cubren OPT_OUT confirmado y duplicado contradictorio; lint, typecheck y suite pasaron (475 tests, 5 omitidos). Una comparación real autorizada consumió 9 intentos: single completó ambas etapas; multipass solicitó revisión humana tras descartar dos señales de privacidad y dejar urgencia incierta, además de una atribución de deuda cuya cita excedía la declaración en uno de tres candidatos. No se ha probado la generalización real en Javier y Rosa. Informe local ignorado por Git.
+
+### 2026-11-15 — Preparación de evaluación de 24 escenarios
+
+Se verificaron lint, typecheck y suite (475 tests pasados, 5 omitidos), además del corpus F-01 (352 registros, anotaciones pendientes de revisión independiente). La matriz semántica local enumera 23 IDs y mezcla escenarios de conversación con fallos de proveedor, borradores y replay; el comparador multipass real existente solo ejecuta C01. Su preflight offline para seis escenarios estima hasta 63 intentos y rechaza el límite de 18. Se solicitó identificar la lista de 24; no se ejecutaron nuevas llamadas reales ni se sustituyó la lista por una muestra arbitraria.
+
+### 2026-11-15 — Evaluación real F-01 de 24 escenarios
+
+El usuario aportó el guion de 24 casos; se ejecutó con `gpt-5.4-mini`, end-to-end y tope de 18 intentos por lote. El runner utiliza single-pass, no multipass. Resultado de checks: 23 PASS y 1 FAIL, 54 intentos; en `F01D1-trust_real-P1-V2` el verificador emitió una cita no literal y el análisis terminó en `EVIDENCE_INVALID` sin `HANDOFF`. Los informes sintéticos detallados están ignorados por Git; resumen en `docs/evaluation/F01_24_SCENARIOS_2026-11-15.md`. Las anotaciones del dataset son provisionales y sin revisión independiente.
+
+### 2026-11-15 — Comparación multipass de 24 escenarios
+
+Se adaptó el evaluador F-01 para estrategia multipass con presupuesto compartido por intentos y preflight que incluye pasadas y borradores; el guion divide los 24 IDs en lotes de hasta 18. Lint y typecheck pasaron; suite 479 tests y 5 omitidos, recorded 3 y dataset válido. La ejecución real con `gpt-5.4-mini` completó los 24 IDs con 139 intentos: 2 PASS y 22 FAIL automáticos (17 revisiones humanas y 5 salidas inválidas). Una revisión manual detectó que uno de los PASS automáticos activaba OPT_OUT y STOP_CONTACT sin solicitud de no-contacto; el oráculo no lo prohibía. Detalles y límites en `docs/evaluation/F02_24_COMPARISON_2026-11-15.md`; informes sintéticos locales ignorados por Git.
+
+### 2026-11-15 — Investigación offline de los resultados multipass
+
+Se reprodujeron offline salidas de 21 casos de una etapa reconstruyendo el snapshot: los 21 resultados públicos coincidieron con los informes previos. Se identificaron solapamientos en motivos de revisión, 5 fallos de correspondencia S2, casos de señales protegidas detectadas que no llegan al orquestador, falsos OPT_OUT en salidas y una ausencia estructural de COST en señales multipass. Se excluyeron tres correcciones de dos etapas; no hubo llamadas reales ni cambios de política, contratos o prompts. Análisis y límites en `docs/evaluation/F02_24_CAUSAL_ANALYSIS_2026-11-15.md`; diagnóstico sintético detallado ignorado por Git.

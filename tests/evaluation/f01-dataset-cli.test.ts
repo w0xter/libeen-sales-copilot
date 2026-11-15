@@ -6,12 +6,16 @@ import { MemoryCaseRepository } from '../../src/adapters/persistence/memory-case
 import { evaluate } from '../../src/application/cases/evaluate';
 import { demoBundle, configBundleRef } from '../../src/config';
 import type { CaseEvent, CaseSnapshot, CaseView, Message } from '../../src/contracts';
+import type { Interpreter } from '../../src/contracts';
+import { MultipassInterpreter } from '../../src/adapters/ai/multipass/interpreter';
+import { openAIMultipassTransport } from '../../src/adapters/ai/multipass/openai-transport';
+import { RequestBudget } from './f01-request-budget';
 
 // The normal test suite skips real, billable model evaluation.
 const enabled = process.env.F01_DATASET_EVAL === '1' ? it : it.skip;
 type Config = {
   datasetVersion: string; split: string; recordIds: string[]; mode: 'interpreter' | 'end-to-end';
-  repeat: number; maxRequests: number; seed: number; allowFailures: boolean; manifestHash: string;
+  repeat: number; maxRequests: number; seed: number; allowFailures: boolean; manifestHash: string; strategy: 'single' | 'multipass';
 };
 type GoldFact = {
   fieldId: string; scope: string; value: unknown; status: string; sourceMessageId: string;
@@ -58,12 +62,11 @@ function project(view: CaseView): State {
   return {snapshot:view.snapshot,action:view.activeProposal?.actionType??null,draft:view.draft?.status??null,
     errors:view.errors.map(e=>({code:e.code,message:e.message}))};
 }
-async function runRecord(record: RecordData, iteration: number, mode: Config['mode'], transport: ModelTransport): Promise<State> {
+async function runRecord(record: RecordData, iteration: number, mode: Config['mode'], transport: ModelTransport, interpreter: Interpreter): Promise<State> {
   const correction=record.gold.transitions?.[0];
   if(correction && mode!=='end-to-end') throw new Error('Corrections require the orchestrator');
   const seedMessages=correction?record.messages.filter(m=>m.messageId!==correction.correctionMessageId):record.messages;
   const initial=newCase(record,seedMessages);
-  const interpreter=new OpenAIInterpreter(transport);
   if(mode==='interpreter'){
     const result=await interpreter.interpret({caseSnapshot:initial,messages:initial.messages,factSchema:demoBundle.factSchema,agentProfile:demoBundle.agentProfile});
     if(!result.ok)return {snapshot:{...initial,analysisStatus:'analysis_failed'},action:null,draft:null,errors:[{code:result.error.code,message:result.error.message}]};
@@ -187,8 +190,9 @@ enabled('evaluates frozen F01 dataset against provisional expectations',async()=
   const records:RecordData[]=readFileSync(`datasets/f01/v1/${cfg.split}.jsonl`,'utf8').trim().split(String.fromCharCode(10)).map((x:string)=>JSON.parse(x) as RecordData);
   const byId=new Map(records.map(r=>[r.id,r]));
   const provider=openAITransport(key,model,25000);
+  const multipassProvider=cfg.strategy==='multipass'?openAIMultipassTransport(key,model):undefined;
   const report={
-    generatedAt:new Date().toISOString(),datasetVersion:cfg.datasetVersion,split:cfg.split,model,mode:cfg.mode,
+    generatedAt:new Date().toISOString(),datasetVersion:cfg.datasetVersion,split:cfg.split,model,mode:cfg.mode,strategy:cfg.strategy??'single',
     seed:cfg.seed,source:'frozen but provisional controlled-synthetic annotations',
     labelStatus:manifest.labelStatus,independentHumanSignOff:manifest.independentHumanSignOff,
     methodologicalLimits:['A semantic check passes only on explicitly annotated properties','The annotations have not been independently verified','Repeated numeric variants of the same template are correlated','Not a real-world customer accuracy estimate','Token usage is unavailable at the ModelTransport interface'],
@@ -202,14 +206,16 @@ enabled('evaluates frozen F01 dataset against provisional expectations',async()=
     byCategory:{} as Record<string,{PASS:number;PARTIAL:number;FAIL:number;BLOCKED:number}>
   };
   const save=()=>writeFileSync(outputFile,JSON.stringify(report,null,2)+String.fromCharCode(10),{mode:0o600});
+  const budget=new RequestBudget(cfg.maxRequests);
   try{
     for(const id of cfg.recordIds)for(let iteration=1;iteration<=cfg.repeat;iteration++){
       const record=byId.get(id);if(!record)throw new Error(`Selected record not found: ${id}`);
       if(record.datasetVersion!==cfg.datasetVersion||record.reviewStatus!=='internally_audited_pending_external_review')throw new Error('Record provenance mismatch');
       const calls:Call[]=[];let budgetExhausted=false;
       const transport:ModelTransport={complete:async(instructions,input,kind,signal)=>{
-        if(report.requestCount>=cfg.maxRequests){budgetExhausted=true;throw new Error('Evaluation request budget exhausted');}
-        const index=++report.requestCount,started=Date.now();
+        let index:number;
+        try{index=budget.reserve();report.requestCount=budget.count;}catch(error){budgetExhausted=true;throw error;}
+        const started=Date.now();
         try{
           const output=await provider.complete(instructions,input,kind,signal);
           calls.push({index,kind:kind??'interpretation',status:'response',latencyMs:Date.now()-started,output});
@@ -219,7 +225,14 @@ enabled('evaluates frozen F01 dataset against provisional expectations',async()=
           throw error;
         }
       }};
-      const state=await runRecord(record,iteration,cfg.mode,transport);
+      const interpreter:Interpreter=multipassProvider?new MultipassInterpreter({execute:async request=>{
+        let index:number;
+        try{index=budget.reserve();report.requestCount=budget.count;}catch(error){budgetExhausted=true;throw error;}
+        const started=Date.now();
+        try{const output=await multipassProvider.execute(request);calls.push({index,kind:`multipass_${request.role}`,status:'response',latencyMs:Date.now()-started,output});return output;}
+        catch(error){calls.push({index,kind:`multipass_${request.role}`,status:'error',latencyMs:Date.now()-started,diagnostic:classifyModelError(error)});throw error;}
+      }}):new OpenAIInterpreter(transport);
+      const state=await runRecord(record,iteration,cfg.mode,transport,interpreter);
       const checks=checksFor(record,state);
       const relevantFailure=calls.some(c=>c.status==='error'&&['network','authentication','rate_limit','provider','timeout'].includes(c.diagnostic?.category??''));
       const blocked=budgetExhausted||relevantFailure||state.errors.some(e=>e.code==='MODEL_UNAVAILABLE');

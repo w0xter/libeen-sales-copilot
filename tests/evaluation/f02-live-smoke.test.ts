@@ -4,11 +4,12 @@ import { join } from 'node:path';
 import { it } from 'vitest';
 import { demoBundle } from '../../src/config';
 import { OpenAIInterpreter, openAITransport, type ModelTransport } from '../../src/adapters/ai/openai';
-import { MultipassInterpreter } from '../../src/adapters/ai/multipass/interpreter';
+import { MultipassInterpreter, type MultipassDiagnostic } from '../../src/adapters/ai/multipass/interpreter';
 import { openAIMultipassTransport } from '../../src/adapters/ai/multipass/openai-transport';
 import type { FakeTransport } from '../../src/adapters/ai/multipass/scheduler';
 import { AttemptBudget } from './f02-simulation';
 import { correction, fixture, seed } from './f02-fixtures';
+import { captureMultipassTransport } from './f02-live-capture';
 
 // One-off observational experiment. Skipped by normal pnpm test.
 // It calls real OpenAI only with explicit opt-in AND explicit credentials.
@@ -33,6 +34,8 @@ live('compares one real C01 staged interpretation: single vs multipass', async (
     const baseline = sha256({ messages, factSchema: demoBundle.factSchema, agentProfile: demoBundle.agentProfile });
     const before = budget.attempts;
     const started = Date.now();
+    let diagnostic: MultipassDiagnostic | null = null;
+    const passRecords: unknown[] = [];
 
     const interpreter = strategy === 'single'
       ? new OpenAIInterpreter((() => {
@@ -48,10 +51,12 @@ live('compares one real C01 staged interpretation: single vs multipass', async (
           const transport: FakeTransport = {
             execute: request => budget.call(innerSignal => provider.execute({ ...request, signal: innerSignal }), request.signal)
           };
-          return transport;
-        })());
+          return captureMultipassTransport(transport, passRecords);
+        })(), value => { diagnostic = value; }, true);
 
     const interpretStage = async (stage: 'initial' | 'correction') => {
+      diagnostic = null;
+      passRecords.length = 0;
       const stageInput = {
         caseSnapshot,
         messages: caseSnapshot.messages,
@@ -76,7 +81,7 @@ live('compares one real C01 staged interpretation: single vs multipass', async (
             status: result.error.message.includes('revisión humana') ? 'human_review' : 'error',
             error: { code: result.error.code, message: result.error.message }
           };
-      return { result, record: { stage, inputHash, historyCount: caseSnapshot.assertions.length, latencyMs: Date.now() - stageStarted, observed } };
+      return { result, record: { stage, inputHash, historyCount: caseSnapshot.assertions.length, latencyMs: Date.now() - stageStarted, observed, ...(strategy === 'multipass' && { diagnostic, passRecords: structuredClone(passRecords) }) } };
     };
 
     const first = await interpretStage('initial');

@@ -27,6 +27,7 @@ Options:
   --scenario initial|gross-correction|trust-paraphrase|opt-out
                                  Default: initial; requires a single case
   --mode interpreter|end-to-end  Default: interpreter
+  --strategy single|multipass    Default: single
   --repeat N                     Independent repetitions (default: 1, max: 10)
   --max-requests N               Hard budget (default and maximum: 20)
   --output PATH                  JSON file or output directory; default .eval-results/
@@ -42,12 +43,12 @@ const fail = (message) => { console.error(`Error: ${message}\n\n${usage}`); proc
 const opts = {
   suite: 'canonical', caseId: 'all', scenario: 'initial', mode: 'interpreter',
   repeat: 1, maxRequests: 20, output: '.eval-results',
-  allowFailures: false, dryRun: false
+  allowFailures: false, dryRun: false, strategy: 'single'
 };
 const values = new Map([
   ['--suite', 'suite'], ['--case', 'caseId'], ['--scenario', 'scenario'],
   ['--mode', 'mode'], ['--repeat', 'repeat'],
-  ['--max-requests', 'maxRequests'], ['--output', 'output']
+  ['--max-requests', 'maxRequests'], ['--output', 'output'], ['--strategy', 'strategy']
 ]);
 for (let i = 2; i < process.argv.length; i++) {
   const arg = process.argv[i];
@@ -65,6 +66,7 @@ for (let i = 2; i < process.argv.length; i++) {
 if (!['canonical', 'followups'].includes(opts.suite)) fail('Invalid --suite');
 if (!['all', 'laura', 'javier', 'rosa'].includes(opts.caseId)) fail('Invalid --case');
 if (!['interpreter', 'end-to-end'].includes(opts.mode)) fail('Invalid --mode');
+if (!['single', 'multipass'].includes(opts.strategy)) fail('Invalid --strategy');
 if (!Number.isSafeInteger(opts.repeat) || opts.repeat < 1 || opts.repeat > 10) fail('Invalid --repeat');
 if (!Number.isSafeInteger(opts.maxRequests) || opts.maxRequests < 1 || opts.maxRequests > 20) fail('Budget must be between 1 and 20');
 const scenarioMap = {
@@ -85,9 +87,9 @@ if (opts.suite === 'followups') {
   scenarioIds = [id];
 }
 if (scenarioIds.includes('C01') && opts.mode !== 'end-to-end') fail('C01 needs --mode end-to-end to test the prior case state and later correction');
-const ceiling = scenarioIds.reduce((sum, id) => sum + (id === 'C01' ? 4 : 2), 0) * opts.repeat;
+const ceiling = scenarioIds.reduce((sum, id) => sum + (id === 'C01' ? 2 : 1) * (opts.strategy === 'multipass' ? 7 + (opts.mode === 'end-to-end' ? 1 : 0) : 2), 0) * opts.repeat;
 if (ceiling > opts.maxRequests) fail(`Maximum expected ${ceiling} provider requests exceeds --max-requests ${opts.maxRequests}. Reduce --repeat or select fewer scenarios.`);
-console.log(`Cases: ${scenarioIds.join(', ')} × ${opts.repeat} | mode=${opts.mode} | max requests=${opts.maxRequests} | preflight ceiling=${ceiling}`);
+console.log(`Cases: ${scenarioIds.join(', ')} × ${opts.repeat} | mode=${opts.mode} | strategy=${opts.strategy} | max requests=${opts.maxRequests} | preflight ceiling=${ceiling}`);
 if (opts.dryRun) { console.log('DRY RUN: no API calls, no artifact generated.'); process.exit(0); }
 
 for (const filename of ['.env.local', '.env']) {
@@ -103,7 +105,7 @@ const requested = isAbsolute(opts.output) ? opts.output : resolve(opts.output);
 const outputFile = extname(requested) === '.json' ? requested : join(requested, `f01-${stamp}.json`);
 mkdirSync(dirname(outputFile), { recursive: true });
 
-const config = { scenarioIds, repeat: opts.repeat, mode: opts.mode, maxRequests: opts.maxRequests, allowFailures: opts.allowFailures };
+const config = { scenarioIds, repeat: opts.repeat, mode: opts.mode, strategy: opts.strategy, maxRequests: opts.maxRequests, allowFailures: opts.allowFailures };
 const child = spawnSync(process.execPath, [vitest, 'run', 'tests/evaluation/f01-cli.test.ts', '--reporter=verbose'], {
   cwd: process.cwd(),
   env: {
