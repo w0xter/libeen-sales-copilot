@@ -17,14 +17,15 @@ for (let i = 2; i < process.argv.length; i++) {
   opts[key] = process.argv[++i];
 }
 if (opts['dry-run'] === opts.simulate) fail('Choose exactly one of --dry-run or --simulate; real execution is disabled');
-if (!['single', 'multipass', 'both'].includes(opts.strategy) || !['interpreter', 'end-to-end'].includes(opts.mode)) fail('Invalid strategy or mode');
+if (!['single', 'multipass', 'both'].includes(opts.strategy) || !['interpreter', 'staged-interpreter', 'end-to-end'].includes(opts.mode)) fail('Invalid strategy or mode');
 if (!/^[a-zA-Z0-9._-]{1,100}$/.test(opts.model)) fail('Invalid model');
 const repeat = Number(opts.repeat), limit = Number(opts['max-requests']);
 if (!/^\d+$/.test(opts.repeat) || !Number.isSafeInteger(repeat) || repeat < 1 || repeat > 10 || !/^\d+$/.test(opts['max-requests']) || !Number.isSafeInteger(limit) || limit < 1 || limit > 20) fail('Invalid repeat or request budget (maximum 20)');
 for (const key of ['max-cost', 'max-seconds']) if (opts[key] !== null && (!/^\d+(\.\d+)?$/.test(opts[key]) || Number(opts[key]) <= 0)) fail(`Invalid ${key}`);
 const ids = opts.case.split(',').sort();
 if (new Set(ids).size !== ids.length || ids.some(id => !Object.hasOwn(cases, id))) fail('Unknown or repeated case');
-if (ids.includes('C01') && opts.mode !== 'end-to-end') fail('C01 requires end-to-end');
+if (opts.simulate && opts.mode === 'end-to-end') fail('Simulated end-to-end is not implemented; use staged-interpreter');
+if (ids.includes('C01') && !['staged-interpreter', 'end-to-end'].includes(opts.mode)) fail('C01 requires staged-interpreter or end-to-end planning');
 const rows = ids.map(id => {
   const analyses = cases[id], drafts = opts.mode === 'end-to-end' ? analyses : 0;
   return { id, analyses, review: 'not_independently_reviewed', single: { typical: analyses * 2, maximum: analyses * 2 + drafts }, multipass: { typical: analyses * 5, maximum: analyses * 7 + drafts } };
@@ -38,8 +39,10 @@ if (opts.simulate) {
   const dir = mkdtempSync(join(tmpdir(), 'f02-simulation-'));
   const target = join(dir, 'report.json');
   try {
-    const config = { ids, repeat, model: opts.model, maxRequests: limit, timeoutMs: opts['max-seconds'] === null ? 30000 : Number(opts['max-seconds']) * 1000, strategies };
-    const child = spawnSync(process.execPath, [resolve('node_modules/vitest/vitest.mjs'), 'run', 'tests/evaluation/f02-simulate-cli.test.ts'], { encoding: 'utf8', env: { PATH: process.env.PATH ?? '', NODE_ENV: 'test', F02_SIMULATE: '1', F02_SIM_CONFIG: JSON.stringify(config), F02_SIM_OUTPUT: target }, timeout: config.timeoutMs + 10000 });
+    const git = spawnSync('git', ['rev-parse', 'HEAD'], { encoding:'utf8' });
+    const dirty = spawnSync('git', ['status', '--porcelain'], { encoding:'utf8' });
+    const config = { ids, repeat, model: opts.model, commit: git.status === 0 ? git.stdout.trim() : null, workspaceDirty: dirty.status === 0 ? Boolean(dirty.stdout.trim()) : null, singlePromptSourceHash: createHash('sha256').update(readFileSync('src/adapters/ai/openai.ts')).digest('hex'), maxRequests: limit, timeoutMs: opts['max-seconds'] === null ? 30000 : Number(opts['max-seconds']) * 1000, strategies };
+    const child = spawnSync(process.execPath, [resolve('node_modules/vitest/vitest.mjs'), 'run', 'tests/evaluation/f02-simulate-cli.test.ts'], { encoding: 'utf8', env: { PATH: process.env.PATH ?? '', NODE_ENV: 'test', ...(process.env.NODE_OPTIONS ? { NODE_OPTIONS: process.env.NODE_OPTIONS } : {}), F02_SIMULATE: '1', F02_SIM_CONFIG: JSON.stringify(config), F02_SIM_OUTPUT: target }, timeout: config.timeoutMs + 10000 });
     if (child.status !== 0) throw Error('Simulation worker failed');
     const report = JSON.parse(readFileSync(target, 'utf8'));
     report.monetaryLimitApplied = false;

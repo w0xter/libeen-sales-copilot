@@ -31,3 +31,16 @@ describe('F02 offline preflight', () => {
     expect(a.model).toBe('model-x');
   });
 });
+
+describe('staged mode', () => {
+  it('plans the actual two-stage interpreter path without drafts', () => {
+    const result = run('--dry-run', '--case', 'C01', '--mode', 'staged-interpreter');
+    expect(result.status).toBe(0);
+    expect(JSON.parse(result.stdout).totals).toEqual({ typical: 14, maximum: 18 });
+  });
+  it('rejects a simulated end-to-end run', () => {
+    const result = run('--simulate', '--case', 'C01', '--mode', 'end-to-end');
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain('end-to-end');
+  });
+});

@@ -284,3 +284,7 @@ Se auditó el CLI F-01 y el manifiesto F-01; se añadió un preflight exclusivam
 ### 2026-11-15 — F-02 comparador offline parcial
 
 Se añadió una simulación con adaptadores de producción y transportes sintéticos en memoria, presupuesto compartido de intentos, emparejamiento y métricas parciales. La simulación no llama al proveedor; las limitaciones de respuestas, historial de C01, cobertura de métricas y cancelación se documentan en `docs/evaluation/F02_MULTIPASS_PREP.md`. MP-G6 PREP permanece parcial y MP-G6 real no se ejecutó.
+
+### 2026-11-15 — F-02 cierre offline, avance parcial
+
+Se separaron guiones, fixtures y proyección del oráculo; se añadió el recorrido `staged-interpreter`, transferencias históricas, señales y hechos simulados de los seis escenarios, cancelación propagada, detección parcial de ocurrencias y evidencias, y pruebas de mutación y red interceptada. Los resultados siguen siendo simulados. Las métricas pendientes y la falta de revisión independiente se describen en `docs/evaluation/F02_MULTIPASS_PREP.md`; MP-G6 PREP permanece parcial. Sin llamadas al proveedor.
