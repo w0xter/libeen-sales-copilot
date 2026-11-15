@@ -1,0 +1,5 @@
+# P8.1 — Ficha efectiva
+
+`deriveEffective` es la representación compartida de campos efectivos: al mantener una corrección selecciona el valor humano; al adoptar selecciona la nueva declaración y su fuente. Las evidencias originales y nuevas se conservan. Conflictos abiertos, correspondencias dudosas, varias propuestas sin decisión inequívoca y revisiones huérfanas no se consolidan. Las correcciones de texto no heredan sujeto, base ni precisión de la propuesta: sus metadatos efectivos son desconocidos y se conserva la nota humana.
+
+`tests/unit/intake/effective.test.ts` comprueba mantener/adoptar, conflicto pendiente, confirmación insuficiente y reanálisis con mensajes renumerados. Las pruebas focalizadas, `pnpm typecheck` y `pnpm lint` pasaron. La interfaz muestra explícitamente el valor efectivo y conserva el historial de candidatos. La comparación sigue siendo textual; fuentes idénticas o varias propuestas previas requieren resolución adicional y se mantienen en conflicto. La validación visual sigue pendiente.
