@@ -1,9 +1,18 @@
 import { fieldNames, type EffectiveSheet, type Field } from './effective';
 import type { ReviewedIssue, Stage } from './commercial';
 export const fieldLabels: Record<Field, string> = { interest: 'Interés en SmartHousing', location: 'Zona de búsqueda', horizon: 'Horizonte de mudanza', buyers: 'Compradores', income: 'Ingresos mensuales', savings: 'Ahorros declarados', debts: 'Cuotas / deudas' };
-export function crmPreview({ alias, stage, sheet, issues, current }: { alias: string; stage: Stage; sheet: EffectiveSheet; issues: ReviewedIssue[]; current: boolean }): string | null {
+export type ExportBlocker = 'stale' | 'empty' | 'conflict' | 'stage';
+export function exportBlockers({ sheet, current, stage, suggested }: { sheet: EffectiveSheet; current: boolean; stage: Stage; suggested: Stage }): ExportBlocker[] {
+  const blockers: ExportBlocker[] = [];
+  if (!current) blockers.push('stale');
+  if (!fieldNames.some(field => sheet[field].status === 'available' && !!sheet[field].selected)) blockers.push('empty');
+  if (fieldNames.some(field => sheet[field].status === 'conflict')) blockers.push('conflict');
+  if (stage === 'Nuevo' && suggested !== 'Nuevo' || stage === 'Cualificado' && suggested !== 'Cualificado') blockers.push('stage');
+  return blockers;
+}
+export function crmPreview({ alias, stage, sheet, issues, current, stageNeedsReview = false, previewOnly = false }: { alias: string; stage: Stage; stageNeedsReview?: boolean; previewOnly?: boolean; sheet: EffectiveSheet; issues: ReviewedIssue[]; current: boolean }): string | null {
   if (!current) return null;
-  const lines = [`Ficha CRM manual · ${alias || 'Sin alias'}`, `Etapa actual: ${stage} (completitud comercial, no aprobación)`, 'Datos autodeclarados; revisión operativa no equivale a verificación documental.', ''];
+  const lines = [`${previewOnly ? 'Vista previa no exportable' : 'Ficha CRM manual'} · ${alias || 'Sin alias'}`, stageNeedsReview ? `Etapa pendiente de revisión (etapa anterior: ${stage})` : `Etapa actual: ${stage} (completitud comercial, no aprobación)`, 'Datos autodeclarados; revisión operativa no equivale a verificación documental.', ''];
   for (const field of fieldNames) {
     const item = sheet[field];
     if (item.status !== 'available' || !item.selected) {
@@ -20,6 +29,6 @@ export function crmPreview({ alias, stage, sheet, issues, current }: { alias: st
   lines.push('', 'Incidencias:');
   if (!issues.length) lines.push('  Ninguna detectada.');
   else issues.forEach(i => lines.push(`  [${i.status}] ${i.category}: ${i.description ?? ''}`));
-  lines.push('', 'Copia manual para CRM; no se ha realizado ninguna sincronización.');
+  lines.push('', previewOnly ? 'Revisión pendiente; esta vista no es una ficha actual exportable.' : 'Copia manual para CRM; no se ha realizado ninguna sincronización.');
   return lines.join('\n');
 }

@@ -1,4 +1,5 @@
 import type { extract, Message } from './extraction';
+import { intakeRules, type IntakeRules } from './rules';
 
 type Extraction = Awaited<ReturnType<typeof extract>>;
 type Fields = Extract<Extraction, { ok: true }>['fields'];
@@ -13,16 +14,15 @@ export type Issue = {
   review: 'clarification' | 'human';
 };
 
-const essential: Field[] = ['interest', 'location', 'horizon', 'buyers', 'income', 'savings'];
 
 /** Propuestas revisables; la extracción original permanece en poder del consumidor. */
-export function identifyIssues(extraction: Extraction, messages: Message[]):
+export function identifyIssues(extraction: Extraction, messages: Message[], rules: IntakeRules = intakeRules):
   | { ok: false; error: Extract<Extraction, { ok: false }>['error'] }
   | { ok: true; issues: Issue[]; incomplete: boolean } {
   if (!extraction.ok) return { ok: false, error: extraction.error };
   const issues: Issue[] = [];
   const add = (issue: Omit<Issue, 'id'>) => issues.push({ id: `issue-${issues.length + 1}`, ...issue });
-  for (const field of essential) {
+  for (const field of rules.requiredFields) {
     if (!extraction.fields[field].length) add({ category: 'missing', field, description: `Falta información sobre ${field}.`, review: 'clarification' });
   }
   for (const field of Object.keys(extraction.fields) as Field[]) {

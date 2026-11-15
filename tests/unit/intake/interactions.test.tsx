@@ -27,7 +27,9 @@ describe('interacciones de la interfaz', () => {
     vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true);
     const writeText = vi.fn().mockResolvedValue(undefined);
     vi.stubGlobal('navigator', { clipboard: { writeText } });
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce({ ok: true, json: async () => response }).mockRejectedValueOnce(new Error('provider_error')));
+    const location = { field: 'location', value: 'Madrid', messageId: 'm1', quote: 'Hola', precision: 'explicit', subject: 'unknown', incomeBasis: 'unknown', debtIncluded: 'unknown', uncertainty: null };
+    const usable = { ...response, extraction: { ...response.extraction, fields: { ...fields, location: [location] } } };
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce({ ok: true, json: async () => usable }).mockRejectedValueOnce(new Error('provider_error')));
     await act(async () => { renderer = create(<IntakeWorkspace />); });
     await act(async () => { await button(renderer.root, 'Analizar conversación ↗').props.onClick(); });
     await act(async () => { await button(renderer.root, 'Copiar ficha CRM').props.onClick(); });
@@ -61,6 +63,72 @@ describe('interacciones de la interfaz', () => {
     act(() => button(renderer.root, 'Usar nueva declaración').props.onClick());
     expect(renderer.root.findByProps({ 'aria-label': 'Vista previa de ficha CRM' }).props.value).toContain('4.100 €/mes [adopted]');
     expect(renderer.root.findByProps({ 'aria-label': 'Vista previa de ficha CRM' }).props.value).toContain('Revisión humana conservada: corrected · 3.600 €/mes');
+  });
+
+  it('exige revisar una etapa cualificada si llega una alerta sensible', async () => {
+    vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true);
+    vi.stubGlobal('crypto', { randomUUID: () => 'stage' });
+    const valueByField: Record<string, string> = { interest: 'Interesado en SmartHousing', location: 'Madrid', horizon: 'un año', buyers: 'dos', income: '3.000 €/mes', savings: '0' };
+    const candidates = Object.entries(valueByField).map(([field, value]) => ({ field, value, messageId: 'm1', quote: value, precision: 'explicit', subject: 'joint', incomeBasis: 'net', debtIncluded: 'included', uncertainty: null }));
+    const full = { ...response, messages: [{ id: 'm1', role: 'customer', text: Object.values(valueByField).join(', ') }], extraction: { ...response.extraction, fields: { ...fields, ...Object.fromEntries(candidates.map(c => [c.field, [c]])) } } };
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => full }));
+    await act(async () => { renderer = create(<IntakeWorkspace />); });
+    await act(async () => { await button(renderer.root, 'Analizar conversación ↗').props.onClick(); });
+    expect(renderer.root.findByProps({ 'aria-label': 'Vista previa de ficha CRM' }).props.value).toContain('Etapa actual: En cualificación');
+    act(() => button(renderer.root, 'Confirmar etapa sugerida').props.onClick());
+    expect(renderer.root.findByProps({ 'aria-label': 'Vista previa de ficha CRM' }).props.value).toContain('Etapa actual: Cualificado');
+    act(() => renderer.root.findByProps({ id: 'manual-alert' }).props.onChange({ target: { value: 'No contactar' } }));
+    act(() => renderer.root.findAllByType('form')[0].props.onSubmit({ preventDefault() {} }));
+    expect(button(renderer.root, 'Copiar ficha CRM').props.disabled).toBe(true);
+    expect(renderer.root.findByProps({ 'aria-label': 'Vista previa de ficha CRM' }).props.value).toContain('Etapa pendiente de revisión');
+    act(() => button(renderer.root, 'Confirmar etapa sugerida').props.onClick());
+    expect(renderer.root.findByProps({ 'aria-label': 'Vista previa de ficha CRM' }).props.value).toContain('Etapa actual: En cualificación');
+  });
+  it('bloquea copiar si un reanálisis añade una contradicción material', async () => {
+    vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true);
+    const candidate = { field: 'income', value: '3.000 €/mes', messageId: 'm1', quote: '3.000', precision: 'explicit', subject: 'joint', incomeBasis: 'net', debtIncluded: 'unknown', uncertainty: null };
+    const first = { ...response, messages: [{ id: 'm1', role: 'customer', text: 'Ingresos 3.000' }], extraction: { ...response.extraction, fields: { ...fields, income: [candidate] } } };
+    const second = { ...first, messages: [...first.messages, { id: 'm2', role: 'customer', text: 'Ingresos 4.000' }], extraction: { ...first.extraction, fields: { ...fields, income: [candidate, { ...candidate, messageId: 'm2', quote: '4.000', value: '4.000 €/mes' }] } } };
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce({ ok: true, json: async () => first }).mockResolvedValueOnce({ ok: true, json: async () => second }));
+    await act(async () => { renderer = create(<IntakeWorkspace />); });
+    await act(async () => { await button(renderer.root, 'Analizar conversación ↗').props.onClick(); });
+    expect(button(renderer.root, 'Copiar ficha CRM').props.disabled).toBe(false);
+    act(() => button(renderer.root, 'Editar texto').props.onClick());
+    act(() => renderer.root.findByProps({ 'aria-label': 'Texto original de la conversación' }).props.onChange({ target: { value: 'Cliente: Ingresos 3.000\nCliente: Ingresos 4.000' } }));
+    await act(async () => { await button(renderer.root, 'Reanalizar conversación ↗').props.onClick(); });
+    expect(button(renderer.root, 'Copiar ficha CRM').props.disabled).toBe(true);
+    expect(renderer.root.findByProps({ 'aria-label': 'Vista previa de ficha CRM' }).props.value).toContain('Conflicto sin resolver');
+    expect(renderer.root.findByProps({ 'aria-label': 'Vista previa de ficha CRM' }).props.value).toContain('Vista previa no exportable');
+    expect(button(renderer.root, 'Revisar ficha')).toBeDefined();
+  });
+  it('ofrece recuperación cuando no hay datos utilizables', async () => {
+    vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true);
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => response }));
+    await act(async () => { renderer = create(<IntakeWorkspace />); });
+    await act(async () => { await button(renderer.root, 'Analizar conversación ↗').props.onClick(); });
+    expect(button(renderer.root, 'Copiar ficha CRM').props.disabled).toBe(true);
+    expect(button(renderer.root, 'Revisar conversación')).toBeDefined();
+  });
+
+  it('no exporta Cualificado tras reanálisis que introduce un conflicto', async () => {
+    vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true);
+    const values: Record<string, string> = { interest: 'Interesado en SmartHousing', location: 'Madrid', horizon: 'un año', buyers: 'dos', income: '3.000 €/mes', savings: '0' };
+    const candidates = Object.entries(values).map(([field, value]) => ({ field, value, messageId: 'm1', quote: value, precision: 'explicit', subject: 'joint', incomeBasis: 'net', debtIncluded: 'included', uncertainty: null }));
+    const first = { ...response, messages: [{ id: 'm1', role: 'customer', text: Object.values(values).join(', ') }], extraction: { ...response.extraction, fields: { ...fields, ...Object.fromEntries(candidates.map(c => [c.field, [c]])) } } };
+    const income = candidates.find(c => c.field === 'income')!;
+    const second = { ...first, messages: [...first.messages, { id: 'm2', role: 'customer', text: '4.000 €/mes' }], extraction: { ...first.extraction, fields: { ...first.extraction.fields, income: [income, { ...income, messageId: 'm2', quote: '4.000 €/mes', value: '4.000 €/mes' }] } } };
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce({ ok: true, json: async () => first }).mockResolvedValueOnce({ ok: true, json: async () => second }));
+    await act(async () => { renderer = create(<IntakeWorkspace />); });
+    await act(async () => { await button(renderer.root, 'Analizar conversación ↗').props.onClick(); });
+    act(() => button(renderer.root, 'Confirmar etapa sugerida').props.onClick());
+    expect(renderer.root.findByProps({ 'aria-label': 'Vista previa de ficha CRM' }).props.value).toContain('Etapa actual: Cualificado');
+    act(() => button(renderer.root, 'Editar texto').props.onClick());
+    act(() => renderer.root.findByProps({ 'aria-label': 'Texto original de la conversación' }).props.onChange({ target: { value: 'Cliente: conversación ficticia nueva' } }));
+    await act(async () => { await button(renderer.root, 'Reanalizar conversación ↗').props.onClick(); });
+    const preview = renderer.root.findByProps({ 'aria-label': 'Vista previa de ficha CRM' }).props.value;
+    expect(preview).toContain('Etapa pendiente de revisión (etapa anterior: Cualificado)');
+    expect(preview).toContain('Conflicto sin resolver');
+    expect(button(renderer.root, 'Copiar ficha CRM').props.disabled).toBe(true);
   });
 
 });
