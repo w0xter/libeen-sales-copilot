@@ -62,8 +62,26 @@ export function reconcile(input: Input) {
     occurrenceIds.add(occurrenceId);
     for (const c of group.candidates) candidateIds.add(c.candidateId);
     const candidates = [...group.candidates].sort((a, b) => a.candidateId.localeCompare(b.candidateId));
-    const supported = candidates.filter(c => input.reviews.filter(r => r.groupId === group.groupId && r.candidateId === c.candidateId).length === 1 && input.reviews.filter(r => r.groupId === group.groupId && r.candidateId === c.candidateId && ContextReviewSchema.safeParse(r).success && r.atomicity === 'atomic' && r.support === 'supported' && evidenceAnchored(r.evidenceRefs, input.messages) && sameEvidence(r.evidenceRefs, c.evidenceRefs, input.messages)).length === 1);
-    const variants = new Set(candidates.map(dimensions));
+    // A verdict is usable only when it is unique, atomic and anchored to this
+    // candidate's evidence. It is still a contextual judgment, not proof.
+    const verdict = (c: ClaimCandidate) => {
+      const reviews = input.reviews.filter(r => r.groupId === group.groupId && r.candidateId === c.candidateId);
+      const r = reviews[0];
+      return reviews.length === 1 && ContextReviewSchema.safeParse(r).success && r.atomicity === 'atomic' && evidenceAnchored(r.evidenceRefs, input.messages) && sameEvidence(r.evidenceRefs, c.evidenceRefs, input.messages) ? r.support : undefined;
+    };
+    const supported = candidates.filter(c => verdict(c) === 'supported');
+    // Refuting the same assertion another reviewer supports is itself a
+    // disagreement; neither review is sufficient to exclude that assertion.
+    const refuted = candidates.filter(c => verdict(c) === 'refuted' && !supported.some(s => dimensions(s) === dimensions(c)));
+    const unresolvedContext = candidates.some(c => {
+      const status = verdict(c);
+      const hasReview = input.reviews.some(r => r.groupId === group.groupId && r.candidateId === c.candidateId);
+      return status === 'refuted' || status === 'uncertain' || status === 'absent' || (hasReview && !status);
+    });
+    const pendingTrace = (reason: string) => {
+      for (const c of candidates) trace.push({ groupId: group.groupId, candidateId: c.candidateId, decision: refuted.includes(c) ? 'excluded' : 'pending', reason: refuted.includes(c) ? 'Contextually refuted' : reason });
+    };
+    const variants = new Set(candidates.filter(c => !refuted.includes(c)).map(dimensions));
     const previousAssertionIds = [...new Set(candidates.flatMap(c => c.correction ? [c.correction.previousAssertionId] : []))].sort();
     const priorAssertions = input.historicalAssertions.filter(a => previousAssertionIds.includes(a.assertionId));
     if (previousAssertionIds.length && !validateAssertions(priorAssertions, input.messages, input.factSchema).ok) return ReconciliationResultSchema.parse({ status: 'failed', code: 'invalid_history', message: 'Historical evidence or assertion is invalid' });
@@ -85,11 +103,19 @@ export function reconcile(input: Input) {
       continue;
     }
     const response = responses[0];
+    // Exclusion is not affirmative support for any remaining alternative, and
+    // an adjudication cannot erase a conflicting contextual review.
+    if (unresolvedContext) {
+      disputes.push({ ...dispute, reason: supported.length && candidates.some(c => verdict(c) === 'refuted') ? 'Conflicting contextual reviews' : candidates.some(c => verdict(c) === 'uncertain') ? 'Uncertain contextual support' : candidates.some(c => verdict(c) === 'refuted') ? 'Contextual refutation requires review' : 'Invalid or absent contextual support' });
+      reasons.push(`Unresolved: ${group.groupId}`);
+      pendingTrace('Contextual disagreement requires review');
+      continue;
+    }
     const selected = response?.resolution.status === 'selected' ? supported.find(c => c.candidateId === (response.resolution.status === 'selected' ? response.resolution.candidateId : '')) : !response && variants.size === 1 && supported.length && (!input.materialFieldIds.includes(group.fieldId) || new Set(supported.map(c => c.extractorId)).size >= 2) ? supported[0] : undefined;
     if (!selected || selected.correction || selected.value === undefined || selected.precision === 'ambiguous' || selected.precision === 'inferred') {
       disputes.push(dispute);
       if (input.materialFieldIds.includes(group.fieldId) || candidates.some(c => c.correction)) reasons.push(`Unresolved: ${group.groupId}`);
-      for (const c of candidates) trace.push({ groupId: group.groupId, candidateId: c.candidateId, decision: 'pending', reason: dispute.reason });
+      pendingTrace(dispute.reason);
       continue;
     }
     const message = input.messages.find(m => m.messageId === selected.occurrence.messageId)!;
