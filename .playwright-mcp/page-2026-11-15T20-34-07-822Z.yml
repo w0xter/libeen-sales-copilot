@@ -1,0 +1,91 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - link "libeen / intake" [ref=e4] [cursor=pointer]:
+      - /url: "?concept=a"
+    - navigation "Conceptos" [ref=e5]:
+      - link "A Commercial Brief" [ref=e6] [cursor=pointer]:
+        - /url: "?concept=a"
+      - link "B Operator Workbench" [ref=e7] [cursor=pointer]:
+        - /url: "?concept=b"
+      - link "C Action Queue" [ref=e8] [cursor=pointer]:
+        - /url: "?concept=c"
+    - generic [ref=e9]: Exploración · datos ficticios
+  - main [ref=e10]:
+    - generic [ref=e11]:
+      - generic [ref=e12]:
+        - text: EXPEDIENTE FICTICIO / LAURA
+        - heading [level=1] [ref=e13]:
+          - text: Una compra en
+          - emphasis [ref=e14]: Valencia.
+        - paragraph [ref=e15]: En cualificación · Información declarada por el cliente
+      - button "Editar conversación" [ref=e16] [cursor=pointer]
+    - generic [ref=e17]:
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - text: SIGUIENTE PASO
+          - heading "Revisa la solicitud sensible" [level=2] [ref=e20]
+          - paragraph [ref=e21]: Antes de formular una pregunta, decide cómo tratar la petición del cliente.
+          - button "Ir a la revisión ↗" [ref=e22] [cursor=pointer]
+        - generic [ref=e23]:
+          - generic [ref=e24]:
+            - generic [ref=e25]:
+              - text: PERFIL COMERCIAL
+              - heading "Lo que sabemos" [level=2] [ref=e26]
+            - generic [ref=e27]: 7 atributos
+          - generic [ref=e28]:
+            - generic [ref=e29]:
+              - generic [ref=e30]: Interés
+              - strong [ref=e31]: Explorar SmartHousing
+              - button "Ver fuente de Interés" [ref=e32] [cursor=pointer]: Fuente m1
+            - generic [ref=e33]:
+              - generic [ref=e34]: Zona de búsqueda
+              - strong [ref=e35]: Valencia
+              - button "Ver fuente de Zona de búsqueda" [ref=e36] [cursor=pointer]: Fuente m1
+            - generic [ref=e37]:
+              - generic [ref=e38]: Horizonte
+              - strong [ref=e39]: Unos 6 meses
+              - button "Ver fuente de Horizonte" [ref=e40] [cursor=pointer]: Fuente m2
+            - generic [ref=e41]:
+              - generic [ref=e42]: Compradores
+              - strong [ref=e43]: Dos personas
+              - button "Ver fuente de Compradores" [ref=e44] [cursor=pointer]: Fuente m2
+            - generic [ref=e45]:
+              - generic [ref=e46]: Ingresos mensuales
+              - strong [ref=e47]: 3.800 € · base sin aclarar
+              - button "Ver fuente de Ingresos mensuales" [ref=e48] [cursor=pointer]: Fuente m3
+            - generic [ref=e49]:
+              - generic [ref=e50]: Ahorros declarados
+              - strong [ref=e51]: 25.000 €
+              - button "Ver fuente de Ahorros declarados" [ref=e52] [cursor=pointer]: Fuente m4
+            - generic [ref=e53]:
+              - generic [ref=e54]: Cuota / deudas
+              - strong [ref=e55]: 240 € / mes · coche
+              - button "Ver fuente de Cuota / deudas" [ref=e56] [cursor=pointer]: Fuente m4
+      - complementary [ref=e57]:
+        - generic [ref=e58]:
+          - generic [ref=e59]:
+            - generic [ref=e60]:
+              - text: ATENCIÓN
+              - heading "Incidencias" [level=2] [ref=e61]
+            - generic [ref=e62]: 2 pendientes
+          - generic [ref=e63]:
+            - generic [ref=e64]:
+              - strong [ref=e65]: Revisión del asesor necesaria
+              - paragraph [ref=e66]: El cliente pide modificar ingresos para que parezcan mayores. No se debe presentar esa cifra como verificada.
+            - button "Marcar revisada" [ref=e67] [cursor=pointer]
+          - generic [ref=e68]:
+            - generic [ref=e69]:
+              - strong [ref=e70]: Ingresos · conflicto de revisión
+              - paragraph [ref=e71]: Una revisión anterior no coincide con la propuesta actual. La ficha CRM está bloqueada.
+            - button "Resolver ejemplo" [ref=e72] [cursor=pointer]
+        - generic [ref=e73]:
+          - generic [ref=e74]:
+            - text: SALIDA MANUAL
+            - heading "Ficha para CRM" [level=2] [ref=e75]
+            - paragraph [ref=e76]: Bloqueada por un conflicto pendiente. Puedes consultar la vista previa.
+          - button "Ver vista previa" [ref=e77] [cursor=pointer]
+        - generic [ref=e78]:
+          - heading "Añadir información" [level=2] [ref=e79]
+          - paragraph [ref=e80]: La nueva intervención deja el resultado anterior desactualizado.
+          - textbox "Escribe una intervención ficticia" [ref=e81]
+          - button "Añadir intervención" [ref=e82] [cursor=pointer]

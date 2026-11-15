@@ -1,0 +1,18 @@
+{
+  "buildPath": "comp",
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          "public/design-exploration/index.html"
+        ],
+        "createdAt": "2026-11-15T20:36:15.592Z",
+        "reason": "P13 exploration: warm paper is an intentional palette in the A and C comparison prototypes; B uses a cool palette."
+      }
+    ]
+  }
+}
