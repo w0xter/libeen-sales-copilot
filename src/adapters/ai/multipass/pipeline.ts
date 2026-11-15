@@ -6,6 +6,7 @@ import { groupClaims } from './grouping';
 import { reconcile } from './reconcile';
 import { Scheduler, type FakeTransport } from './scheduler';
 import { createTrace, type Role } from './trace';
+import { bindSubjects } from './subjects';
 
 export type Snapshot = { caseId: string; messages: Message[]; factSchema: FactSchema; agentProfile: AgentProfile; knownSubjects: SubjectRef[]; historicalAssertions: FactAssertion[]; historicalBlockers: Blocker[]; materialFieldIds: string[] };
 const extraction = z.strictObject({ claims: z.array(RawClaimSchema) });
@@ -57,8 +58,12 @@ export async function runPipeline(options: { runId: string; snapshot: Snapshot; 
     const failure = fail('incomplete_contextual_review');
     return { ...failure, diagnostics: grouped.diagnostics };
   }
-  const input = { factSchema: snapshot.factSchema, knownSubjects: snapshot.knownSubjects, historicalAssertions: snapshot.historicalAssertions, diagnostics: grouped.diagnostics, groups: grouped.groups, reviews: contextual.reviews, messages: snapshot.messages, materialFieldIds: snapshot.materialFieldIds, schemaVersion: snapshot.factSchema.version, safety: { scanStatus: 'complete' as const, reviewStatus: 'complete' as const, candidates: [...scanResult.candidates, ...(contextual.candidates ?? [])], verdicts: contextual.verdicts, historicalBlockers: snapshot.historicalBlockers } };
+  const binding = bindSubjects({ groups: grouped.groups, reviews: contextual.reviews, messages: snapshot.messages, historicalAssertions: snapshot.historicalAssertions, knownSubjects: snapshot.knownSubjects, caseId: snapshot.caseId, diagnostics: grouped.diagnostics });
+  const input = { factSchema: snapshot.factSchema, knownSubjects: [...snapshot.knownSubjects, ...binding.authorizedSubjects], historicalAssertions: snapshot.historicalAssertions, diagnostics: grouped.diagnostics, groups: binding.groups, reviews: contextual.reviews, messages: snapshot.messages, materialFieldIds: snapshot.materialFieldIds, schemaVersion: snapshot.factSchema.version, safety: { scanStatus: 'complete' as const, reviewStatus: 'complete' as const, candidates: [...scanResult.candidates, ...(contextual.candidates ?? [])], verdicts: contextual.verdicts, historicalBlockers: snapshot.historicalBlockers } };
   let result = reconcile(input);
+  if (binding.status === 'human_review_required' && result.status !== 'failed') {
+    result = ReconciliationResultSchema.parse({ status: 'human_review_required', disputes: result.status === 'human_review_required' ? result.disputes : [], reasons: [...(result.status === 'human_review_required' ? result.reasons : []), 'Subject attribution requires review'], trace: result.trace, safetyFindings: result.safetyFindings });
+  }
   // Conflicting contextual verdicts for the same occurrence require human review;
   // corroborating votes do not erase an explicit refutation.
   const conflictingReview = grouped.groups.some(group => {
@@ -68,7 +73,7 @@ export async function runPipeline(options: { runId: string; snapshot: Snapshot; 
   if (conflictingReview && result.status === 'consolidated') {
     result = ReconciliationResultSchema.parse({ status: 'human_review_required', disputes: [], reasons: ['Conflicting contextual reviews'], trace: result.trace, safetyFindings: result.safetyFindings });
   }
-  if (!conflictingReview && result.status === 'human_review_required' && result.disputes.length && trace.consumed < 7) {
+  if (binding.status === 'success' && !conflictingReview && result.status === 'human_review_required' && result.disputes.length && trace.consumed < 7) {
     const dispute = result.disputes[0];
     const answer = await call('J', freeze({ snapshot, dispute, group: grouped.groups.find(g => g.groupId === dispute.groupId), reviews: contextual.reviews, safetyFindings: result.safetyFindings }), AdjudicationResponseSchema);
     if (answer !== undefined) { const adjudication = AdjudicationResponseSchema.parse(answer); const next = reconcile({ ...input, adjudications: [adjudication] }); if (next.status !== 'failed') { result = next; trace.resolutions = adjudication.resolution.status === 'selected' ? 1 : 0; } }
@@ -78,5 +83,5 @@ export async function runPipeline(options: { runId: string; snapshot: Snapshot; 
   trace.finalStatus = result.status;
   if (result.status === 'human_review_required') trace.abstentionCauses = ['reconciliation_requires_review'];
   if (result.status === 'failed') trace.abstentionCauses = [result.code];
-  return { result, trace, diagnostics: grouped.diagnostics };
+  return { result, trace, diagnostics: grouped.diagnostics, attributionDiagnostics: binding.diagnostics };
 }

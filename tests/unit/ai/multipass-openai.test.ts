@@ -148,6 +148,18 @@ const fullSpecs: Record<string, FullSpec[]> = {
 };
 function fullClient(name: string) {
   const caseSnapshot = snapshot(name); const calls: string[] = [];
+  const attributions: Record<string, { kind: string; quote: string }> = {
+    'laura:laura-m1:desired_locations': { kind: 'case', quote: 'buscamos piso en Valencia' },
+    'laura:laura-m3:declared_monthly_income': { kind: 'buying_unit', quote: 'entre los dos' },
+    'laura:laura-m3:available_savings': { kind: 'buying_unit', quote: 'Ahorrado tenemos' },
+    'laura:laura-m4:monthly_debt': { kind: 'buying_unit', quote: 'pagamos un préstamo del coche' },
+    'javier:javier-m3:buyer_count': { kind: 'buying_unit', quote: 'solo' },
+    'javier:javier-m3:employment_context': { kind: 'local_speaker', quote: 'soy autonomo' },
+    'javier:javier-m3:declared_monthly_income': { kind: 'local_speaker', quote: 'soy autonomo, depende del mes' },
+    'rosa:rosa-m1:declared_monthly_income': { kind: 'buying_unit', quote: 'Entre los dos' },
+    'rosa:rosa-m1:available_savings': { kind: 'buying_unit', quote: 'Ahorros no tenemos' },
+    'rosa:rosa-m1:moving_horizon': { kind: 'case', quote: 'necesitamos salir del piso en dos semanas' },
+  };
   const wireRef = (messageId: string, quote: string) => ({ messageId, quote, start: null, end: null });
   const signals = name === 'javier' ? [{ signalId: 'trust', category: 'TRUST', evidenceRefs: [wireRef('javier-m5', 'y esto es fiable? no sera una estafa no')] }] : name === 'rosa' ? [
     { signalId: 'urgent', category: 'URGENT', evidenceRefs: [wireRef('rosa-m1', 'necesitamos salir del piso en dos semanas')] },
@@ -158,13 +170,13 @@ function fullClient(name: string) {
     const b = body as { model: string; instructions: string; text: { format: { name: string } }; input: string }; const role = b.text.format.name; calls.push(role);
     const input = JSON.parse(b.input);
     if (role === 'multipass_s1') return response({ status: 'complete', candidates: signals });
-    if (role === 'multipass_s2') return response({ status: 'complete', candidates: [], verdicts: signals.map(s => ({ signalId: s.signalId, status: s.signalId === 'opt' ? 'dismissed' : 'confirmed', justification: 'contexto simulado', evidenceRefs: s.evidenceRefs })), reviews: input.groups.flatMap((g: { groupId: string; candidates: { candidateId: string; subjectRef: { scope: string }; occurrence: { messageId: string; focusSpan: unknown }; evidenceRefs: { messageId: string; quote: string }[] }[] }) => g.candidates.map(c => ({ groupId: g.groupId, candidateId: c.candidateId, atomicity: 'atomic', support: 'supported', identitySpan: c.occurrence.focusSpan, evidenceRefs: c.evidenceRefs.map(e => wireRef(e.messageId, e.quote)), justification: 'contexto simulado', subjectAttribution: { kind: c.subjectRef.scope === 'participant' ? 'local_speaker' : c.subjectRef.scope, messageId: c.occurrence.messageId, evidenceRefs: c.evidenceRefs.map(e => wireRef(e.messageId, e.quote)), justification: 'El contexto de la declaración identifica el ámbito indicado.' } }))) });
+    if (role === 'multipass_s2') return response({ status: 'complete', candidates: [], verdicts: signals.map(s => ({ signalId: s.signalId, status: s.signalId === 'opt' ? 'dismissed' : 'confirmed', justification: 'contexto simulado', evidenceRefs: s.evidenceRefs })), reviews: input.groups.flatMap((g: { groupId: string; fieldId: string; candidates: { candidateId: string; occurrence: { messageId: string; focusSpan: unknown }; evidenceRefs: { messageId: string; quote: string }[] }[] }) => g.candidates.map(c => { const a = attributions[`${name}:${c.occurrence.messageId}:${g.fieldId}`]; return { groupId: g.groupId, candidateId: c.candidateId, atomicity: 'atomic', support: 'supported', identitySpan: c.occurrence.focusSpan, evidenceRefs: c.evidenceRefs.map(e => wireRef(e.messageId, e.quote)), justification: 'contexto simulado', subjectAttribution: { kind: a.kind, messageId: c.occurrence.messageId, evidenceRefs: [wireRef(c.occurrence.messageId, a.quote)], justification: 'El contexto identifica el ámbito indicado.' } }; })) });
     if (role === 'multipass_j') return response({ disputeId: input.dispute.disputeId, resolution: { status: 'unresolved', candidateId: null, justification: 'incertidumbre', evidenceRefs: null } });
     const claims = fullSpecs[name].map(s => {
       const m = caseSnapshot.messages.find(m => m.messageId === s.messageId)!; if (m.content.type !== 'text') throw Error('expected text');
       const text = m.content.text; const start = text.indexOf(s.focus); if (start < 0) throw Error('missing focus');
       const id = s.scope === 'case' ? name : s.scope === 'buying_unit' ? `${name}:buying_unit` : `${name}:speaker:${s.messageId}`;
-      return { fieldId: s.fieldId, subjectRef: { scope: s.scope, id }, value: s.value, unit: s.unit ?? null, period: s.period ?? null, incomeBasis: s.incomeBasis ?? null, precision: s.precision ?? 'explicit', occurrence: { messageId: s.messageId, statementSpan: { start: 0, end: text.length, text }, focusSpan: { start, end: start + s.focus.length, text: s.focus }, previousAssertionId: null }, evidenceRefs: [wireRef(s.messageId, text)], correction: null };
+      return { fieldId: s.fieldId, subjectRef: { scope: s.scope, id }, value: s.value, unit: s.unit ?? null, period: s.period ?? null, incomeBasis: s.incomeBasis ?? null, precision: s.precision ?? 'explicit', occurrence: { messageId: s.messageId, statementSpan: { start: 0, end: text.length, text }, focusSpan: { start, end: start + s.focus.length, text: s.focus }, previousAssertionId: null }, evidenceRefs: [wireRef(s.messageId, s.focus)], correction: null };
     });
     return response({ claims });
   } } };
@@ -179,8 +191,32 @@ it.each(['laura', 'javier', 'rosa'])('consolidates full %s through the SDK witho
   if (!result.ok) return;
   expect(result.value.assertions).toHaveLength(fullSpecs[name].length);
   for (const spec of fullSpecs[name]) expect(result.value.assertions).toContainEqual(expect.objectContaining({ fieldId: spec.fieldId, value: spec.value }));
+  const byField = (id: string) => result.value.assertions.find(a => a.fieldId === id)!;
+  if (name === 'laura') {
+    expect(byField('declared_monthly_income')).toMatchObject({ incomeBasis: 'net', precision: 'approximate', subjectRef: { scope: 'buying_unit' } });
+    expect(byField('available_savings')).toMatchObject({ precision: 'approximate', subjectRef: byField('declared_monthly_income').subjectRef });
+    expect(byField('monthly_debt')).toMatchObject({ period: 'month', subjectRef: byField('declared_monthly_income').subjectRef });
+    expect(result.value.assertions.some(a => a.subjectRef.scope === 'participant')).toBe(false);
+  }
+  if (name === 'javier') {
+    expect(byField('declared_monthly_income')).toMatchObject({ incomeBasis: 'unknown', precision: 'approximate', subjectRef: byField('employment_context').subjectRef });
+    expect(byField('employment_context').subjectRef.id).not.toBe('javier:speaker:javier-m3');
+    expect(result.value.assertions.flatMap(a => a.evidenceRefs).some(e => e.messageId === 'javier-m4')).toBe(false);
+  }
+  if (name === 'rosa') expect(byField('available_savings').subjectRef).toEqual(byField('declared_monthly_income').subjectRef);
   expect(calls).toHaveLength(5);
   expect(result.value.blockers.map(b => b.type).sort()).toEqual(name === 'javier' ? ['TRUST'] : name === 'rosa' ? ['BINDING_CLAIM', 'URGENT'] : []);
+});
+
+it('reuses canonical subjects and assertions when the same transcript is reanalysed', async () => {
+  const { client, caseSnapshot } = fullClient('javier');
+  const a = createAIAdapters({ AI_MODE: 'openai', OPENAI_API_KEY: 'test', AI_INTERPRETER_STRATEGY: 'multipass' }, { complete: async () => null }, openAIMultipassTransport('test', 'model', client));
+  if (!a.ok) throw Error('factory');
+  const interpret = () => a.value.interpreter.interpret({ caseSnapshot, messages: caseSnapshot.messages, factSchema: demoBundle.factSchema, agentProfile: demoBundle.agentProfile });
+  const first = await interpret(); if (!first.ok) throw Error('first interpretation');
+  caseSnapshot.assertions = first.value.assertions;
+  const second = await interpret(); expect(second.ok).toBe(true); if (!second.ok) return;
+  expect(second.value.assertions.map(a => [a.assertionId, a.subjectRef])).toEqual(first.value.assertions.map(a => [a.assertionId, a.subjectRef]));
 });
 
 it('uses six SDK calls when one malformed extraction is regenerated', async () => {

@@ -367,6 +367,16 @@ it('keeps contradictory contextual reviews in human review', async () => {
   expect(result.result.status).toBe('human_review_required');
 });
 
+it('retains protected findings when a new subject is rejected by binding', async () => {
+  const snapshot = caseSnapshot('javier');
+  snapshot.knownSubjects = [{ scope: 'case', id: snapshot.caseId }];
+  const delegate = fakeCase(claimsFor(snapshot, [caseSpecs.javier[1]]), [trust], [verdict(trust, 'confirmed')]);
+  const result = await run(delegate, snapshot);
+  expect(result.result.status).toBe('human_review_required');
+  if (result.result.status === 'human_review_required') expect(result.result.safetyFindings).toContainEqual(expect.objectContaining({ category: 'TRUST', status: 'confirmed' }));
+  expect(result.attributionDiagnostics?.some(d => d.status === 'rejected')).toBe(true);
+});
+
 it('rejects adjudication evidence that does not identify the disputed occurrence', async () => {
   const snapshot = caseSnapshot('laura'); const claims = claimsFor(snapshot, [caseSpecs.laura[1]]); const delegate = fakeCase(claims, [], [], { adjudicate: 'valid' });
   const result = await run({ execute: async r => {
