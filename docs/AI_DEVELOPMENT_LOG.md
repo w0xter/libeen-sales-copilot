@@ -364,3 +364,7 @@ Se reprodujeron offline salidas de 21 casos de una etapa reconstruyendo el snaps
 ### F02-R01 — diagnóstico offline de capturas
 
 Se añadió una prueba opt-in que lee el ZIP sintético capturado, reproduce las respuestas multipass sin proveedor y compara el estado público de 21 casos de una etapa; tres casos con historial se marcan como no reconstruidos. Se documentan inventario, causas y límites en `docs/evaluation/F02_R01_CAPTURED_REPLAY.md`. No se alteraron intérprete, prompts, contratos, oráculos ni fixtures. La verificación y sus resultados se detallan en el handoff de la tarea.
+
+### F02-R02 — evaluación semántica offline
+
+Se añadió una evaluación provisional y trazable de candidatos y señales sobre el replay F02-R01, con integridad SHA-256 del ZIP y separación de disponibilidad, validación y resultados semánticos. Las etiquetas limitadas y los tres casos multietapa no evaluables se documentan en `docs/evaluation/F02_R02_SEMANTIC_EVALUATION.md`; no hubo cambios funcionales ni llamadas al proveedor.
