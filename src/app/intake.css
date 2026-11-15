@@ -236,3 +236,26 @@
 .workspace-working .result-content { max-width: 1100px; }
 .workspace-working .question { background: #f5f8f4; margin-bottom: 22px; }
 .workspace-working .key-issue { margin-bottom: 8px; }
+.priority-warning { padding: 16px; margin-bottom: 20px; color: #653e17; background: #fff5e6; border: 1px solid #dcb883; border-radius: 12px; }
+.priority-warning p { margin: 6px 0 0; }
+summary { cursor: pointer; font-weight: 700; padding: 12px 0; color: #305b49; }
+summary:focus-visible { outline: 3px solid #b94d3d; outline-offset: 3px; }
+.conflict-choice + .conflict-choice { border-top: 1px solid #edca99; margin-top: 14px; padding-top: 14px; }
+.workspace-entry > section[hidden], .workspace-working > section[hidden] { display:none; }
+.workspace-working .facts { margin: 12px 0 28px; }
+.fact-uncertainty p { color: #704a18; margin: 6px 0; }
+.fact details summary { font-size: 12px; }
+.workspace-working .result-content > section { margin-top: 24px; }
+.workspace-working .result-head { padding: 16px 22px; }
+.workspace-working .result-head p { display: none; }
+/* Legibilidad operativa: el texto y las acciones conservan tamaño útil. */
+.workspace-working .section-title h3, .workspace-working .fact h4 { font-size: 15px; }
+.workspace-working .fact, .workspace-working .question, .workspace-working .key-issue, .workspace-working .conflict-banner { font-size: 14px; line-height: 1.5; }
+.workspace-working .key-issue p, .workspace-working .coverage-note, .workspace-working .review-actions button, .workspace-working .fact details summary, .workspace-working .question textarea { font-size: 13px; }
+.workspace-working .fact { min-height: 0; padding: 14px; }
+.workspace-working .fact p { margin: 6px 0; }
+.workspace-working .state-overview p, .workspace-working .tiny-note { font-size: 13px; }
+.primary { background: #a93a2e; border-color: #a93a2e; }
+:focus-visible { outline: 3px solid #a93a2e; outline-offset: 3px; }
+.crm-export { border-top: 1px solid var(--line); }
+.return-to-work { display: block; margin: 0 0 16px; }
