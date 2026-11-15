@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>Libeen · Lead Intake — UX2 · Revisión humana v0.3</title>
+  <style>
+    :root {
+      --ink:#24302e; --ink-2:#52605c; --muted:#7b8883; --paper:#f8f7f3; --white:#fff;
+      --line:#e6e7e1; --soft:#f2f3ee; --coral:#de634e; --coral-dark:#a93a2e;
+      --coral-soft:#fff0eb; --green:#347c62; --green-soft:#e8f4ee;
+      --amber:#9f712a; --amber-soft:#fff5df; --slate-soft:#edf1ef;
+      --shadow:0 12px 35px rgba(25,46,38,.045); --radius:16px;
+    }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:14px/1.48 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    button, textarea, input { font:inherit; }
+    button { cursor:pointer; }
+    button:disabled { cursor:not-allowed; opacity:.55; }
+    :focus-visible { outline:3px solid rgba(222,99,78,.45); outline-offset:3px; }
+    .designbar { background:#283a34; color:#e5f0ea; padding:9px 32px; display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; font-size:12px; }
+    .designbar strong { color:#fff; }
+    .designbar .state-controls { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+    .designbar button { border:1px solid #5b7066; color:#e5f0ea; background:transparent; border-radius:7px; padding:5px 9px; font-size:11px; }
+    .designbar button.active { color:#283a34; background:#e9f4eb; border-color:#e9f4eb; }
+    .app-top { background:var(--white); border-bottom:1px solid var(--line); }
+    .app-top .inner { max-width:1520px; padding:20px 34px; margin:auto; display:flex; justify-content:space-between; align-items:center; gap:22px; }
+    .logo { letter-spacing:-1.7px; font-size:30px; line-height:1; font-weight:850; white-space:nowrap; }
+    .logo span { color:var(--coral); }
+    .logo em { font-size:12px; letter-spacing:0; font-weight:650; font-style:normal; margin-left:14px; color:var(--muted); vertical-align:middle; }
+    .top-badges { display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    .tiny-pill { background:var(--soft); color:var(--ink-2); border:1px solid var(--line); border-radius:999px; padding:5px 11px; font-size:11px; font-weight:650; }
+    .tiny-pill.demo { background:#fef4e6; color:#92642a; border-color:#f8e0bd; }
+    main { max-width:1520px; margin:auto; padding:28px 34px 42px; }
+    .headline { display:flex; align-items:flex-end; justify-content:space-between; gap:22px; margin-bottom:22px; }
+    .eyebrow { color:var(--coral-dark); font-size:11px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase; margin:0 0 7px; }
+    h1 { font-size:clamp(25px,2.3vw,34px); line-height:1.16; letter-spacing:-1.05px; margin:0 0 7px; font-weight:760; }
+    .subtitle { color:var(--ink-2); margin:0; max-width:770px; }
+    .link-btn { color:var(--ink-2); background:transparent; border:1px solid var(--line); border-radius:10px; padding:9px 13px; white-space:nowrap; font-size:12px; font-weight:650; }
+    .link-btn:hover { background:var(--soft); }
+    .workspace { display:grid; grid-template-columns:minmax(340px, 44fr) minmax(500px, 56fr); gap:18px; align-items:start; }
+    .surface { background:var(--white); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); min-width:0; }
+    .surface-header { padding:20px 22px; display:flex; align-items:center; justify-content:space-between; gap:16px; border-bottom:1px solid var(--line); }
+    .surface-header h2 { margin:0; font-size:17px; letter-spacing:-.35px; }
+    .surface-header p { margin:3px 0 0; color:var(--muted); font-size:12px; }
+    .source-head { padding:22px; }
+    .field-label { text-transform:uppercase; font-size:10px; font-weight:800; letter-spacing:.95px; color:var(--muted); display:block; margin-bottom:7px; }
+    .case-row { display:flex; gap:10px; align-items:center; margin-bottom:16px; }
+    .alias { flex:1; min-width:0; padding:11px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink); }
+    .case-chip { background:var(--amber-soft); color:#866322; border-radius:99px; padding:8px 11px; font-size:11px; font-weight:750; white-space:nowrap; }
+    .example-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:7px; }
+    .examples { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:16px; }
+    .example-btn { background:var(--white); border:1px solid var(--line); padding:8px 13px; border-radius:10px; font-size:12px; color:var(--ink-2); font-weight:650; }
+    .example-btn.active { background:var(--coral-soft); border-color:#eac3b9; color:var(--coral-dark); }
+    .tabs { display:flex; gap:18px; border-bottom:1px solid var(--line); padding:0 22px; }
+    .tab { padding:12px 2px 12px; border:0; border-bottom:2px solid transparent; background:transparent; color:var(--muted); font-size:12px; font-weight:750; }
+    .tab.active { color:var(--ink); border-color:var(--coral); }
+    .conversation-body { padding:17px 18px 18px; min-height:385px; max-height:535px; overflow:auto; }
+    .chat-row { display:flex; margin:0 0 16px; gap:9px; align-items:flex-start; scroll-margin-top:15px; border-radius:10px; }
+    .chat-row.advisor { flex-direction:row-reverse; }
+    .msg-avatar { width:29px; height:29px; border-radius:10px; background:#e8ede8; color:var(--green); display:grid; place-items:center; font-size:11px; font-weight:800; flex:none; }
+    .chat-row.advisor .msg-avatar { background:var(--coral-soft); color:var(--coral-dark); }
+    .chat-inner { max-width:86%; min-width:0; }
+    .msg-meta { font-size:10px; color:var(--muted); font-weight:700; margin-bottom:4px; }
+    .chat-row.advisor .msg-meta { text-align:right; }
+    .bubble { background:var(--soft); padding:12px 14px; border-radius:3px 13px 13px 13px; color:#34413c; white-space:pre-wrap; font-size:12.5px; line-height:1.6; border:1px solid transparent; }
+    .chat-row.advisor .bubble { background:#fff2ed; border-radius:13px 3px 13px 13px; }
+    .chat-row.unknown .bubble { background:#fff8e9; }
+    .chat-row.highlight .bubble { outline:2px solid var(--coral); outline-offset:2px; background:#fff7ed; }
+    .editor-wrap { display:none; height:100%; min-height:385px; }
+    .editor-wrap.active { display:flex; flex-direction:column; }
+    .editor { width:100%; resize:vertical; min-height:330px; flex:1; padding:14px; background:#fbfbf9; border:1px solid var(--line); border-radius:10px; color:var(--ink); font-size:12.5px; line-height:1.75; }
+    .editor-help { margin:10px 0 0; font-size:11px; color:var(--muted); }
+    .source-footer { border-top:1px solid var(--line); padding:17px 22px; background:#fdfdfb; border-radius:0 0 16px 16px; }
+    .source-action { display:flex; gap:9px; align-items:center; }
+    .primary { border:1px solid var(--coral); background:var(--coral); color:#fff; border-radius:11px; padding:12px 18px; font-weight:750; letter-spacing:-.1px; }
+    .primary:hover:not(:disabled) { background:var(--coral-dark); border-color:var(--coral-dark); }
+    .secondary { border:1px solid var(--line); color:var(--ink); background:#fff; border-radius:10px; padding:11px 13px; font-weight:700; }
+    .secondary:hover { background:var(--soft); }
+    .tiny-note { margin:9px 0 0; color:var(--muted); font-size:11px; }
+    .result-head { display:flex; justify-content:space-between; gap:15px; align-items:center; padding:20px 22px 18px; border-bottom:1px solid var(--line); }
+    .result-head h2 { font-size:17px; margin:0; letter-spacing:-.4px; }
+    .result-head p { font-size:12px; color:var(--muted); margin:3px 0 0; }
+    .result-content { padding:21px 22px 25px; }
+    .state-overview { border:1px solid #edd9b5; background:#fffbf0; border-radius:12px; padding:16px; display:flex; gap:11px; margin-bottom:20px; }
+    .state-icon { width:33px; height:33px; border-radius:10px; background:#ffedc8; color:#9f712a; font-weight:800; font-size:17px; display:grid; place-items:center; flex:none; }
+    .state-overview h3 { margin:0 0 4px; font-size:14px; }
+    .state-overview p { margin:0; font-size:12px; line-height:1.55; color:#695a43; }
+    .section-title { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:0 0 10px; }
+    .section-title h3 { font-size:13px; font-weight:800; margin:0; letter-spacing:-.1px; }
+    .section-title small { font-size:11px; color:var(--muted); }
+    .facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:20px; }
+    .fact { border:1px solid var(--line); border-radius:11px; padding:11px 12px; min-width:0; }
+    .fact-title { font-size:10px; color:var(--ink-2); font-weight:700; margin-bottom:5px; }
+    .fact-value { font-size:14px; font-weight:760; letter-spacing:-.28px; overflow-wrap:anywhere; }
+    .fact-note { display:flex; gap:5px; flex-wrap:wrap; align-items:center; color:var(--muted); font-size:10px; margin-top:6px; }
+    .fact.wide { grid-column:span 2; }
+    .chip { font-size:10px; padding:2px 7px; border-radius:99px; font-weight:740; background:var(--slate-soft); color:var(--ink-2); white-space:nowrap; }
+    .chip.unknown { background:#f2f2f2; color:#7a817b; }
+    .chip.warn { background:var(--amber-soft); color:#946724; }
+    .chip.good { background:var(--green-soft); color:var(--green); }
+    .evidence { border:0; background:none; color:var(--coral-dark); text-decoration:underline; text-underline-offset:2px; padding:0; font-size:10px; font-weight:750; }
+    .issue { display:flex; gap:11px; background:var(--coral-soft); border:1px solid #f6d5ca; border-radius:12px; padding:14px 15px; margin-bottom:19px; }
+    .issue .marker { color:var(--coral-dark); font-weight:850; font-size:16px; }
+    .issue strong { display:block; font-size:12px; margin-bottom:4px; }
+    .issue p { color:#86594d; margin:0; font-size:11.5px; }
+    .issue .evidence { font-size:11px; margin-top:4px; }
+    .question { border:1px solid var(--line); border-radius:12px; padding:15px; }
+    .question .question-head { display:flex; justify-content:space-between; gap:12px; margin-bottom:9px; }
+    .question-head strong { font-size:13px; }
+    .question textarea { border:1px solid var(--line); background:#fbfcf9; border-radius:9px; width:100%; padding:11px; resize:vertical; min-height:76px; line-height:1.65; color:var(--ink); font-size:12px; }
+    .question-bottom { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:10px; }
+    .question-bottom small { color:var(--muted); font-size:11px; }
+    .micro { padding:8px 12px; font-size:11px; border:1px solid var(--line); border-radius:9px; background:#fff; font-weight:800; white-space:nowrap; }
+    .micro:hover { background:var(--soft); }
+    .result-footer { border-top:1px solid var(--line); padding:16px 22px; display:flex; align-items:center; justify-content:space-between; gap:14px; }
+    .footer-muted { color:var(--muted); font-size:11px; max-width:280px; }
+    .foot-btn { white-space:nowrap; border:1px solid var(--line); background:var(--soft); color:var(--muted); border-radius:10px; padding:10px 13px; font-size:12px; font-weight:750; }
+    .empty-illustration { text-align:center; padding:58px 22px 65px; }
+    .empty-icon { width:63px; height:63px; border-radius:19px; margin:0 auto 16px; display:grid; place-items:center; background:var(--soft); color:var(--green); font-size:25px; }
+    .empty-illustration h3 { margin:0 0 8px; font-size:19px; letter-spacing:-.35px; }
+    .empty-illustration p { max-width:350px; margin:0 auto; color:var(--ink-2); font-size:12px; line-height:1.65; }
+    .loadingdots { display:flex; justify-content:center; gap:7px; margin-top:18px; }
+    .loadingdots span { width:7px; height:7px; border-radius:100%; background:var(--coral); animation:pulse 1s infinite ease-in-out; }
+    .loadingdots span:nth-child(2) { animation-delay:.15s; }.loadingdots span:nth-child(3) { animation-delay:.3s; }
+    @keyframes pulse { 0%,65%,100% { opacity:.25; transform:scale(.75); } 32% { opacity:1; transform:scale(1.12); } }
+    .stale-banner { background:var(--amber-soft); border:1px solid #ecd9af; color:#795b25; border-radius:11px; padding:12px 14px; margin-bottom:14px; font-size:12px; font-weight:700; }
+    .result-stale { opacity:.64; }
+    .error-box { background:#fff1ee; color:#933d30; border:1px solid #f1c8c1; border-radius:12px; padding:14px; margin-bottom:17px; font-size:12px; }
+    .disclaimer { max-width:1520px; margin:10px auto 35px; padding:0 34px; color:var(--muted); font-size:11px; display:flex; justify-content:space-between; gap:18px; flex-wrap:wrap; }
+    #toast { position:fixed; bottom:22px; right:22px; background:#263f34; color:#fff; border-radius:10px; padding:12px 16px; box-shadow:0 12px 30px #28382d22; font-size:12px; opacity:0; transform:translateY(8px); transition:.2s ease; pointer-events:none; z-index:3; }
+    #toast.show { opacity:1; transform:translateY(0); }
+    @media (max-width:1080px) { .workspace { grid-template-columns:1fr; } .conversation-body { max-height:420px; min-height:280px; } .headline { align-items:flex-start; } }
+    @media (max-width:650px) { .designbar { padding:9px 15px; } .app-top .inner { padding:17px; } main { padding:22px 15px; } .headline { flex-direction:column; align-items:flex-start; } .surface-header,.source-head,.result-content,.result-head { padding:17px; } .surface-header { flex-wrap:wrap; } .tabs { padding:0 17px; } .result-footer { padding:14px 17px; } .facts { grid-template-columns:1fr; } .fact.wide { grid-column:span 1; } .top-badges { display:none; } .disclaimer { padding:0 15px; } .source-action { flex-wrap:wrap; } }
+
+    /* UX1 v0.2: lectura por prioridad, sin convertir la interfaz en un formulario paso a paso. */
+    .top-badges .stage-top { background:var(--amber-soft); border-color:#f3dfae; color:#87611b; }
+    .source-meta { color:var(--muted); font-size:11px; font-weight:650; white-space:nowrap; }
+    .source-head { padding-bottom:15px; }
+    .result-content { padding-top:18px; }
+    .state-overview { align-items:flex-start; background:#f5f8f4; border-color:#dfeae0; margin-bottom:17px; padding:14px 16px; }
+    .state-overview .state-icon { background:#e4f0e8; color:#37765a; }
+    .state-overview h3 { font-size:14px; }
+    .state-overview p { color:#4f675b; }
+    .overview-metrics { display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .metric-pill { background:#fff; border:1px solid #dfe7dd; border-radius:99px; font-size:10px; font-weight:730; color:#50655b; padding:3px 8px; }
+    .metric-pill.warn { color:#926826; border-color:#f3e0b4; background:#fff8e6; }
+    .focus-title { margin:0 0 10px; display:flex; justify-content:space-between; gap:12px; align-items:baseline; }
+    .focus-title h3 { margin:0; font-size:13px; letter-spacing:-.1px; }
+    .focus-title small { color:var(--muted); font-size:10px; }
+    .priority-grid { display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 1.15fr); gap:10px; margin-bottom:11px; align-items:stretch; }
+    .key-issue { border-radius:12px; padding:14px 15px; background:var(--coral-soft); border:1px solid #f6d5ca; min-width:0; }
+    .key-issue-label { color:var(--coral-dark); display:flex; gap:7px; align-items:center; font-size:10px; letter-spacing:.6px; font-weight:850; text-transform:uppercase; margin-bottom:8px; }
+    .key-issue h4 { margin:0 0 7px; font-size:13px; letter-spacing:-.15px; }
+    .key-issue p { color:#805c52; margin:0 0 8px; font-size:11px; line-height:1.55; }
+    .key-issue .evidence { font-size:11px; }
+    .priority-grid .question { padding:13px; margin:0; min-width:0; }
+    .priority-grid .question-head { margin-bottom:7px; }
+    .priority-grid .question-head strong { font-size:11px; }
+    .priority-grid .question textarea { min-height:93px; font-size:11.5px; }
+    .priority-grid .question-bottom { gap:9px; flex-wrap:wrap; }
+    .priority-grid .question-bottom small { font-size:10px; flex:1; min-width:170px; }
+    .pending-inline { border:1px solid var(--line); background:#fdfdfa; border-radius:10px; padding:10px 12px; font-size:11px; color:var(--ink-2); margin:0 0 19px; }
+    .pending-inline strong { color:var(--ink); }
+    .pending-inline b { color:var(--amber); }
+    .facts { margin-bottom:12px; }
+    .fact { transition:border-color .15s; }
+    .fact:hover { border-color:#cdd9d0; }
+    .facts-help { font-size:11px; color:var(--muted); line-height:1.55; margin:0; }
+    .coverage-note { background:#f4f5f1; border-radius:9px; color:var(--ink-2); padding:9px 11px; margin-top:12px; font-size:10.5px; }
+    .result-stale .question textarea { pointer-events:none; }
+    .result-stale button[data-evidence] { pointer-events:auto; }
+    .result-stale .micro { pointer-events:none; }
+    .designbar { position:relative; }
+    @media (max-width:1300px) { .priority-grid { grid-template-columns:1fr; } .priority-grid .question textarea { min-height:78px; } }
+    @media (max-width:650px) { .case-row { flex-wrap:wrap; } .priority-grid { grid-template-columns:1fr; } .overview-metrics { gap:4px; } }
+    @media (prefers-reduced-motion:reduce) { *, *::before, *::after {scroll-behavior:auto!important;animation:none!important;transition:none!important;} }
+
+    /* UX2 v0.3 — revisión contextual; sin alterar la estructura aprobada de UX1 */
+    .designbar .state-controls { max-width:780px; justify-content:flex-end; }
+    .facts .fact { position:relative; min-height:107px; display:flex; flex-direction:column; }
+    .fact .fact-note { margin-top:auto; padding-top:7px; }
+    .fact-review-row { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:9px; padding-top:8px; border-top:1px solid #f0f1ec; }
+    .review-trigger { border:1px solid #dbe4dd; background:#f6f8f4; color:#356450; border-radius:7px; padding:5px 9px; font-size:10px; font-weight:800; white-space:nowrap; }
+    .review-trigger:hover { background:#eaf2eb; }
+    .fact.reviewed { border-color:#c5dfcf; background:#fcfffc; }
+    .fact.discarded { background:#f9f9f7; border-style:dashed; }
+    .fact.discarded .fact-value { color:#89938b; text-decoration:line-through; }
+    .fact.in-conflict { border-color:#e6b37c; background:#fffcf6; }
+    .fact.selected { border-color:var(--coral); box-shadow:0 0 0 2px #fbece5; }
+    .fact .chip { white-space:normal; line-height:1.2; }
+    .review-summary { display:flex; gap:8px; flex-wrap:wrap; align-items:center; padding:10px 12px; background:#f5f8f5; border:1px solid #e2eae2; border-radius:10px; margin:0 0 12px; }
+    .review-summary strong { color:#315a45; font-size:11px; }
+    .review-summary .chip { background:#fff; border:1px solid #e0e9e0; padding:4px 8px; }
+    .review-panel { background:#fff; border:1px solid #c7d7ce; box-shadow:0 6px 20px rgba(34,55,44,.035); border-radius:13px; padding:16px; margin:3px 0 18px; scroll-margin-top:16px; }
+    .review-panel-head { display:flex; justify-content:space-between; align-items:flex-start; gap:15px; margin-bottom:13px; }
+    .review-panel .kicker { color:var(--green); text-transform:uppercase; letter-spacing:.9px; font-size:10px; font-weight:850; margin:0 0 4px; }
+    .review-panel h4 { margin:0; font-size:15px; letter-spacing:-.2px; }
+    .close-review { width:29px; height:29px; border-radius:8px; border:1px solid var(--line); background:#fff; font-size:17px; line-height:1; }
+    .review-comparison { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
+    .review-value { border:1px solid var(--line); border-radius:9px; padding:11px; background:#fafbf8; min-width:0; }
+    .review-value.is-manual { background:#f3f9f5; border-color:#daeadf; }
+    .review-value.new-evidence { background:#fff8e9; border-color:#eedab6; }
+    .review-value label { font-size:10px; color:#697a70; display:block; margin-bottom:5px; font-weight:750; }
+    .review-value strong { font-size:12px; line-height:1.4; overflow-wrap:anywhere; display:block; }
+    .review-value small { display:block; font-size:10px; color:#718078; margin-top:5px; line-height:1.4; }
+    .review-source { display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:11px; color:var(--ink-2); background:#faf9f5; border-radius:9px; padding:9px 11px; margin-bottom:12px; }
+    .review-source button { margin-left:auto; }
+    .review-instruction { font-size:11px; color:var(--ink-2); margin:7px 0 11px; line-height:1.6; }
+    .review-actions { display:flex; gap:7px; align-items:center; flex-wrap:wrap; }
+    .review-actions button { font-size:11px; padding:9px 12px; border-radius:9px; font-weight:750; border:1px solid var(--line); background:#fff; color:var(--ink); }
+    .review-actions .review-confirm { background:#347c62; border-color:#347c62; color:white; }
+    .review-actions .review-save { background:var(--coral); border-color:var(--coral); color:white; }
+    .review-actions .review-danger { color:#a64a3f; }
+    .review-actions button:hover { filter:brightness(.96); }
+    .revision-form { border-top:1px solid var(--line); padding-top:12px; margin-top:12px; }
+    .revision-form label { display:block; color:var(--ink-2); font-size:11px; font-weight:750; margin-bottom:5px; }
+    .revision-form input,.revision-form textarea { width:100%; border:1px solid #cdd8d0; border-radius:9px; padding:9px 11px; background:#fff; color:var(--ink); font-size:12px; margin-bottom:11px; }
+    .revision-form textarea { resize:vertical; min-height:56px; }
+    .revision-form .note { margin:0 0 12px; font-size:10px; color:var(--muted); }
+    .review-alert { border:1px solid #ead9b5; background:#fffbf0; border-radius:10px; padding:10px 12px; font-size:11px; color:#795a29; margin:11px 0; }
+    .review-alert.critical { border-color:#ecb48d; background:#fff4e7; }
+    .review-warnings { font-size:10.5px; color:var(--muted); line-height:1.55; margin:6px 0 0; }
+    .snapshot-label { color:#825d22; font-weight:700; }
+    .result-stale button[data-open-field] { pointer-events:none; }
+    .result-stale .review-panel { pointer-events:none; }
+    .proto-legend { font-size:10.5px; color:var(--muted); margin:7px 0 0; }
+    .conflict-banner { background:#fff7eb; border:1px solid #edca99; border-radius:12px; padding:12px 14px; margin:0 0 16px; font-size:11.5px; color:#76552d; }
+    .conflict-banner strong { color:#714b1c; }
+    .conflict-banner button { border:0; color:#a64b2e; text-decoration:underline; background:transparent; font:inherit; font-weight:800; }
+    .conflict-mark { color:#b56d26; font-weight:800; }
+    .result-footer { flex-wrap:wrap; }
+    @media (max-width:690px) { .review-comparison { grid-template-columns:1fr; } .review-panel { padding:13px; } .fact-review-row { align-items:flex-start; } .review-summary { gap:6px; } }
+  </style>
+</head>
+<body>
+  <div class="designbar" role="region" aria-label="Controles de la maqueta">
+    <div><strong>PROTOTIPO UX2 · v0.3</strong> &nbsp; Diseño interactivo sin backend ni inferencia de IA</div>
+    <div class="state-controls" id="designStates" aria-label="Previsualizar estados">
+      <span>Previsualizar:</span>
+      <button type="button" data-preview="initial" class="active">Sin analizar</button>
+      <button type="button" data-preview="loading">Analizando</button>
+      <button type="button" data-preview="result">Ejemplo analizado</button>
+      <button type="button" data-preview="stale">Desactualizado</button><button type="button" data-preview="conflict">Conflicto de revisión</button>
+      <button type="button" data-preview="error">Error</button>
+    </div>
+  </div>
+
+  <header class="app-top">
+    <div class="inner">
+      <div class="logo" aria-label="libeen Lead Intake">libeen<span>.</span><em>Lead Intake</em></div>
+      <div class="top-badges"><span class="tiny-pill stage-top" id="stageLabel" aria-label="Etapa comercial actual">Etapa · Nuevo</span><span class="tiny-pill demo">● Demo · datos ficticios</span><span class="tiny-pill">Sin conexión CRM</span></div>
+    </div>
+  </header>
+
+  <main>
+    <div class="headline">
+      <div>
+        <p class="eyebrow">Espacio de trabajo del asesor</p>
+        <h1>Convierte una conversación en información útil.</h1>
+        <p class="subtitle">Del texto original a una ficha comercial trazable: identifica lo declarado, lo pendiente y la próxima aclaración que revisará el asesor.</p>
+      </div>
+      <button type="button" class="link-btn" id="resetBtn">↺ Restablecer expediente</button>
+    </div>
+
+    <div class="workspace">
+      <section class="surface" aria-label="Entrada de conversación">
+        <div class="surface-header"><div><h2>01 &nbsp; Conversación</h2><p>Fuente original del expediente temporal</p></div><span class="tiny-pill">Entrada manual</span></div>
+        <div class="source-head">
+          <label class="field-label" for="alias">Alias del expediente</label>
+          <div class="case-row"><input class="alias" type="text" id="alias" value="Laura" maxlength="45" aria-label="Alias del expediente" /><span class="source-meta">Sesión temporal</span></div>
+          <div class="example-head"><span class="field-label" style="margin:0">Ejemplos ficticios</span><span style="color:var(--muted);font-size:11px">O pega tu propio texto</span></div>
+          <div class="examples" id="exampleButtons"><button class="example-btn active" data-example="Laura">Laura</button><button class="example-btn" data-example="Javier">Javier</button><button class="example-btn" data-example="Rosa">Rosa</button><button class="example-btn" data-example="Libre">Texto libre</button></div>
+        </div>
+        <div class="tabs" role="tablist" aria-label="Vista de la conversación">
+          <button class="tab active" id="tabReading" role="tab" aria-selected="true" aria-controls="conversationView">Conversación</button>
+          <button class="tab" id="tabEdit" role="tab" aria-selected="false" aria-controls="editorWrap">Editar texto</button>
+        </div>
+        <div class="conversation-body" id="conversationBody">
+          <div id="conversationView" role="tabpanel" aria-labelledby="tabReading"></div>
+          <div class="editor-wrap" id="editorWrap" role="tabpanel" aria-labelledby="tabEdit"><textarea class="editor" id="sourceEditor" spellcheck="false" aria-label="Texto original de la conversación"></textarea><p class="editor-help">Marca los turnos con «Cliente:» y «Libeen:» (o «Asesor:»). Si el autor es incierto, debe revisarse antes de atribuirle datos.</p></div>
+        </div>
+        <div class="source-footer"><div class="source-action"><button class="primary" type="button" id="analyzeBtn">Analizar conversación ↗</button><button class="secondary" id="appendBtn" type="button">+ Añadir continuación</button></div><p class="tiny-note" id="sourceHint" role="status">Ningún mensaje se envía. El ejemplo analizado de Laura es ilustrativo.</p></div>
+      </section>
+
+      <section class="surface" aria-label="Primera lectura de resultados">
+        <div class="result-head"><div><h2>02 &nbsp; Lectura del expediente</h2><p>Lo importante primero, con acceso a cada fuente original.</p></div><span id="resultBadge" class="tiny-pill" role="status">Sin analizar</span></div>
+        <div id="results" aria-live="polite" aria-atomic="false"></div>
+        <div class="result-footer"><span class="footer-muted">UX2: revisión humana ilustrativa. Exportación manual pendiente de diseño UX4.</span><button type="button" class="foot-btn" disabled aria-disabled="true" title="Pendiente de diseño en UX4">Exportar ficha · UX4</button></div>
+      </section>
+    </div>
+  </main>
+  <div class="disclaimer"><span>UX2 v0.3 · Solo prototipo visual · Sin IA, persistencia, WhatsApp ni CRM.</span><span>«Cualificado» se refiere solo a completitud comercial; nunca a solvencia ni aprobación financiera.</span></div>
+  <div id="toast" role="status"></div>
+
+
+  <script>
+    'use strict';
+    const CASES = {
+      Laura: `Cliente: ¡Hola! Hemos visto vuestro anuncio en Instagram. Somos mi pareja y yo, buscamos piso en Valencia para mudarnos antes del verano.\n\nLibeen: ¡Hola! Encantados. Para ver si encajáis, ¿cuánto ganáis al mes entre los dos, después de deudas, y cuánto tenéis ahorrado para la entrada?\n\nCliente: Unos 3.800 € netos entre los dos. Ahorrado tenemos 18.000 más o menos. Yo tengo 31 y él 34.\n\nCliente: Ah, y pagamos un préstamo del coche de 250 € al mes, no sé si cuenta.`,
+      Javier: `Cliente: buenas, cuanto cuesta esto? me interesa algo por madrid o alrededores\n\nLibeen: ¡Hola, Javier! Depende de la casa y de tu situación. ¿Compras solo o con alguien? ¿Y cuánto ganas al mes, más o menos?\n\nCliente: solo. soy autonomo, depende del mes, entre 2000 y 3000\n\nCliente: [audio de 1:12]\n\nCliente: y esto es fiable? no sera una estafa no`,
+      Rosa: `Cliente: Buenos días. Somos mi marido y yo. Él tiene 67 años y está jubilado, yo trabajo a media jornada. Entre los dos, 1.400 €. Ahorros no tenemos, pero necesitamos salir del piso en dos semanas.\n\nCliente: Si no podéis vendernos, ¿nos alquiláis algo solo de alquiler?\n\nCliente: Mi hijo dice que os pida por escrito que estamos aprobados antes de seguir.`
+    };
+    const CONFLICT_REPLY = 'Cliente: Rectifico un dato: los ingresos son unos 4.100 € netos al mes entre los dos.';
+    const FACTS = [
+      {id:'interest',label:'Interés en SmartHousing',value:'Pendiente de aclarar',caption:'No informado',source:null,context:'No hay una declaración explícita de interés en SmartHousing.',missing:true},
+      {id:'location',label:'Zona de búsqueda',value:'Valencia',caption:'Autodeclarado',source:1,context:'Zona declarada por la pareja.'},
+      {id:'horizon',label:'Horizonte de mudanza',value:'Antes del verano',caption:'Aproximado',source:1,context:'Periodo relativo expresado literalmente, sin fecha inventada.'},
+      {id:'buyers',label:'Compradores',value:'2 personas',caption:'Unidad conjunta',source:1,context:'No repartir ingresos ni ahorros por persona.'},
+      {id:'income',label:'Ingresos mensuales',value:'≈ 3.800 € netos',caption:'Pareja · aproximado',source:3,context:'Ingreso neto mensual conjunto, expresado como aproximación.'},
+      {id:'savings',label:'Ahorros declarados',value:'≈ 18.000 €',caption:'Aproximado',source:3,context:'Ahorros aproximados declarados para la unidad compradora.'},
+      {id:'debt',label:'Cuotas / deudas',value:'250 € / mes · coche',caption:'Inclusión ambigua',source:4,context:'Existe una cuota declarada, pero no consta si ya está descontada de los ingresos. Confirmar la cifra no resuelve su inclusión.',warning:true,wide:true}
+    ];
+    const state = {selected:'Laura',source:CASES.Laura,alias:'Laura',view:'reading',status:'initial',hasResult:false,reviews:{},activeField:null,editing:false,questionText:'¿Los 3.800 € netos que me comentáis ya tienen descontados los 250 € del préstamo del coche?',questionEditedAfterReview:false,newCandidate:null};
+    let pendingTimer,toastTimer;
+    const $ = id => document.getElementById(id);
+    const escapeHTML = v => String(v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const messages = () => state.source.split(/\n\s*\n/).map(s=>s.trim()).filter(Boolean).map((raw,i)=>{const m=raw.match(/^(Cliente|Libeen|Asesor)\s*:\s*([\s\S]*)$/i);return {index:i+1,author:m?m[1]:'Autor no identificado',text:m?m[2]:raw,advisor:!!(m&&/^(Libeen|Asesor)$/i.test(m[1]))};});
+    function renderMessages() {
+      if(!state.source.trim()) {$('conversationView').innerHTML='<div class="empty-illustration"><div class="empty-icon">✎</div><h3>Empieza con una conversación</h3><p>Pega turnos ficticios en «Editar texto» o carga un ejemplo.</p></div>';return;}
+      $('conversationView').innerHTML=messages().map(m=>`<div class="chat-row ${m.advisor?'advisor':m.author==='Autor no identificado'?'unknown':''}" id="message-${m.index}"><span class="msg-avatar">${m.advisor?'L':m.author==='Autor no identificado'?'?':'C'}</span><div class="chat-inner"><div class="msg-meta">${escapeHTML(m.author)} · Fuente #${m.index}</div><div class="bubble">${escapeHTML(m.text)}</div></div></div>`).join('');
+    }
+    function badge(text,variant='') {return `<span class="chip ${variant}">${escapeHTML(text)}</span>`;}
+    function isStale(){return state.status==='stale'||state.status==='unsupported';}
+    function reviewFor(id){return state.reviews[id]||null;}
+    function effective(f){const r=reviewFor(f.id);if(!r)return {value:f.value,caption:f.caption,css:f.warning?'warn':f.missing?'unknown':'',kind:'proposed'};if(r.status==='discarded')return {value:f.value,caption:'Descartado · no utilizable',css:'unknown',kind:'discarded'};if(r.status==='corrected')return {value:r.value,caption:'Corregido por asesor',css:'good',kind:'corrected'};if(r.status==='confirmed')return {value:f.value,caption:'Confirmado por asesor',css:'good',kind:'confirmed'};return {value:f.value,caption:f.caption,css:'',kind:'proposed'};}
+    function conflicts(){return state.status==='conflict' && state.newCandidate && !state.newCandidate.resolved;}
+    function factMarkup(f){const e=effective(f),conflict=conflicts()&&f.id==='income';const c=['fact',f.wide?'wide':'',e.kind==='discarded'?'discarded':'',e.kind==='confirmed'||e.kind==='corrected'?'reviewed':'',conflict?'in-conflict':'',state.activeField===f.id?'selected':''].join(' ');
+      return `<div class="${c}"><div class="fact-title">${escapeHTML(f.label)}</div><div class="fact-value">${escapeHTML(e.value)}</div><div class="fact-note">${badge(conflict?'Conflicto por revisar':e.caption,conflict?'warn':e.css)} ${f.source?`<button class="evidence" type="button" data-evidence="${f.source}">Ver fuente #${f.source}</button>`:''}</div><div class="fact-review-row"><span class="${conflict?'conflict-mark':''}" style="font-size:10px;color:var(--muted)">${conflict?'Nueva declaración #5':e.kind==='corrected'?'Valor manual':e.kind==='discarded'?'No se incluiría en CRM':f.missing?'Sin dato que validar':'Dato autodeclarado'}</span><button class="review-trigger" data-open-field="${f.id}" type="button">${conflict?'Resolver conflicto':f.missing?'Ver detalle':e.kind==='confirmed'||e.kind==='corrected'||e.kind==='discarded'?'Ver revisión':'Revisar'} ↗</button></div></div>`;
+    }
+    function reviewPanel(){const f=FACTS.find(x=>x.id===state.activeField);if(!f||isStale())return '';
+      const r=reviewFor(f.id),e=effective(f),conflict=conflicts()&&f.id==='income';const originalLabel=f.missing?'Sin declaración del cliente':'Propuesta a partir de la conversación';
+      const source=f.source?`<div class="review-source"><span>Fuente original · Cliente · mensaje #${f.source}</span><button type="button" class="evidence" data-evidence="${f.source}">Ver fuente ↗</button></div>`:'';
+      const compare=conflict?`<div class="review-comparison"><div class="review-value is-manual"><label>Valor protegido de revisión humana</label><strong>${escapeHTML(e.value)}</strong><small>${r?'Corrección anterior del asesor':'Resultado anterior'}</small></div><div class="review-value new-evidence"><label>Nueva declaración del cliente · #5</label><strong>${escapeHTML(state.newCandidate.value)}</strong><small>Nuevo candidato; todavía no aceptado</small></div></div><div class="review-alert critical">No sobrescribimos la corrección. La nueva declaración necesita conciliación. No se puede dar por validada la ficha mientras exista conflicto.</div><div class="review-actions"><button type="button" class="review-confirm" data-review-action="keep">Mantener corrección</button><button type="button" data-review-action="adopt">Usar nueva declaración</button></div>`:'';
+      const value= r?`<div class="review-value is-manual"><label>Decisión humana registrada en esta sesión</label><strong>${r.status==='discarded'?'Descartado por asesor':r.status==='confirmed'?'Confirmado · '+escapeHTML(f.value):escapeHTML(r.value)}</strong><small>${r.note?escapeHTML(r.note):'La revisión no equivale a verificación documental'}</small></div>`:'';
+      const base=f.missing?`<div class="review-alert">No hay una afirmación que validar. El interés explícito debe obtenerse de la conversación o de una intervención humana con procedencia identificada; no se inventa aquí.</div>`:`<div class="review-value"><label>${originalLabel}</label><strong>${escapeHTML(f.value)}</strong><small>${escapeHTML(f.context)}</small></div>`;
+      const resolvedAudit=state.status==='resolved'&&f.id==='income'&&state.newCandidate?.resolved?`<div class="review-alert"><strong>Decisión de conciliación registrada:</strong> ${state.newCandidate.resolution==='kept'?'Se mantuvo el valor corregido por el asesor':'Se adoptó la declaración nueva'}. La declaración de 4.100 € permanece visible como fuente #5. <button class="evidence" data-evidence="5" type="button">Ver nuevo mensaje #5</button></div>`:'';
+      const form=state.editing?`<form class="revision-form" id="revisionForm"><label for="revisionValue">Valor corregido para la ficha</label><input id="revisionValue" type="text" maxlength="130" required value="${escapeHTML(r?.status==='corrected'?r.value:f.value)}"/><label for="revisionNote">Motivo / referencia de la corrección (opcional)</label><textarea id="revisionNote" maxlength="220" placeholder="Ej.: aclarado verbalmente durante revisión">${escapeHTML(r?.note||'')}</textarea><p class="note">Se registrará como corrección del asesor en esta sesión. No modifica el chat original y no implica verificación documental.</p><div class="review-actions"><button class="review-save" type="submit">Guardar corrección</button><button data-review-action="cancel" type="button">Cancelar</button></div></form>`:'';
+      const actions=!f.missing&&!conflict&&!state.editing?`<div class="review-actions">${!r?'<button type="button" class="review-confirm" data-review-action="confirm">Confirmar dato</button>':''}<button type="button" data-review-action="edit">Corregir</button>${r?.status==='discarded'?'<button type="button" data-review-action="restore">Restaurar candidato</button>':'<button type="button" class="review-danger" data-review-action="discard">Descartar candidato</button>'}${r?.status==='confirmed'||r?.status==='corrected'?'<button type="button" data-review-action="restore">Volver a propuesta</button>':''}</div>`:'';
+      return `<div class="review-panel" id="reviewPanel"><div class="review-panel-head"><div><p class="kicker">Revisión del asesor · ${f.id==='debt'?'dato con ambigüedad':'dato comercial'}</p><h4>${escapeHTML(f.label)}</h4></div><button type="button" class="close-review" data-review-action="close" aria-label="Cerrar revisión">×</button></div><div class="review-comparison">${base}${value||'<div class="review-value"><label>Estado operativo</label><strong>'+escapeHTML(f.missing?'No informado':e.caption)+'</strong><small>El dato no está verificado documentalmente</small></div>'}</div>${source}${!f.missing&&!conflict?`<p class="review-instruction">${r?'Puedes modificar tu revisión, restaurar la propuesta o descartarla.':'No necesitas confirmar todos los datos. Confirma si la interpretación es útil, corrige el valor o descártalo si no es fiable.'}</p>`:''}${f.id==='debt'?'<div class="review-alert">Confirmar la cuota de 250 € no resuelve si está descontada de los ingresos. Esa aclaración sigue pendiente.</div>':''}${compare}${resolvedAudit}${form}${actions}<p class="review-warnings">Esta es una interacción ilustrativa sin backend. Una confirmación expresa aceptación operativa del dato, no solvencia aprobada ni documento validado.</p></div>`;
+    }
+    function reviewSummary(){const a=Object.values(state.reviews);const counts={confirmed:a.filter(x=>x.status==='confirmed').length,corrected:a.filter(x=>x.status==='corrected').length,discarded:a.filter(x=>x.status==='discarded').length};return `<div class="review-summary"><strong>Revisión humana</strong>${badge(counts.confirmed+' confirmados')}${badge(counts.corrected+' corregidos')}${badge(counts.discarded+' descartados')}<span style="font-size:10px;color:var(--muted)">La ficha conserva las decisiones de esta sesión</span></div>`;}
+    function resultMarkup(){const stale=isStale();const conflict=conflicts();const needsQuestionReview = state.status==='resolved' || conflict || (['corrected','discarded'].includes(state.reviews.income?.status)||['corrected','discarded'].includes(state.reviews.debt?.status))&&!state.questionEditedAfterReview;const snapshot=`<div class="state-overview"><div class="state-icon" aria-hidden="true">i</div><div><h3>Datos aprovechables; hay dos asuntos por aclarar</h3><p>Laura ha facilitado ubicación, plazo, compradores e importes. Antes de considerar completa la ficha, conviene resolver la cuota del coche y confirmar su interés explícito en SmartHousing.</p><div class="overview-metrics"><span class="metric-pill">5 campos con información clara</span><span class="metric-pill warn">1 con ambigüedad</span><span class="metric-pill">1 sin informar</span></div></div></div>
+      ${conflict?`<div class="conflict-banner"><strong>Una nueva declaración contradice un valor corregido por el asesor.</strong> No se ha reemplazado la revisión humana. <button type="button" data-open-field="income">Comparar y resolver ↗</button></div>`:''}${state.status==='resolved'?'<div class="conflict-banner"><strong>Discrepancia revisada por el asesor.</strong> La evidencia nueva sigue en el historial. La pregunta anterior requiere un nuevo cálculo de E y no se puede copiar como vigente en esta maqueta.</div>':''}
+      <div class="focus-title"><h3>Atención prioritaria</h3><small>Resultado de diseño · requiere revisión humana</small></div><div class="priority-grid"><div class="key-issue"><div class="key-issue-label"><span>!</span> Ambigüedad material</div><h4>¿La cuota ya está descontada?</h4><p>La conversación contiene ingresos conjuntos y una cuota de coche de 250 €/mes. Su relación sigue sin aclararse; no descontarla automáticamente.</p><button class="evidence" data-evidence="4" type="button">Consultar mensaje original #4</button></div><div class="question"><div class="question-head"><strong>Pregunta propuesta para el asesor</strong>${badge('No enviada')}</div><textarea id="questionText" aria-label="Pregunta sugerida editable" ${stale||state.status==='resolved'?'readonly':''}>${escapeHTML(state.questionText)}</textarea><div class="question-bottom"><small>${stale?'Resultado desactualizado: reanaliza antes de utilizarlo.':needsQuestionReview?'La pregunta menciona datos anteriores: revisa la redacción o vuelve a analizar antes de copiar.':'Puedes editarla o copiarla; nunca se envía automáticamente.'}</small><button type="button" class="micro" id="copyQuestion" ${stale||needsQuestionReview?'disabled':''}>Copiar pregunta</button></div></div></div>
+      <div class="pending-inline"><b>También pendiente:</b> confirmar el interés explícito de Laura en explorar SmartHousing. Haber preguntado por una vivienda no confirma ese interés.</div>
+      <div class="section-title"><h3>Ficha comercial</h3><small>7 campos · datos declarados, no verificados</small></div>
+      ${reviewSummary()}<div class="facts">${FACTS.map(f=>factMarkup(f)).join('')}</div>${reviewPanel()}
+      <p class="facts-help">Abre «Revisar» sobre cualquier dato para inspeccionar su origen. Confirmar/corregir/descartar solo afecta a la interpretación de la ficha, no a la conversación original.</p><div class="coverage-note">Demostración de UX2 con datos preparados de Laura, sin IA real. El núcleo B/D/E no se ha ejecutado aquí y la detección automática puede omitir incidencias sensibles.</div>`;
+      if(stale)return `<div class="result-content"><div class="stale-banner" role="alert">↻ Has modificado la conversación. Los resultados anteriores y las correcciones se conservan como referencia, pero no son una lectura actual. Reanaliza para continuar.</div><div class="result-stale">${snapshot}</div></div>`;
+      return `<div class="result-content">${snapshot}</div>`;
+    }
+    function renderResults(){const statusLabels={initial:'Sin analizar',loading:'Analizando…',result:'Ejemplo ilustrativo',stale:'Resultado anterior',error:'Error ilustrativo',unsupported:'Sin IA en maqueta',conflict:'Conflicto por revisar',resolved:'Discrepancia revisada'};
+      $('resultBadge').textContent=statusLabels[state.status]||'Sin analizar';const c=$('results');
+      if(state.status==='initial')c.innerHTML='<div class="empty-illustration"><div class="empty-icon">▤</div><h3>Todo empieza con la conversación</h3><p>Analiza el texto para ver los campos comerciales y sus fuentes. Después podrás abrir cada dato para revisarlo.</p></div>';
+      if(state.status==='loading')c.innerHTML='<div class="empty-illustration"><div class="empty-icon">✧</div><h3>Analizando la conversación…</h3><p>Identificando información y dudas. La espera es simulada, no hay ninguna petición a un modelo.</p><div class="loadingdots"><span></span><span></span><span></span></div></div>';
+      if(['result','stale','conflict','resolved'].includes(state.status))c.innerHTML=resultMarkup();
+      if(state.status==='unsupported')c.innerHTML=`<div class="result-content"><div class="stale-banner">No es posible reanalizar este texto con la maqueta. Las correcciones previas siguen en esta sesión, pero la extracción anterior no debe utilizarse como actual.</div><div class="empty-illustration"><div class="empty-icon">⌘</div><h3>Lista para conectar con B/D/E</h3><p>UX2 prueba las interacciones de revisión. Las conversaciones nuevas y los ejemplos Javier/Rosa se analizarán con el sistema real, no con una simulación inventada.</p></div></div>`;
+      if(state.status==='error')c.innerHTML='<div class="result-content"><div class="error-box"><strong>No se ha podido completar el análisis.</strong><br>El texto fuente y las revisiones del asesor permanecen en memoria de esta página. No se han generado datos nuevos; cualquier resultado previo debe considerarse desactualizado.</div><div class="empty-illustration"><div class="empty-icon">!</div><h3>Vuelve a intentarlo</h3><p>Estado ilustrativo sin llamada real al modelo.</p></div></div>';
+      $('stageLabel').textContent=['result','stale','conflict','resolved'].includes(state.status)?'Etapa · En cualificación':'Etapa · Nuevo';
+    }
+    function render(){ $('alias').value=state.alias;$('sourceEditor').value=state.source;
+      $('exampleButtons').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.example===state.selected));
+      $('tabReading').classList.toggle('active',state.view==='reading');$('tabReading').setAttribute('aria-selected',String(state.view==='reading'));
+      $('tabEdit').classList.toggle('active',state.view==='edit');$('tabEdit').setAttribute('aria-selected',String(state.view==='edit'));
+      $('conversationView').style.display=state.view==='reading'?'block':'none';$('editorWrap').classList.toggle('active',state.view==='edit');
+      $('designStates').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.preview===state.status));
+      $('analyzeBtn').textContent=state.status==='loading'?'Analizando…':state.hasResult?'Reanalizar conversación ↗':'Analizar conversación ↗';$('analyzeBtn').disabled=!state.source.trim()||state.status==='loading';
+      $('sourceHint').textContent=isStale()?'El análisis anterior está desactualizado. Reanaliza antes de usar la salida.':'Ningún mensaje se envía. Solo Laura tiene datos preparados para diseñar la revisión.';
+      renderMessages();renderResults();
+    }
+    function notify(txt){const t=$('toast');t.textContent=txt;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2300);}
+    function view(v){state.view=v;render();if(v==='edit')$('sourceEditor').focus();}
+    function changeSource(value){const ed=$('sourceEditor'),start=ed.selectionStart,end=ed.selectionEnd;clearTimeout(pendingTimer);state.source=value;state.activeField=null;state.editing=false;state.newCandidate=null;state.questionEditedAfterReview=false;state.status=state.hasResult?'stale':'initial';render();ed.setSelectionRange(start,end);}
+    function selectExample(key){if((state.source!==(CASES[state.selected]||'')||state.hasResult||Object.keys(state.reviews).length)&&state.source.trim()&&!confirm('¿Cambiar de expediente? Perderás las revisiones y cambios no exportados.'))return;
+      clearTimeout(pendingTimer);state.selected=key;state.source=CASES[key]||'';state.alias=key==='Libre'?'Nuevo lead':key;state.status='initial';state.hasResult=false;state.view=key==='Libre'?'edit':'reading';state.reviews={};state.activeField=null;state.editing=false;state.questionEditedAfterReview=false;state.newCandidate=null;render();}
+    function startAnalysis(){if(!state.source.trim())return;clearTimeout(pendingTimer);state.status='loading';render();pendingTimer=setTimeout(()=>{
+      if(state.selected==='Laura' && state.source.trim()===CASES.Laura.trim()){state.status='result';state.hasResult=true;state.newCandidate=null;}
+      else if(state.selected==='Laura'&&state.source.trim()===(CASES.Laura+'\n\n'+CONFLICT_REPLY).trim()&&state.reviews.income?.status==='corrected'){
+        state.status='conflict';state.hasResult=true;state.newCandidate={field:'income',value:'≈ 4.100 € netos/mes · pareja',source:5,resolved:false};state.activeField='income';
+      }else{state.status='unsupported';state.newCandidate=null;}
+      render();
+    },700);}
+    function previewConflict(){clearTimeout(pendingTimer);state.selected='Laura';state.alias='Laura';state.source=CASES.Laura+'\n\n'+CONFLICT_REPLY;state.view='reading';state.status='conflict';state.hasResult=true;state.activeField='income';state.editing=false;state.questionEditedAfterReview=false;state.reviews={income:{status:'corrected',value:'≈ 3.600 € netos/mes · pareja',note:'Corrección humana de ejemplo (antes del nuevo mensaje)'}};state.newCandidate={field:'income',value:'≈ 4.100 € netos/mes · pareja',source:5,resolved:false};render();}
+    function preview(mode){if(mode==='conflict'){previewConflict();return;}clearTimeout(pendingTimer);state.selected='Laura';state.alias='Laura';state.source=CASES.Laura;state.view='reading';state.status=mode;state.hasResult=['result','stale'].includes(mode);state.reviews={};state.activeField=null;state.editing=false;state.questionEditedAfterReview=false;state.newCandidate=null;render();}
+    function highlightSource(n){view('reading');const el=$('message-'+n);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('highlight');setTimeout(()=>el.classList.remove('highlight'),2300);}}
+    function openField(id){if(isStale()) {notify('Reanaliza antes de revisar datos antiguos.');return;}if(!FACTS.some(f=>f.id===id))return;state.activeField=id;state.editing=false;renderResults();requestAnimationFrame(()=>$('reviewPanel')?.scrollIntoView({behavior:'smooth',block:'nearest'}));}
+    function act(action){if(!state.activeField)return;const f=FACTS.find(x=>x.id===state.activeField);if(!f)return;const id=f.id;
+      if(action==='close'){state.activeField=null;state.editing=false;renderResults();return;}
+      if(action==='edit'){state.editing=true;renderResults();$('revisionValue')?.focus();return;}
+      if(action==='cancel'){state.editing=false;renderResults();return;}
+      if(action==='confirm'&&!f.missing){state.reviews[id]={status:'confirmed',note:'Confirmado por asesor en esta sesión'};notify('Dato confirmado para la ficha; no verificado documentalmente');}
+      if(action==='discard'&&!f.missing){state.reviews[id]={status:'discarded',note:'Descartado por asesor'};if(['income','debt'].includes(id))state.questionEditedAfterReview=false;notify('Candidato descartado · no se utilizaría en el CRM');}
+      if(action==='restore'){delete state.reviews[id];if(['income','debt'].includes(id))state.questionEditedAfterReview=false;notify('Se ha restaurado el candidato original');}
+      if(action==='keep'&&conflicts()){state.newCandidate.resolved=true;state.newCandidate.resolution='kept';state.status='resolved';state.questionEditedAfterReview=false;notify('Se conserva la corrección; nueva evidencia señalada como no adoptada');}
+      if(action==='adopt'&&conflicts()){state.reviews[id]={status:'corrected',value:state.newCandidate.value,note:'Nueva declaración del cliente · mensaje #5; seleccionada por asesor'};state.newCandidate.resolved=true;state.newCandidate.resolution='adopted';state.status='resolved';state.questionEditedAfterReview=false;notify('Nueva declaración aplicada por decisión del asesor');}
+      renderResults();
+    }
+    $('tabReading').addEventListener('click',()=>view('reading'));
+    $('tabEdit').addEventListener('click',()=>view('edit'));
+    $('sourceEditor').addEventListener('input',e=>changeSource(e.target.value));
+    $('alias').addEventListener('input',e=>{state.alias=e.target.value;});
+    $('exampleButtons').addEventListener('click',e=>{const b=e.target.closest('[data-example]');if(b)selectExample(b.dataset.example);});
+    $('analyzeBtn').addEventListener('click',startAnalysis);
+    $('appendBtn').addEventListener('click',()=>{clearTimeout(pendingTimer);state.view='edit';state.source+=(state.source.trim()?'\n\n':'')+'Cliente: ';state.status=state.hasResult?'stale':'initial';state.activeField=null;state.editing=false;render();const ed=$('sourceEditor');ed.focus();ed.setSelectionRange(ed.value.length,ed.value.length);});
+    $('resetBtn').addEventListener('click',()=>{if(!confirm('¿Restablecer el expediente? Se perderán conversación y correcciones no exportadas.'))return;state.selected='Laura';state.source=CASES.Laura;state.alias='Laura';state.view='reading';state.status='initial';state.hasResult=false;state.reviews={};state.activeField=null;state.editing=false;state.newCandidate=null;clearTimeout(pendingTimer);render();});
+    $('designStates').addEventListener('click',e=>{const b=e.target.closest('button[data-preview]');if(b)preview(b.dataset.preview);});
+    document.addEventListener('submit',e=>{if(e.target.id!=='revisionForm')return;e.preventDefault();if(!state.activeField||isStale())return;const v=$('revisionValue').value.trim();const n=$('revisionNote').value.trim();if(!v){$('revisionValue').focus();return;}state.reviews[state.activeField]={status:'corrected',value:v,note:n||'Corrección humana en esta sesión'};state.editing=false;if(['income','debt'].includes(state.activeField))state.questionEditedAfterReview=false;renderResults();notify('Corrección guardada; el texto original no se ha modificado');});
+    document.addEventListener('input',e=>{if(e.target.id==='questionText'){state.questionText=e.target.value;state.questionEditedAfterReview=true; if(!['conflict','resolved'].includes(state.status)) {const b=$('copyQuestion');if(b){b.disabled=false;const note=b.parentElement?.querySelector('small');if(note)note.textContent='Pregunta revisada manualmente; no enviada.';}}}});
+    document.addEventListener('click',async e=>{
+      const evidence=e.target.closest('[data-evidence]');if(evidence){highlightSource(evidence.dataset.evidence);return;}
+      const f=e.target.closest('[data-open-field]');if(f){openField(f.dataset.openField);return;}
+      const action=e.target.closest('[data-review-action]');if(action){act(action.dataset.reviewAction);return;}
+      if(e.target.id==='copyQuestion'&&!e.target.disabled){const t=$('questionText').value;try{await navigator.clipboard.writeText(t);notify('Pregunta copiada; no enviada');}catch{$('questionText').focus();$('questionText').select();notify('Selecciona y copia el texto; no enviado');}}
+    });
+    render();
+  </script>
+</body>
+</html>

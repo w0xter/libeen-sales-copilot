@@ -1,5 +1,6 @@
-import { LiveWorkspace } from '../components/case-workspace/live-workspace';
+import { IntakeWorkspace } from '../components/intake/workspace';
+import './intake.css';
 
 export default function Home() {
-  return <LiveWorkspace />;
+  return <IntakeWorkspace />;
 }
