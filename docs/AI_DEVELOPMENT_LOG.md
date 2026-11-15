@@ -280,3 +280,7 @@ Final verification: focused multipass tests 60 passed; `pnpm lint`, `pnpm typech
 ### 2026-11-15 — F-02 MP-G6 preparación parcial
 
 Se auditó el CLI F-01 y el manifiesto F-01; se añadió un preflight exclusivamente offline con presupuestos conservadores de solicitudes para seis casos y tests locales. No se ejecutaron llamadas de modelo. La comparación, métricas, controles de coste/tiempo efectivos y revisión independiente del oráculo siguen pendientes; no se declara MP-G6 PASS. Véase `docs/evaluation/F02_MULTIPASS_PREP.md`.
+
+### 2026-11-15 — F-02 comparador offline parcial
+
+Se añadió una simulación con adaptadores de producción y transportes sintéticos en memoria, presupuesto compartido de intentos, emparejamiento y métricas parciales. La simulación no llama al proveedor; las limitaciones de respuestas, historial de C01, cobertura de métricas y cancelación se documentan en `docs/evaluation/F02_MULTIPASS_PREP.md`. MP-G6 PREP permanece parcial y MP-G6 real no se ejecutó.
