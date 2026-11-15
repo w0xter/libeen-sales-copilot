@@ -360,3 +360,7 @@ Se adaptó el evaluador F-01 para estrategia multipass con presupuesto compartid
 ### 2026-11-15 — Investigación offline de los resultados multipass
 
 Se reprodujeron offline salidas de 21 casos de una etapa reconstruyendo el snapshot: los 21 resultados públicos coincidieron con los informes previos. Se identificaron solapamientos en motivos de revisión, 5 fallos de correspondencia S2, casos de señales protegidas detectadas que no llegan al orquestador, falsos OPT_OUT en salidas y una ausencia estructural de COST en señales multipass. Se excluyeron tres correcciones de dos etapas; no hubo llamadas reales ni cambios de política, contratos o prompts. Análisis y límites en `docs/evaluation/F02_24_CAUSAL_ANALYSIS_2026-11-15.md`; diagnóstico sintético detallado ignorado por Git.
+
+### F02-R01 — diagnóstico offline de capturas
+
+Se añadió una prueba opt-in que lee el ZIP sintético capturado, reproduce las respuestas multipass sin proveedor y compara el estado público de 21 casos de una etapa; tres casos con historial se marcan como no reconstruidos. Se documentan inventario, causas y límites en `docs/evaluation/F02_R01_CAPTURED_REPLAY.md`. No se alteraron intérprete, prompts, contratos, oráculos ni fixtures. La verificación y sus resultados se detallan en el handoff de la tarea.
