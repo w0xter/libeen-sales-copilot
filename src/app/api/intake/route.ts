@@ -2,8 +2,6 @@ import { openAITransport } from '../../../intake/extraction';
 import { parseConversation } from '../../../intake/parse-conversation';
 import { runIntake } from '../../../intake/run-intake';
 
-export const runtime = 'nodejs';
-
 export async function POST(request: Request): Promise<Response> {
   let body: unknown;
   try { body = await request.json(); } catch { return Response.json({ error: 'invalid_json' }, { status: 400 }); }

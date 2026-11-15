@@ -1,0 +1,13 @@
+# P8 — Reanálisis y revisiones
+
+Las revisiones se conservan en la sesión al analizar de nuevo. Cada una guarda una copia de la fuente y la propuesta originales. La correspondencia usa campo, rol, texto completo de origen y cita, no el número secuencial que asigna el parser: insertar un turno anterior no mueve la revisión a otro mensaje. Si no hay correspondencia, o hay fuentes idénticas que no se pueden distinguir, se conserva y muestra la revisión sin asociarla automáticamente. Los resultados anteriores se marcan como desactualizados tras editar o fallar; sus citas no enlazan a una numeración potencialmente diferente.
+
+Una nueva propuesta para un campo corregido se compara de forma conservadora con las existentes al revisar. Ante una diferencia textual se muestran ambas fuentes y se permite mantener la corrección o elegir la nueva declaración. Ambas quedan visibles. Esto puede generar falsos conflictos y no es un reconciliador semántico. Las decisiones de revisión y resolución invalidan la pregunta; se bloquea su copia hasta que el asesor la revise expresamente y no queden conflictos abiertos. Un reanálisis con revisiones también exige esa revisión, ya que E sigue trabajando sobre candidatos de B y no incorpora las correcciones humanas. No se envía ninguna pregunta.
+
+## Evidencia y límites
+
+- Las pruebas unitarias cubren conservación de fuente y metadatos, confirmación, corrección, descarte/restauración, estabilidad de identidad al renumerar y detección conservadora de una propuesta diferente. No sustituyen el recorrido interactivo.
+- Se ha corregido el build: con `cacheComponents`, Next requiere quitar el export `runtime` y usa Node.js por defecto. `pnpm build` pasó tras el cambio.
+- `ux-reference/libeen-intake-react-build.html` es el HTML inicial producido por ese build de Next, conservado para inspección junto al prototipo original. Referencia recursos `/_next/` generados por Next: por sí solo no es una aplicación interactiva autónoma ni captura estados posteriores. La aplicación requiere el build y servidor de Next.
+- La herramienta de navegador permanece deshabilitada en Work. No hay capturas ni verificación visual, accesible o del flujo interactivo en navegador. La fidelidad completa con UX2 sigue pendiente de esa revisión; los controles artificiales de previsualización del prototipo no son funciones reales.
+- La comparación textual puede producir falsos positivos y no detecta contradicciones semánticas con valores idénticos. Los metadatos originales se conservan; cambios de sujeto, base o precisión deben quedar explícitos en el texto o nota humanos. No hay persistencia entre sesiones ni exportación. Persisten los defectos conocidos de B/D/E en P4/P5. No se ejecutó inferencia real en esta puerta.
