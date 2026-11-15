@@ -1,4 +1,12 @@
-# Libeen Sales Copilot V0
+# Libeen AI Lead Intake V0
+
+La dirección activa es **Libeen AI Lead Intake V0**, centrada en extracción, issues y una pregunta de aclaración. El proyecto está en bootstrap documental: las nuevas especificaciones están pendientes y P0 aún no ha comenzado. AI Lead Intake no está implementado.
+
+La [documentación activa pendiente](docs/current/README.md) se incorporará sin sobrescribir el [archivo histórico](docs/legacy/README.md). Consulta el [índice documental](docs/README.md).
+
+## Implementación heredada: Sales Copilot V0
+
+El código y las instrucciones siguientes corresponden a la implementación anterior, conservada para posible reutilización. Sus decisiones no son requisitos de AI Lead Intake.
 
 Copiloto local para asesores que trabajan con **conversaciones ficticias**. Extrae hechos con evidencia, conserva incertidumbres, evalúa un workflow y propone una acción y, cuando procede, un borrador para revisión humana. La política `demo-v1` es sintética: orienta hacia una aclaración, una llamada propuesta o revisión humana; **no aprueba ni rechaza financiación**. No hay envío real, CRM, calendario ni reserva de citas.
 
@@ -39,7 +47,7 @@ El asesor puede editar, aprobar o descartar un borrador y registrar un envío **
 - `AI_MODE=replay`: funciona sin credenciales y está etiquetado en la interfaz. Solo admite las conversaciones y variantes sintéticas reconocidas.
 - `AI_MODE=openai`: configura `OPENAI_API_KEY` en `.env.local` y opcionalmente `OPENAI_MODEL` (por defecto `gpt-4.1-mini`). La clave solo se lee en el servidor. Reinicia el servidor tras cambiar el entorno. La falta de clave o un error del proveedor se comunica sin cambiar a replay silenciosamente.
 
-El adaptador OpenAI extrae candidatos estructurados que pasan validación y selecciona entre plantillas de borrador permitidas; no redacta libremente. **La inferencia real se ha evaluado, pero sigue siendo inconsistente y F-01 no está resuelto.** La evaluación original y la remediación parcial conservan los fallos y límites observados: [evaluación independiente](docs/evaluation/INDEPENDENT_EVALUATION.md) y [remediación F-01](docs/evaluation/F01_OPENAI_REMEDIATION.md). Las pruebas deterministas no hacen llamadas reales; una prueba aislada de instrucciones maliciosas no acredita resistencia general.
+El adaptador OpenAI extrae candidatos estructurados que pasan validación y selecciona entre plantillas de borrador permitidas; no redacta libremente. **La inferencia real se ha evaluado, pero sigue siendo inconsistente y F-01 no está resuelto.** La evaluación original y la remediación parcial conservan los fallos y límites observados: [evaluación independiente](docs/legacy/evaluation/INDEPENDENT_EVALUATION.md) y [remediación F-01](docs/legacy/evaluation/F01_OPENAI_REMEDIATION.md). Las pruebas deterministas no hacen llamadas reales; una prueba aislada de instrucciones maliciosas no acredita resistencia general.
 
 ## Configuración R10
 
@@ -61,7 +69,7 @@ pnpm test tests/acceptance/laura
 pnpm test tests/acceptance/safety tests/acceptance/failures
 ```
 
-Consulta [preparación de entrega](docs/evaluation/DELIVERY_READINESS.md) y [el registro de desarrollo](docs/AI_DEVELOPMENT_LOG.md) para resultados y límites reales. El test de prompt injection cubre el rechazo de texto desconocido en replay, no una prueba contra un modelo real.
+Consulta [preparación de entrega](docs/legacy/evaluation/DELIVERY_READINESS.md) y [el registro de desarrollo](docs/legacy/AI_DEVELOPMENT_LOG.md) para resultados y límites reales. El test de prompt injection cubre el rechazo de texto desconocido en replay, no una prueba contra un modelo real.
 
 ## Decisiones y límites
 
@@ -70,4 +78,4 @@ Consulta [preparación de entrega](docs/evaluation/DELIVERY_READINESS.md) y [el 
 - No hay transcripción de audio, asesoramiento financiero, promesas de vivienda, persistencia de producción ni efectos externos. No hay fuentes comerciales verificadas para contestar la objeción de confianza de Javier, así que se deriva.
 - Con más tiempo: evaluar el adaptador con un modelo real y casos adversariales, revisar la seguridad del texto editado por humanos, incorporar autenticación y persistencia adecuadas, y mejorar la cobertura visual y de concurrencia antes de cualquier uso real.
 
-La [documentación local](docs/README.md) contiene las especificaciones y contratos; el [registro de desarrollo](docs/AI_DEVELOPMENT_LOG.md) documenta el trabajo y las correcciones de Codex. El [enunciado original](docs/reference/Prueba_tecnica_AI_Product_Engineer.pdf) proporciona las conversaciones ficticias.
+La [documentación histórica](docs/legacy/README.md) contiene las especificaciones y contratos anteriores; el [registro de desarrollo](docs/legacy/AI_DEVELOPMENT_LOG.md) documenta el trabajo y las correcciones de Codex. El [enunciado original](docs/legacy/reference/Prueba_tecnica_AI_Product_Engineer.pdf) proporciona las conversaciones ficticias.
