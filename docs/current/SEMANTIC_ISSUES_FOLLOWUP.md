@@ -1,6 +1,8 @@
 # Seguimiento del spike: diagnóstico y prioridad de opt-out
 
-## Decisión: ADJUST
+## Decisión original: ADJUST
+
+**Adjudicación humana posterior:** producto acepta para V0 el rango mensual provisional de LBE-18-S0 si conserva sujeto, cifras, períodos y evidencia; `debtIncluded: excluded` para financiación inexistente es una imprecisión menor no bloqueante. Se mantiene la expectativa original de candidatos separados como alternativa y la contradicción no resuelta de LBE-18-S1 sigue requiriendo aclaración. La conclusión original siguiente recoge el criterio aplicado antes de esta adjudicación.
 
 Los dos bloqueos se corrigen en esta muestra, pero no se cumple el criterio de salida de las siete extracciones sin regresiones. En LBE-18-S0 el modelo agrupa los importes de mayo y junio en un candidato marcado `range` y marca la ausencia de financiación como `debtIncluded: excluded`; el gold distingue dos candidatos mensuales y no justifica esa clasificación. No se ejecutaron los 32 casos. Una sola muestra por caso no demuestra calidad general ni permite atribuir la variación de extracción al cambio de código.
 
