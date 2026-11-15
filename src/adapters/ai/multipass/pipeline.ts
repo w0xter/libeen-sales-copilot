@@ -7,6 +7,7 @@ import { reconcile } from './reconcile';
 import { Scheduler, type FakeTransport } from './scheduler';
 import { createTrace, type Role, type GroupingCounts, type InvalidCandidateReason, type SpanMismatchKind } from './trace';
 import { bindSubjects } from './subjects';
+import { checkContextCoverage } from './context-coverage';
 import { locateEvidenceRef, locateOccurrence, validateOccurrence, validateEvidenceRefs } from './evidence';
 
 export type Snapshot = { caseId: string; messages: Message[]; factSchema: FactSchema; agentProfile: AgentProfile; knownSubjects: SubjectRef[]; historicalAssertions: FactAssertion[]; historicalBlockers: Blocker[]; materialFieldIds: string[] };
@@ -114,13 +115,9 @@ export async function runPipeline(options: { runId: string; snapshot: Snapshot; 
   if (reviewed === undefined) { const failure = fail('protected_review_failed'); return { ...failure, diagnostics: grouped.diagnostics }; }
   const rawContextual = review.parse(reviewed);
   const contextual = { ...rawContextual, candidates: rawContextual.candidates?.map(normalizeRefs), verdicts: rawContextual.verdicts.map(normalizeRefs) };
-  const expectedReviews = grouped.groups.flatMap(g => g.candidates.map(c => JSON.stringify([g.groupId, c.candidateId])));
-  const actualReviews = contextual.reviews.map(r => JSON.stringify([r.groupId, r.candidateId]));
-  if (actualReviews.length !== expectedReviews.length || new Set(actualReviews).size !== actualReviews.length || actualReviews.some(id => !expectedReviews.includes(id))) {
-    const expected = new Set(expectedReviews);
-    const actual = new Set(actualReviews);
-    const perGroup = grouped.groups.map(group => contextual.reviews.filter(r => r.groupId === group.groupId && expected.has(JSON.stringify([r.groupId, r.candidateId]))).length);
-    trace.reviewCounts = { expected: expectedReviews.length, actual: actualReviews.length, missing: expectedReviews.filter(id => !actual.has(id)).length, duplicates: actualReviews.length - actual.size, foreign: actualReviews.filter(id => !expected.has(id)).length, groupsExpected: grouped.groups.length, groupsReviewed: perGroup.filter(count => count > 0).length, groupsReviewedOnce: perGroup.filter(count => count === 1).length };
+  const coverage = checkContextCoverage(grouped.groups, contextual.reviews);
+  if (!coverage.complete) {
+    trace.reviewCounts = coverage.counts;
     const failure = fail('incomplete_contextual_review');
     return { ...failure, diagnostics: grouped.diagnostics };
   }

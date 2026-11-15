@@ -166,3 +166,19 @@ it('reports the category of a grouping-related human review without embedding so
   expect(captured[0]).toMatchObject({ finalStatus: 'human_review_required', reviewReasonCategories: expect.arrayContaining(['grouping']) });
   expect(JSON.stringify(captured)).not.toContain('not-a-real-quote');
 });
+
+it.each(['identical', 'contradictory'] as const)('rejects %s duplicate reviews with content-free diagnostics', async kind => {
+  const { name, messages } = fixture('C01');
+  const captured: unknown[] = [];
+  const interpreter = new MultipassInterpreter({ execute: async request => {
+    const output = multiResponse(request.role, request.input, scripted(name, messages));
+    if (request.role !== 'S2') return output;
+    const value = output as { reviews: { support: string }[] };
+    value.reviews.push(kind === 'identical' ? structuredClone(value.reviews[0]) : { ...value.reviews[0], support: 'refuted' });
+    return value;
+  } }, value => captured.push(value));
+  const result = await interpreter.interpret({ caseSnapshot: seed(name, messages), messages, factSchema: demoBundle.factSchema, agentProfile: demoBundle.agentProfile });
+  expect(result).toMatchObject({ ok: false, error: { code: 'MODEL_OUTPUT_INVALID' } });
+  expect(captured[0]).toMatchObject({ failureCode: 'incomplete_contextual_review', reviewCounts: { duplicates: 1, identicalDuplicates: kind === 'identical' ? 1 : 0, conflictingDuplicates: kind === 'contradictory' ? 1 : 0 } });
+  expect(JSON.stringify(captured)).not.toContain('3.800');
+});
