@@ -1,0 +1,9 @@
+# P10 — Vista previa y copia manual CRM
+
+La vista previa y la copia usan `deriveEffective`, igual que la pantalla. Separan campos sin informar, descartes y conflictos; conservan evidencia y revisiones humanas no consolidadas. La corrección humana no hereda metadatos estructurados sin confirmar. Se muestran fuente, procedencia y etapa actual, sin afirmar sincronización ni verificación documental. Cuando la conversación cambia, falla el análisis o hay uno en curso, la ficha anterior no se ofrece como actual ni se puede copiar.
+
+Las pruebas de exportación verifican bloqueo por desactualización y separación de estados. Las pruebas de interacción con respuestas y portapapeles simulados cubren alerta sensible, copia, edición, fallo, corrección, conflicto y adopción. Los escenarios Laura, Javier, Rosa y Alcalá y errores ya están cubiertos en `tests/integration/intake/p4.test.ts` y `p5.test.ts` con transporte simulado. No son pruebas de calidad de inferencia del modelo. Los defectos conocidos de Javier y Rosa permanecen en P4/P5.
+
+No se ha probado en navegador ni hay capturas: la herramienta local estaba deshabilitada. Las pruebas de React Test Renderer no validan apariencia, accesibilidad real, portapapeles del sistema ni fidelidad con UX2. La V0 no está validada visualmente ni lista para producción. Los estados se pierden al cerrar la sesión. La resolución de múltiples propuestas preexistentes o fuentes idénticas puede quedar en conflicto sin acción automática; no se exportan como dato consolidado.
+
+Verificación final de esta ejecución: `pnpm test` 172 aprobadas y 2 omitidas (proveedor real optativo); `pnpm typecheck`, `pnpm lint` y `pnpm build` finalizaron correctamente. El HTML de build versionado se actualizó desde `.next/server/app/index.html` tras el build; necesita los recursos de Next para funcionar.

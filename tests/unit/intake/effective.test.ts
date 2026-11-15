@@ -14,7 +14,7 @@ const baseline = { [key]: [JSON.stringify([key, candidate.value])] };
 const conflictKey = JSON.stringify([key, newKey, newer.value]);
 const input = { candidates: [candidate, newer], messages: [source, newerSource], reviews: { [key]: review }, baselines: baseline };
 describe('ficha efectiva', () => {
-  it('no consolida un conflicto sin resolver', () => expect(deriveEffective({ ...input, resolutions: {} }).income.status).toBe('conflict'));
+  it('no consolida un conflicto sin resolver y conserva la revisión humana', () => { const field = deriveEffective({ ...input, resolutions: {} }).income; expect(field.status).toBe('conflict'); expect(field.humanReviews[0].value).toBe('3.600 €/mes'); });
   it('selecciona la corrección o la nueva declaración según la decisión', () => {
     const kept = deriveEffective({ ...input, resolutions: { [conflictKey]: 'keep' } }).income;
     const adopted = deriveEffective({ ...input, resolutions: { [conflictKey]: 'adopt' } }).income;
