@@ -25,19 +25,25 @@ export function identifyIssues(extraction: Extraction, messages: Message[], rule
   for (const field of rules.requiredFields) {
     if (!extraction.fields[field].length) add({ category: 'missing', field, description: `Falta información sobre ${field}.`, review: 'clarification' });
   }
+  for (const signal of extraction.semanticIssues ?? []) {
+    if (issues.some(i => i.category === signal.category && i.field === (signal.field ?? undefined) && i.messageId === signal.messageId && i.quote === signal.quote)) continue;
+    add({ category: signal.category, ...(signal.field ? { field: signal.field } : {}), messageId: signal.messageId, quote: signal.quote, description: signal.explanation, review: signal.category === 'sensitive' ? 'human' : 'clarification' });
+  }
   for (const field of Object.keys(extraction.fields) as Field[]) {
     const candidates = extraction.fields[field];
     for (const c of candidates) {
       const source = { field, messageId: c.messageId, quote: c.quote };
+      if (extraction.semanticIssues === undefined) {
       if (c.uncertainty || c.precision === 'uncertain') add({ category: 'ambiguous', ...source, description: c.uncertainty || 'El dato se ha extraído con precisión incierta.', review: 'clarification' });
       if (field === 'income' && c.incomeBasis === 'unknown') add({ category: 'ambiguous', ...source, description: 'No se conoce si los ingresos son netos o brutos.', review: 'clarification' });
       if (field === 'debts' && c.debtIncluded === 'unknown') add({ category: 'ambiguous', ...source, description: 'No se conoce si la cuota está descontada de los ingresos.', review: 'clarification' });
       if (['income', 'savings', 'debts'].includes(field) && c.subject === 'unknown') add({ category: 'ambiguous', ...source, description: 'No se conoce el sujeto del dato económico.', review: 'clarification' });
+      }
       const message = messages.find(m => m.id === c.messageId);
       if (!message || message.role !== 'customer' || message.text === null || !message.text.includes(c.quote)) add({ category: 'inaccessible', ...source, description: 'La fuente no permite atribuir con seguridad este dato al cliente.', review: 'human' });
     }
     // Solo cantidades simples: no interpretar rangos ni resolver rectificaciones.
-    if (['income', 'savings', 'debts'].includes(field) && candidates.length > 1) {
+    if (extraction.semanticIssues === undefined && ['income', 'savings', 'debts'].includes(field) && candidates.length > 1) {
       const simple = candidates.filter(c => (c.value.match(/\d[\d.,]*/g) || []).length === 1);
       for (let i = 0; i < simple.length; i++) for (let j = i + 1; j < simple.length; j++) {
         const a = simple[i], b = simple[j];
@@ -54,6 +60,7 @@ export function identifyIssues(extraction: Extraction, messages: Message[], rule
       continue;
     }
     for (const sentence of message.text.split(/[.!?¿¡;]+/).map(s => s.trim()).filter(Boolean)) {
+      if (issues.some(i => i.category === 'sensitive' && i.messageId === message.id && i.quote && (sentence.includes(i.quote) || i.quote.includes(sentence)))) continue;
       // La detección solo actúa ante formulaciones afirmativas evidentes.
       if (/\b(?:no|nunca|si|quizás|quizá|hipotéticamente)\b/i.test(sentence)) {
         if (/\bno\s+(?:me\s+)?(?:contact(?:éis|en|es)|llam(?:éis|en|es)|escrib(?:áis|an|as))\b/i.test(sentence)) add({ category: 'sensitive', messageId: message.id, quote: sentence, description: 'Posible petición de no contacto; requiere revisión humana.', review: 'human' });
