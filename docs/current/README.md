@@ -9,6 +9,7 @@ Este directorio es la única fuente documental activa para la **nueva** Libeen A
 1. [`01_FUNCTIONAL_SPEC_V0.md`](01_FUNCTIONAL_SPEC_V0.md) — qué debe lograr el producto y qué queda excluido.
 2. [`02_MINIMAL_BDE_IMPLEMENTATION_PLAN.md`](02_MINIMAL_BDE_IMPLEMENTATION_PLAN.md) — qué recuperar del repositorio y cómo validar el núcleo B/D/E en P0–P4.
 3. [`tasks/P0_BRIEF.md`](tasks/P0_BRIEF.md) — tarea **exclusivamente P0**. **Leerlo no constituye autorización de ejecución**: comienza P0 solo cuando el usuario lo encargue explícitamente.
+4. [`P0_BOUNDARIES_AND_EXAMPLES.md`](P0_BOUNDARIES_AND_EXAMPLES.md) — contrato observable y expectativas preparados en P0; no constituyen resultados de ejecución.
 
 Las instrucciones generales de desarrollo están en [`../../AGENTS.md`](../../AGENTS.md). La documentación anterior se encuentra en [`../legacy/`](../legacy/README.md) y **no impone requisitos** a esta V0. No leer ni aplicar automáticamente su DAG, contratos, policies, WorkflowDefinition, AgentProfile, M0–M5 o tareas LIB-001–LIB-013. Consultar código legado para reutilización está permitido **solo en la medida requerida por una tarea concreta**.
 
