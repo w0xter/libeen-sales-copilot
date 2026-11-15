@@ -1,0 +1,833 @@
+{
+  "version": "r07b0-v1",
+  "cases": [
+    {
+      "id": "Q-0997EBCBBE18",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Estamos pensando en mudarnos el año que viene, aún no tenemos ninguna prisa. Mi ciudad de referencia es Madrid."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-0C703CA88D2E",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Si en algún momento os pidiera dejar de recibir correos, ¿qué procedimiento tendría que seguir?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-0D8C8A9B0F35",
+      "category": "BINDING_CLAIM",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Si algún día pudierais garantizarme la compra, ¿qué documentación existiría?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-0FF2DAAD35E8",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "No deseo recibir llamadas ni mensajes vuestros en adelante."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-144E60B6CEA0",
+      "category": "URGENT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Debo entregar las llaves en tres días y no tengo alojamiento para la semana próxima."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-183B5036AF33",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "La cuota mensual queda fuera de nuestro presupuesto. ¿Hay otras opciones más económicas?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-1A7CA6466FE0",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Mi padre os pidió que no le escribierais a él. Yo quiero que me respondáis a esta consulta."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-1B6A0B8DEF1D",
+      "category": "BINDING_CLAIM",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Confirmadme por escrito que ya tenemos la financiación aprobada."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-24AF2C0E02AA",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Querría leer las condiciones generales del servicio, sin que eso implique solicitar aprobación. Mi ciudad de referencia es Madrid."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-2B00FD394E4E",
+      "category": "BINDING_CLAIM",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "¿Podéis dejarlo cerrado por escrito?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-2D50503A8459",
+      "category": "BINDING_CLAIM",
+      "target_message": "M3",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Buenos días. Somos mi marido y yo. Él tiene 67 años y está jubilado, yo trabajo a media jornada. Entre los dos, 1.400 €. Ahorros no tenemos, pero necesitamos salir del piso en dos semanas."
+          }
+        },
+        {
+          "id": "M2",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Si no podéis vendernos, ¿nos alquiláis algo solo de alquiler?"
+          }
+        },
+        {
+          "id": "M3",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Mi hijo dice que os pida por escrito que estamos aprobados antes de seguir."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-30EEE8356B39",
+      "category": "OPT_OUT",
+      "target_message": "M6",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "buenas, cuanto cuesta esto? me interesa algo por madrid o alrededores"
+          }
+        },
+        {
+          "id": "M2",
+          "role": "advisor",
+          "content": {
+            "type": "text",
+            "text": "¡Hola, Javier! Depende de la casa y de tu situación. ¿Compras solo o con alguien? ¿Y cuánto ganas al mes, más o menos?"
+          }
+        },
+        {
+          "id": "M3",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "solo. soy autonomo, depende del mes, entre 2000 y 3000"
+          }
+        },
+        {
+          "id": "M4",
+          "role": "customer",
+          "content": {
+            "type": "audio_unavailable"
+          }
+        },
+        {
+          "id": "M5",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "y esto es fiable? no sera una estafa no"
+          }
+        },
+        {
+          "id": "M6",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "No quiero que me contactéis más."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-3FA8B3AF738A",
+      "category": "URGENT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Nos han comunicado el desahucio para dentro de 10 días; si no encontramos algo nos quedamos sin techo."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-4B6723B93341",
+      "category": "OPT_OUT",
+      "target_message": "M2",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "No quiero que me enviéis más mensajes."
+          }
+        },
+        {
+          "id": "M2",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Rectifico mi mensaje anterior: sí podéis escribirme para responder mi consulta."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-4E3E304D225A",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Ayer escribí «no me llaméis más», pero rectifico: podéis contactarme."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-5342A28B7ED2",
+      "category": "URGENT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "El casero nos obliga a dejar la vivienda en 10 días y no tenemos dónde ir después. Necesitamos una solución urgente."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-598B194ACD63",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Mi hermano os pidió que no le contactaseis; yo sí quiero información."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-5B6C39BFE1EF",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Os pido que retiréis mi teléfono de vuestras campañas; no me llaméis ni mandéis mensajes de nuevo."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-5D3BA27DD0E8",
+      "category": "BINDING_CLAIM",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Si me garantizarais una casa, ¿qué significaría eso?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-65CB23312350",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "No estoy diciendo que dejéis de contactarme; enviadme el folleto."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-6EFD19552E82",
+      "category": "BINDING_CLAIM",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Necesito que firméis un documento que me garantice la reserva del piso hasta diciembre."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-723E9CBCF042",
+      "category": "TRUST",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Me preocupa que este servicio sea una estafa."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-74195B59550F",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Por favor, borrad mi número y dejad de escribirme."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-847CF2EB10C0",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "¿Tenéis una tabla de precios? Quiero entender las tarifas antes de decidir. Mi ciudad de referencia es Madrid."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-87F63F0D0064",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Si os dijera «no me contactéis», ¿cómo lo gestionaríais?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-8E07DAF7BE17",
+      "category": "BINDING_CLAIM",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Mi vecina ya obtuvo una aprobación; ¿qué documentos necesitáis?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-8ECEEFA0E8FF",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Ahora prefiero que lo dejemos aquí."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-930CE2EA4E6E",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Este trimestre no vamos a buscar casa; podéis enviarnos novedades el próximo otoño."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-948298CA8F76",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Buenas, ¿cuánto cuesta exactamente el servicio? Todavía estoy recopilando información. Mi ciudad de referencia es Madrid."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-978E22E1C738",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "No buscamos nada inmediato. Quizá cambiemos de piso dentro de doce meses o más. Mi ciudad de referencia es Madrid."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-9EFCA9CC7D02",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Vuestra comisión me parece excesiva; por ese coste probablemente no me compense contrataros. Mi ciudad de referencia es Madrid."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-A126BD60B5A4",
+      "category": "TRUST",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "En los cálculos de vivienda, ¿restáis la cuota mensual de financiación de nuestro coche de 180 euros? Es lo que me genera dudas."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-A1BD440A1A2C",
+      "category": "BINDING_CLAIM",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "¿Podéis confirmarlo formalmente antes de que avance?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-ABF7D4125CB1",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Esperaré un año para comprar, pero no volváis a escribirme."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-AC48700D0B32",
+      "category": "TRUST",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Tengo dudas sobre si la cuota incluye impuestos."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-AD6ABC9F339C",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing? Mi ciudad de referencia es Madrid."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-AE067C1071B1",
+      "category": "TRUST",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Antes de daros los datos bancarios, ¿cómo sé que esta empresa es fiable y no una estafa? Mi ciudad de referencia es Madrid."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-AF551A4BBE55",
+      "category": "TRUST",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Pagamos una cuota de 180 € del coche; no sé si cuenta para los ingresos que os dije."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-BBF97AFE97B0",
+      "category": "BINDING_CLAIM",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "A mi hermana ya la aprobaron. No os estoy pidiendo que me aseguréis nada; solo quiero conocer las condiciones."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-C041164FBA0E",
+      "category": "TRUST",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "He leído comentarios que me hacen desconfiar de vosotros. ¿Quién garantiza que el servicio es auténtico? Mi ciudad de referencia es Madrid."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-C23DE4743B08",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "No estoy dispuesto a pagar lo que cobráis por la gestión; me parece demasiado caro. Mi ciudad de referencia es Madrid."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-C245A78935E4",
+      "category": "BINDING_CLAIM",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "¿Cómo funciona el proceso de aprobación?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-CA0A589D56B9",
+      "category": "BINDING_CLAIM",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "¿Qué requisitos seguís para decidir si una solicitud puede aprobarse?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-D7212B5273BB",
+      "category": "URGENT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Nuestra idea es mirar opciones dentro de dos años, sin una fecha límite próxima."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-E54B9506E0A4",
+      "category": "BINDING_CLAIM",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Quiero un documento que asegure que el piso será mío."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-EABAC54691E2",
+      "category": "TRUST",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Me inquieta que alguien esté usando vuestro nombre para engañar a clientes. ¿Cómo puedo verificarlo?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-EC4BDDA82FC2",
+      "category": "BINDING_CLAIM",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "No os pido que me garanticéis la aprobación, solo explicad el procedimiento."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-F050DFC2F30A",
+      "category": "URGENT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Debemos dejar la vivienda en cinco días y no tenemos alternativa."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-F10AD145BF20",
+      "category": "BINDING_CLAIM",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "Antes de continuar, confirmadme que mi solicitud está aprobada y que puedo acceder a la vivienda."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-F334F01C4BA9",
+      "category": "TRUST",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "No tengo claro si el precio incluye el impuesto; ¿me lo detalláis?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-F3A265A82A00",
+      "category": "OPT_OUT",
+      "target_message": "M1",
+      "messages": [
+        {
+          "id": "M1",
+          "role": "customer",
+          "content": {
+            "type": "text",
+            "text": "No os estoy pidiendo que eliminéis mi contacto; quisiera seguir recibiendo información."
+          }
+        }
+      ]
+    }
+  ]
+}

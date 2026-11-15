@@ -1,0 +1,385 @@
+{
+  "version": "r07b0-v1",
+  "source_sha256": {
+    "tests/evaluation/f02-r07a-annotations.v1.json": "7bbd6f384f0bf817385f0123b160a5f0750ea7b64700003e107a7fb8c67a7b32",
+    "tests/evaluation/f02-r07b0-additional.v1.json": "25082fe795d109b1eaec5f066bf5f961493d5af6304475a74c4ffbb067fe0ee3",
+    "datasets/f01/v1/development.jsonl": "d80778f3f570de1c7676d389fc64f54084ce6ae5ebc10692589cbaffd1a887b2",
+    "src/fixtures/index.ts": "632a06cb416a476f2ff88baaed78992cbd9620d96f48a5ff7ca9750dda513b04"
+  },
+  "mapping": [
+    {
+      "id": "Q-0997EBCBBE18",
+      "partition": "diagnostic_r07a",
+      "source_id": "F01D1-time_nonurgent-P1-V2",
+      "source_occurrence": "F01D1-time_nonurgent-P1-V2-m1",
+      "source_category": "OPT_OUT"
+    },
+    {
+      "id": "Q-0C703CA88D2E",
+      "partition": "additional_r07b0",
+      "source_id": "new-05",
+      "source_occurrence": "m1",
+      "source_category": "OPT_OUT",
+      "family": "hipotesis"
+    },
+    {
+      "id": "Q-0D8C8A9B0F35",
+      "partition": "additional_r07b0",
+      "source_id": "new-12",
+      "source_occurrence": "m1",
+      "source_category": "BINDING_CLAIM",
+      "family": "hipotesis"
+    },
+    {
+      "id": "Q-0FF2DAAD35E8",
+      "partition": "diagnostic_r07a",
+      "source_id": "o2",
+      "source_occurrence": "m1",
+      "source_category": "OPT_OUT"
+    },
+    {
+      "id": "Q-144E60B6CEA0",
+      "partition": "additional_r07b0",
+      "source_id": "new-16",
+      "source_occurrence": "m1",
+      "source_category": "URGENT",
+      "family": "urgencia"
+    },
+    {
+      "id": "Q-183B5036AF33",
+      "partition": "additional_r07b0",
+      "source_id": "new-07",
+      "source_occurrence": "m1",
+      "source_category": "OPT_OUT",
+      "family": "objecion_economica"
+    },
+    {
+      "id": "Q-1A7CA6466FE0",
+      "partition": "additional_r07b0",
+      "source_id": "new-04",
+      "source_occurrence": "m1",
+      "source_category": "OPT_OUT",
+      "family": "tercero"
+    },
+    {
+      "id": "Q-1B6A0B8DEF1D",
+      "partition": "diagnostic_r07a",
+      "source_id": "b2",
+      "source_occurrence": "m1",
+      "source_category": "BINDING_CLAIM"
+    },
+    {
+      "id": "Q-24AF2C0E02AA",
+      "partition": "diagnostic_r07a",
+      "source_id": "F01D1-documentation_request-P2-V2",
+      "source_occurrence": "F01D1-documentation_request-P2-V2-m1",
+      "source_category": "OPT_OUT"
+    },
+    {
+      "id": "Q-2B00FD394E4E",
+      "partition": "diagnostic_r07a",
+      "source_id": "b6",
+      "source_occurrence": "m1",
+      "source_category": "BINDING_CLAIM"
+    },
+    {
+      "id": "Q-2D50503A8459",
+      "partition": "diagnostic_r07a",
+      "source_id": "B08",
+      "source_occurrence": "rosa-m3",
+      "source_category": "BINDING_CLAIM"
+    },
+    {
+      "id": "Q-30EEE8356B39",
+      "partition": "diagnostic_r07a",
+      "source_id": "B10",
+      "source_occurrence": "javier-opt-out-addition",
+      "source_category": "OPT_OUT"
+    },
+    {
+      "id": "Q-3FA8B3AF738A",
+      "partition": "diagnostic_r07a",
+      "source_id": "F01D1-urgent_real-P2-V2",
+      "source_occurrence": "F01D1-urgent_real-P2-V2-m1",
+      "source_category": "URGENT"
+    },
+    {
+      "id": "Q-4B6723B93341",
+      "partition": "additional_r07b0",
+      "source_id": "new-06",
+      "source_occurrence": "m2",
+      "source_category": "OPT_OUT",
+      "family": "rectificacion"
+    },
+    {
+      "id": "Q-4E3E304D225A",
+      "partition": "diagnostic_r07a",
+      "source_id": "o5",
+      "source_occurrence": "m1",
+      "source_category": "OPT_OUT"
+    },
+    {
+      "id": "Q-5342A28B7ED2",
+      "partition": "diagnostic_r07a",
+      "source_id": "F01D1-urgent_real-P1-V2",
+      "source_occurrence": "F01D1-urgent_real-P1-V2-m1",
+      "source_category": "URGENT"
+    },
+    {
+      "id": "Q-598B194ACD63",
+      "partition": "diagnostic_r07a",
+      "source_id": "o4",
+      "source_occurrence": "m1",
+      "source_category": "OPT_OUT"
+    },
+    {
+      "id": "Q-5B6C39BFE1EF",
+      "partition": "additional_r07b0",
+      "source_id": "new-01",
+      "source_occurrence": "m1",
+      "source_category": "OPT_OUT",
+      "family": "cese"
+    },
+    {
+      "id": "Q-5D3BA27DD0E8",
+      "partition": "diagnostic_r07a",
+      "source_id": "b5",
+      "source_occurrence": "m1",
+      "source_category": "BINDING_CLAIM"
+    },
+    {
+      "id": "Q-65CB23312350",
+      "partition": "diagnostic_r07a",
+      "source_id": "o3",
+      "source_occurrence": "m1",
+      "source_category": "OPT_OUT"
+    },
+    {
+      "id": "Q-6EFD19552E82",
+      "partition": "additional_r07b0",
+      "source_id": "new-09",
+      "source_occurrence": "m1",
+      "source_category": "BINDING_CLAIM",
+      "family": "compromiso_escrito"
+    },
+    {
+      "id": "Q-723E9CBCF042",
+      "partition": "diagnostic_r07a",
+      "source_id": "t1",
+      "source_occurrence": "m1",
+      "source_category": "TRUST"
+    },
+    {
+      "id": "Q-74195B59550F",
+      "partition": "diagnostic_r07a",
+      "source_id": "o1",
+      "source_occurrence": "m1",
+      "source_category": "OPT_OUT"
+    },
+    {
+      "id": "Q-847CF2EB10C0",
+      "partition": "diagnostic_r07a",
+      "source_id": "F01D1-price_question-P2-V2",
+      "source_occurrence": "F01D1-price_question-P2-V2-m1",
+      "source_category": "OPT_OUT"
+    },
+    {
+      "id": "Q-87F63F0D0064",
+      "partition": "diagnostic_r07a",
+      "source_id": "o6",
+      "source_occurrence": "m1",
+      "source_category": "OPT_OUT"
+    },
+    {
+      "id": "Q-8E07DAF7BE17",
+      "partition": "diagnostic_r07a",
+      "source_id": "b3",
+      "source_occurrence": "m1",
+      "source_category": "BINDING_CLAIM"
+    },
+    {
+      "id": "Q-8ECEEFA0E8FF",
+      "partition": "diagnostic_r07a",
+      "source_id": "o7",
+      "source_occurrence": "m1",
+      "source_category": "OPT_OUT"
+    },
+    {
+      "id": "Q-930CE2EA4E6E",
+      "partition": "additional_r07b0",
+      "source_id": "new-02",
+      "source_occurrence": "m1",
+      "source_category": "OPT_OUT",
+      "family": "demora"
+    },
+    {
+      "id": "Q-948298CA8F76",
+      "partition": "diagnostic_r07a",
+      "source_id": "F01D1-price_question-P1-V2",
+      "source_occurrence": "F01D1-price_question-P1-V2-m1",
+      "source_category": "OPT_OUT"
+    },
+    {
+      "id": "Q-978E22E1C738",
+      "partition": "diagnostic_r07a",
+      "source_id": "F01D1-time_nonurgent-P2-V2",
+      "source_occurrence": "F01D1-time_nonurgent-P2-V2-m1",
+      "source_category": "OPT_OUT"
+    },
+    {
+      "id": "Q-9EFCA9CC7D02",
+      "partition": "diagnostic_r07a",
+      "source_id": "F01D1-cost_real-P1-V2",
+      "source_occurrence": "F01D1-cost_real-P1-V2-m1",
+      "source_category": "OPT_OUT"
+    },
+    {
+      "id": "Q-A126BD60B5A4",
+      "partition": "diagnostic_r07a",
+      "source_id": "F01D1-trust_false_friend-P2-V2",
+      "source_occurrence": "F01D1-trust_false_friend-P2-V2-m1",
+      "source_category": "TRUST"
+    },
+    {
+      "id": "Q-A1BD440A1A2C",
+      "partition": "additional_r07b0",
+      "source_id": "new-13",
+      "source_occurrence": "m1",
+      "source_category": "BINDING_CLAIM",
+      "family": "ambiguedad"
+    },
+    {
+      "id": "Q-ABF7D4125CB1",
+      "partition": "diagnostic_r07a",
+      "source_id": "o8",
+      "source_occurrence": "m1",
+      "source_category": "OPT_OUT"
+    },
+    {
+      "id": "Q-AC48700D0B32",
+      "partition": "diagnostic_r07a",
+      "source_id": "t2",
+      "source_occurrence": "m1",
+      "source_category": "TRUST"
+    },
+    {
+      "id": "Q-AD6ABC9F339C",
+      "partition": "diagnostic_r07a",
+      "source_id": "F01D1-documentation_request-P1-V2",
+      "source_occurrence": "F01D1-documentation_request-P1-V2-m1",
+      "source_category": "OPT_OUT"
+    },
+    {
+      "id": "Q-AE067C1071B1",
+      "partition": "diagnostic_r07a",
+      "source_id": "F01D1-trust_real-P1-V2",
+      "source_occurrence": "F01D1-trust_real-P1-V2-m1",
+      "source_category": "TRUST"
+    },
+    {
+      "id": "Q-AF551A4BBE55",
+      "partition": "diagnostic_r07a",
+      "source_id": "F01D1-trust_false_friend-P1-V2",
+      "source_occurrence": "F01D1-trust_false_friend-P1-V2-m1",
+      "source_category": "TRUST"
+    },
+    {
+      "id": "Q-BBF97AFE97B0",
+      "partition": "additional_r07b0",
+      "source_id": "new-11",
+      "source_occurrence": "m1",
+      "source_category": "BINDING_CLAIM",
+      "family": "negacion_tercero"
+    },
+    {
+      "id": "Q-C041164FBA0E",
+      "partition": "diagnostic_r07a",
+      "source_id": "F01D1-trust_real-P2-V2",
+      "source_occurrence": "F01D1-trust_real-P2-V2-m1",
+      "source_category": "TRUST"
+    },
+    {
+      "id": "Q-C23DE4743B08",
+      "partition": "diagnostic_r07a",
+      "source_id": "F01D1-cost_real-P2-V2",
+      "source_occurrence": "F01D1-cost_real-P2-V2-m1",
+      "source_category": "OPT_OUT"
+    },
+    {
+      "id": "Q-C245A78935E4",
+      "partition": "diagnostic_r07a",
+      "source_id": "b1",
+      "source_occurrence": "m1",
+      "source_category": "BINDING_CLAIM"
+    },
+    {
+      "id": "Q-CA0A589D56B9",
+      "partition": "additional_r07b0",
+      "source_id": "new-10",
+      "source_occurrence": "m1",
+      "source_category": "BINDING_CLAIM",
+      "family": "informacion"
+    },
+    {
+      "id": "Q-D7212B5273BB",
+      "partition": "additional_r07b0",
+      "source_id": "new-17",
+      "source_occurrence": "m1",
+      "source_category": "URGENT",
+      "family": "plazo_no_urgente"
+    },
+    {
+      "id": "Q-E54B9506E0A4",
+      "partition": "diagnostic_r07a",
+      "source_id": "b7",
+      "source_occurrence": "m1",
+      "source_category": "BINDING_CLAIM"
+    },
+    {
+      "id": "Q-EABAC54691E2",
+      "partition": "additional_r07b0",
+      "source_id": "new-14",
+      "source_occurrence": "m1",
+      "source_category": "TRUST",
+      "family": "confianza"
+    },
+    {
+      "id": "Q-EC4BDDA82FC2",
+      "partition": "diagnostic_r07a",
+      "source_id": "b4",
+      "source_occurrence": "m1",
+      "source_category": "BINDING_CLAIM"
+    },
+    {
+      "id": "Q-F050DFC2F30A",
+      "partition": "diagnostic_r07a",
+      "source_id": "u1",
+      "source_occurrence": "m1",
+      "source_category": "URGENT"
+    },
+    {
+      "id": "Q-F10AD145BF20",
+      "partition": "additional_r07b0",
+      "source_id": "new-08",
+      "source_occurrence": "m1",
+      "source_category": "BINDING_CLAIM",
+      "family": "aprobacion"
+    },
+    {
+      "id": "Q-F334F01C4BA9",
+      "partition": "additional_r07b0",
+      "source_id": "new-15",
+      "source_occurrence": "m1",
+      "source_category": "TRUST",
+      "family": "falso_amigo"
+    },
+    {
+      "id": "Q-F3A265A82A00",
+      "partition": "additional_r07b0",
+      "source_id": "new-03",
+      "source_occurrence": "m1",
+      "source_category": "OPT_OUT",
+      "family": "negacion"
+    }
+  ]
+}

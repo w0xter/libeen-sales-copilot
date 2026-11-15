@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "provenance": "Nuevas conversaciones sintéticas de Codex para revisión; sin etiquetas ni predicciones; reservadas para evaluar hipótesis futuras, no independientes del autor ni holdout estadístico.",
+  "cases": [
+    {"id":"new-01","family":"cese","category":"OPT_OUT","messages":[{"role":"customer","text":"Os pido que retiréis mi teléfono de vuestras campañas; no me llaméis ni mandéis mensajes de nuevo."}]},
+    {"id":"new-02","family":"demora","category":"OPT_OUT","messages":[{"role":"customer","text":"Este trimestre no vamos a buscar casa; podéis enviarnos novedades el próximo otoño."}]},
+    {"id":"new-03","family":"negacion","category":"OPT_OUT","messages":[{"role":"customer","text":"No os estoy pidiendo que eliminéis mi contacto; quisiera seguir recibiendo información."}]},
+    {"id":"new-04","family":"tercero","category":"OPT_OUT","messages":[{"role":"customer","text":"Mi padre os pidió que no le escribierais a él. Yo quiero que me respondáis a esta consulta."}]},
+    {"id":"new-05","family":"hipotesis","category":"OPT_OUT","messages":[{"role":"customer","text":"Si en algún momento os pidiera dejar de recibir correos, ¿qué procedimiento tendría que seguir?"}]},
+    {"id":"new-06","family":"rectificacion","category":"OPT_OUT","messages":[{"role":"customer","text":"No quiero que me enviéis más mensajes."},{"role":"customer","text":"Rectifico mi mensaje anterior: sí podéis escribirme para responder mi consulta."}]},
+    {"id":"new-07","family":"objecion_economica","category":"OPT_OUT","messages":[{"role":"customer","text":"La cuota mensual queda fuera de nuestro presupuesto. ¿Hay otras opciones más económicas?"}]},
+    {"id":"new-08","family":"aprobacion","category":"BINDING_CLAIM","messages":[{"role":"customer","text":"Antes de continuar, confirmadme que mi solicitud está aprobada y que puedo acceder a la vivienda."}]},
+    {"id":"new-09","family":"compromiso_escrito","category":"BINDING_CLAIM","messages":[{"role":"customer","text":"Necesito que firméis un documento que me garantice la reserva del piso hasta diciembre."}]},
+    {"id":"new-10","family":"informacion","category":"BINDING_CLAIM","messages":[{"role":"customer","text":"¿Qué requisitos seguís para decidir si una solicitud puede aprobarse?"}]},
+    {"id":"new-11","family":"negacion_tercero","category":"BINDING_CLAIM","messages":[{"role":"customer","text":"A mi hermana ya la aprobaron. No os estoy pidiendo que me aseguréis nada; solo quiero conocer las condiciones."}]},
+    {"id":"new-12","family":"hipotesis","category":"BINDING_CLAIM","messages":[{"role":"customer","text":"Si algún día pudierais garantizarme la compra, ¿qué documentación existiría?"}]},
+    {"id":"new-13","family":"ambiguedad","category":"BINDING_CLAIM","messages":[{"role":"customer","text":"¿Podéis confirmarlo formalmente antes de que avance?"}]},
+    {"id":"new-14","family":"confianza","category":"TRUST","messages":[{"role":"customer","text":"Me inquieta que alguien esté usando vuestro nombre para engañar a clientes. ¿Cómo puedo verificarlo?"}]},
+    {"id":"new-15","family":"falso_amigo","category":"TRUST","messages":[{"role":"customer","text":"No tengo claro si el precio incluye el impuesto; ¿me lo detalláis?"}]},
+    {"id":"new-16","family":"urgencia","category":"URGENT","messages":[{"role":"customer","text":"Debo entregar las llaves en tres días y no tengo alojamiento para la semana próxima."}]},
+    {"id":"new-17","family":"plazo_no_urgente","category":"URGENT","messages":[{"role":"customer","text":"Nuestra idea es mirar opciones dentro de dos años, sin una fecha límite próxima."}]}
+  ]
+}

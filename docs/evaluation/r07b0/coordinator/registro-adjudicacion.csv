@@ -1,0 +1,1 @@
+version_paquete,caso_id,categoria,revisor_a_id,decision_a,justificacion_a,evidencia_a,hablante_a,alcance_a,certeza_a,revisor_b_id,decision_b,justificacion_b,evidencia_b,hablante_b,alcance_b,certeza_b,tipo_desacuerdo,adjudicador_id,decision_final,justificacion_final,evidencia_final,fecha_adjudicacion,estado
