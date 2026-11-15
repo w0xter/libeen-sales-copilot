@@ -11,6 +11,17 @@ type Call = { index: number; kind: string; status: string; output?: unknown };
 type Run = { scenario?: string; id?: string; observed: { status?: string; analysisStatus?: string; action: string | null; errors: { code: string; message: string }[] }; calls: Call[] };
 type DatasetRecord = { id: string; messages: Message[]; gold: { transitions?: unknown[] } };
 const files = ['B01','B05','B06','B08','B10','C01','binding_request','cost_real','basis_correction','amount_correction','documentation_request','price_question','time_nonurgent','trust_false_friend','trust_real','urgent_real'];
+function unusedOperationsAllowed(id: string, remaining: {kind:string}[]): boolean {
+  return remaining.length === 0 || (['F01D1-price_question-P1-V2','F01D1-price_question-P2-V2'].includes(id) && remaining.length === 1 && remaining[0].kind === 'multipass_J');
+}
+it('allows only the two documented single-J differences', () => {
+  expect(unusedOperationsAllowed('F01D1-price_question-P1-V2', [{kind:'multipass_J'}])).toBe(true);
+  expect(unusedOperationsAllowed('F01D1-price_question-P2-V2', [{kind:'multipass_J'}])).toBe(true);
+  expect(unusedOperationsAllowed('B05', [{kind:'multipass_J'}])).toBe(false);
+  expect(unusedOperationsAllowed('F01D1-price_question-P1-V2', [{kind:'multipass_J'},{kind:'multipass_J'}])).toBe(false);
+  for (const kind of ['multipass_E1','multipass_S2','multipass_Repair']) expect(unusedOperationsAllowed('F01D1-price_question-P2-V2', [{kind}])).toBe(false);
+  expect(unusedOperationsAllowed('B05', [])).toBe(true);
+});
 const enabled = process.env.F02_CAPTURED_ZIP ? it : it.skip;
 
 enabled('compares R05a public outcomes and records captured adjudications no longer needed', async () => {
@@ -44,7 +55,7 @@ enabled('compares R05a public outcomes and records captured adjudications no lon
       } }, value => { diagnostic = value; }, true);
       const result = await interpreter.interpret({ caseSnapshot: initial, messages: data.messages, factSchema: demoBundle.factSchema, agentProfile: demoBundle.agentProfile });
       expect(unexpected, `${id}: unexpected operations`).toEqual([]);
-      expect(remaining.filter(call => call.kind !== 'multipass_J'), `${id}: unused non-adjudication operations`).toEqual([]);
+      expect(unusedOperationsAllowed(id, remaining), `${id}: unexpected unused captured operations`).toBe(true);
       let action: string | null = null;
       if (result.ok) {
         const domain = evaluate({ ...initial, assertions: result.value.assertions, blockers: result.value.blockers, analysisStatus: 'complete' }, demoBundle, `replay-${id}`, 'openai');

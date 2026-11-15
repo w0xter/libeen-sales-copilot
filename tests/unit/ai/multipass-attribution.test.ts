@@ -36,7 +36,7 @@ describe('subject binding', () => {
     const candidates = [candidate('a'), candidate('b')];
     const grouped = groupClaims(candidates, [message], { factSchema: demoBundle.factSchema, assertions: [], caseId: 'case' });
     const reviews: ContextReview[] = candidates.map(c => ({ groupId: grouped.groups[0].groupId, candidateId: c.candidateId, atomicity: 'atomic', support: 'supported', evidenceRefs: c.evidenceRefs, justification: 'supported', subjectAttribution: { kind: 'local_speaker', messageId: 'm', evidenceRefs: [{ messageId: 'm', quote: 'Yo', start: 0, end: 2 }], justification: 'speaker' } }));
-    return { groups: grouped.groups, reviews, messages: [message], historicalAssertions: [], knownSubjects: [], caseId: 'case', diagnostics: grouped.diagnostics };
+    return { factSchema: demoBundle.factSchema, groups: grouped.groups, reviews, messages: [message], historicalAssertions: [], knownSubjects: [], caseId: 'case', diagnostics: grouped.diagnostics };
   };
   it('replaces extractor IDs with a stable local reference irrespective of order', () => {
     const value = setup(); const a = bindSubjects(value);
@@ -98,13 +98,26 @@ describe('subject binding safeguards for previously known subjects', () => {
   const message: Message = {messageId:'m',conversationId:'c',role:'customer',occurredAt:'2026-01-01T00:00:00Z',content:{type:'text',text}};
   const claim: ClaimCandidate = {candidateId:'a',extractorId:'E1',fieldId:'declared_monthly_income',subjectRef:{scope:'participant',id:'known'},value:2000,unit:'EUR',precision:'explicit',occurrence:{messageId:'m',statementSpan:{start:0,end:text.length,text},focusSpan:{start:8,end:12,text:'2000'}},evidenceRefs:[{messageId:'m',quote:'2000',start:8,end:12}]};
   const make = () => {
-    const grouped = groupClaims([claim],[message],{factSchema:demoBundle.factSchema,assertions:[],caseId:'case'});
+    const grouped = groupClaims([structuredClone(claim)],[message],{factSchema:demoBundle.factSchema,assertions:[],caseId:'case'});
     const reviews: ContextReview[] = [{groupId:grouped.groups[0].groupId,candidateId:'a',atomicity:'atomic',support:'supported',evidenceRefs:claim.evidenceRefs,justification:'supported'}];
-    return {groups:grouped.groups,reviews,messages:[message],historicalAssertions:[],knownSubjects:[{scope:'participant' as const,id:'known'}],caseId:'case',diagnostics:grouped.diagnostics};
+    return {factSchema:demoBundle.factSchema,groups:grouped.groups,reviews,messages:[message],historicalAssertions:[],knownSubjects:[{scope:'participant' as const,id:'known'}],caseId:'case',diagnostics:grouped.diagnostics};
   };
   it.each(['refuted','uncertain','absent'] as const)('does not verify a known subject when S2 says %s', support => {
     const value=make(); value.reviews[0].support=support;
     expect(bindSubjects(value)).toMatchObject({status:'human_review_required',groups:[],diagnostics:[{reason:`Subject attribution requires review: contextual support ${support}`}]});
+  });
+  it.each(['unknown', 'scope', 'missing', 'invalid'] as const)('rejects %s schema input even for direct calls', mode => {
+    const value=make();
+    if (mode === 'unknown') value.groups[0].candidates[0].fieldId = 'not-a-field';
+    if (mode === 'scope') value.groups[0].candidates[0].subjectRef.scope = 'case';
+    if (mode === 'missing') (value as {factSchema?: unknown}).factSchema = undefined;
+    if (mode === 'invalid') (value as {factSchema?: unknown}).factSchema = {fields:[]};
+    expect(bindSubjects(value)).toMatchObject({status:'human_review_required',groups:[],authorizedSubjects:[]});
+  });
+  it('uses the supplied schema rather than a fixed demo definition', () => {
+    const value=make();
+    value.factSchema = {...value.factSchema,fields:value.factSchema.fields.map(f=>f.id==='declared_monthly_income'?{...f,scopes:['buying_unit' as const]}:f)};
+    expect(bindSubjects(value)).toMatchObject({status:'human_review_required',groups:[]});
   });
   it('does not verify a known subject with unrelated review evidence', () => {
     const value=make(); value.reviews[0].evidenceRefs=[{messageId:'m',quote:'Yo',start:0,end:2}];
@@ -127,7 +140,7 @@ describe('multiple individual declarations in one message', () => {
     const grouped = groupClaims(candidates,[message],{factSchema:demoBundle.factSchema,assertions:[],caseId:'case'});
     expect(grouped.groups).toHaveLength(2);
     const reviews:ContextReview[] = grouped.groups.flatMap(g=>g.candidates.map(c=>({groupId:g.groupId,candidateId:c.candidateId,atomicity:'atomic',support:'supported',evidenceRefs:c.evidenceRefs,justification:'speaker',subjectAttribution:{kind:'local_speaker',messageId:'m',evidenceRefs:[{messageId:'m',quote:'Yo',start:0,end:2}],justification:'speaker'}})));
-    const result=bindSubjects({groups:grouped.groups,reviews,messages:[message],historicalAssertions:[],knownSubjects:[],caseId:'case',diagnostics:grouped.diagnostics});
+    const result=bindSubjects({factSchema:demoBundle.factSchema,groups:grouped.groups,reviews,messages:[message],historicalAssertions:[],knownSubjects:[],caseId:'case',diagnostics:grouped.diagnostics});
     expect(result).toMatchObject({status:'human_review_required',groups:[],authorizedSubjects:[]});
   });
 });

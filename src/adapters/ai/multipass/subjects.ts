@@ -1,13 +1,19 @@
 import { createHash } from 'node:crypto';
-import type { FactAssertion, Message, SubjectRef } from '../../../contracts';
+import { FactSchemaSchema, type FactAssertion, type FactSchema, type Message, type SubjectRef } from '../../../contracts';
 import type { ClaimGroup, ContextReview } from './contracts';
 import { validateOccurrence } from './evidence';
 import { evidenceAnchored, sameEvidence } from './safety';
 
 /** S2 supplies semantic classification; this stage verifies its provenance and
  * consistency. Canonical IDs are pseudonymous references, not authentication. */
-export function bindSubjects(input: { groups: ClaimGroup[]; reviews: ContextReview[]; messages: Message[]; historicalAssertions: FactAssertion[]; knownSubjects: SubjectRef[]; caseId: string; diagnostics: { candidateId: string; code: string }[] }) {
+export function bindSubjects(input: { factSchema: FactSchema; groups: ClaimGroup[]; reviews: ContextReview[]; messages: Message[]; historicalAssertions: FactAssertion[]; knownSubjects: SubjectRef[]; caseId: string; diagnostics: { candidateId: string; code: string }[] }) {
   const { groups, reviews, messages, historicalAssertions, knownSubjects, caseId } = input;
+  const parsedSchema = FactSchemaSchema.safeParse(input.factSchema);
+  const permits = (fieldId: string, scope: SubjectRef['scope']) => {
+    if (!parsedSchema.success) return false;
+    const fields = parsedSchema.data.fields.filter(field => field.id === fieldId);
+    return fields.length === 1 && fields[0].scopes.includes(scope);
+  };
   const bound: ClaimGroup[] = [];
   const authorized: SubjectRef[] = [];
   const diagnostics: { groupId: string; candidateId: string; status: 'verified' | 'normalized' | 'rejected'; reason: string }[] = [];
@@ -21,7 +27,7 @@ export function bindSubjects(input: { groups: ClaimGroup[]; reviews: ContextRevi
     // Separate occurrences in one message may describe different people. A
     // message-local ID cannot safely identify either without stronger binding.
     const competingOccurrences = kinds.has('local_speaker') && group.candidates.some(c => c.subjectRef.scope === 'participant' && groups.some(other => other.groupId !== group.groupId && other.fieldId === group.fieldId && other.candidates.some(peer => peer.subjectRef.scope === 'participant' && peer.occurrence.messageId === c.occurrence.messageId)));
-    let rejected = scopes.size !== 1 || claimedSubjects.size !== 1 || kinds.size > 1 || matched.some(rs => rs.length !== 1) || competingOccurrences;
+    let rejected = group.candidates.some(c => !permits(c.fieldId, c.subjectRef.scope)) || scopes.size !== 1 || claimedSubjects.size !== 1 || kinds.size > 1 || matched.some(rs => rs.length !== 1) || competingOccurrences;
     const normalized = group.candidates.map((c, i) => {
       const review = matched[i][0]; const a = review?.subjectAttribution;
       const known = knownSubjects.some(s => s.scope === c.subjectRef.scope && s.id === c.subjectRef.id);
@@ -52,7 +58,7 @@ export function bindSubjects(input: { groups: ClaimGroup[]; reviews: ContextRevi
           if (subject?.scope === 'buying_unit' && units.size && !units.has(subject.id)) subject = undefined;
         }
       }
-      if (!subject) rejected = true;
+      if (!subject || !permits(c.fieldId, subject.scope)) rejected = true;
       return { candidate: c, subject };
     });
     if (new Set(normalized.flatMap(x => x.subject ? [JSON.stringify(x.subject)] : [])).size > 1) rejected = true;

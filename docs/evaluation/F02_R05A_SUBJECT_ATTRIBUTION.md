@@ -6,7 +6,7 @@
 
 Se rechaza la normalización de un grupo cuyos candidatos declaran sujetos distintos, aunque S2 les asigne la misma clase. Cuando existen varias ocurrencias de un mismo campo individual en un mensaje, una atribución `local_speaker` no puede convertirlas en la misma persona a partir solo del identificador local de mensaje: se solicita revisión. Los sujetos previamente conocidos y separados pueden seguir representando dos ocurrencias si cumplen las comprobaciones existentes. El ID local sigue acotado al caso y al mensaje; dos mensajes no se enlazan solo por pertenecer al mismo expediente. Se preservan las reglas previas para unidad compradora, expediente, correcciones y conflictos históricos. `other_person` y `ambiguous` siguen sin autorizar una identidad nueva. Ninguna de estas reglas crea un participante identificado ni valida semántica por mayoría de modelos.
 
-**Límite de contrato interno:** `bindSubjects` no recibe `FactSchema` y no puede comprobarlo por sí mismo. El pipeline existente pasa los candidatos por `groupClaims`/`validateCandidate` con el `FactSchema` antes de `bindSubjects`, que no modifica su ámbito. Esto preserva la comprobación por la ruta actual; una invocación directa de `bindSubjects` no tiene esa garantía. Para satisfacer una comprobación autónoma del esquema en esa frontera, el integrador tendría que autorizar pasar `factSchema` desde `pipeline.ts` y adaptar consumidores y pruebas. Se solicita esa ampliación; no se ha importado un esquema demo fijo ni alterado el pipeline. Este punto queda pendiente, no se declara cumplida la comprobación autónoma.
+**Actualización R05a-G1:** `bindSubjects` recibe explícitamente el `FactSchema` del snapshot y valida su estructura, la existencia única del campo y el ámbito del candidato tanto antes como después de normalizar. Sin esquema válido, sin campo o con ámbito no permitido, el grupo se rechaza. No se utiliza configuración demo implícita. El pipeline conserva la validación previa en agrupación; no se modifican las demás reglas de atribución.
 
 ## Casos y límites
 
@@ -20,7 +20,7 @@ Pendiente para R05b: vinculación probada de participantes identificados y de va
 
 ## Comparación con R01/R02
 
-El comparador nuevo conserva las capturas y el oráculo; admite exclusivamente llamadas `J` históricas no consumidas y las registra. Los 21 resultados públicos comparados mantienen estado/error o acción histórica: 14 revisiones, 5 errores de validación y 2 resultados completos. No se comparan íntegramente hechos, eventos ni borradores. C01 y las dos correcciones del dataset siguen sin reconstruirse.
+El comparador nuevo conserva las capturas y el oráculo; admite como máximo una llamada `J` histórica no consumida para cada una de las dos variantes `price_question-P1/P2` y las registra; cualquier otra operación sobrante falla. Los 21 resultados públicos comparados mantienen estado/error o acción histórica: 14 revisiones, 5 errores de validación y 2 resultados completos. No se comparan íntegramente hechos, eventos ni borradores. C01 y las dos correcciones del dataset siguen sin reconstruirse.
 
 La prueba original estricta R01 **falla** en `price_question-P2` porque queda sin consumir una respuesta histórica `J`: ahora se requiere revisión de sujeto antes de invocar adjudicación. El comparador R05a registra también un `J` no consumido en `price_question-P1`; ambos mantienen el resultado público de revisión. En B05 la categoría interna `unresolved_material` ya no se genera al retirarse antes el grupo con sujetos incompatibles; la atribución sigue sin resolverse y la salida pública permanece de revisión. Estos cambios de traza no prueban mejor precisión semántica. R02 pasa con la salida del comparador nuevo; sus etiquetas son provisionales.
 
@@ -41,4 +41,14 @@ La comparación solo se ejecuta offline; no se modifica el ZIP ni se consulta Op
 - R01 estricto: **FAIL** por la operación J no consumida indicada arriba; la prueba y sus expectativas históricas no se modificaron.
 - `pnpm build`: **PASS**.
 
-No se cambió el contrato público, pipeline, reconciliador, aplicación, dominio, configuración, fixtures ni prompts. No se implementó reconciliación parcial ni contrato V2. El posible cambio para validar el esquema dentro de la frontera queda bloqueado por el alcance de R05a.
+No se cambió el contrato público, pipeline, reconciliador, aplicación, dominio, configuración, fixtures ni prompts. No se implementó reconciliación parcial ni contrato V2. R05a-G1 autorizó el suministro del esquema desde el pipeline y cerró esa limitación.
+
+
+## Verificación R05a-G1
+
+- Comparador actualizado y regresiones B08/B10 con ZIP capturado: **PASS**, 4 tests; 21 resultados públicos coinciden con los históricos según la proyección R01. Solo se admiten las dos divergencias J documentadas.
+- Replay R01 estricto sin modificar: **FAIL**, en `price_question-P2` por J histórica sin consumir; no se elimina ni consume artificialmente.
+- Evaluador R02 sobre diagnóstico recién generado: **PASS**, 4 tests.
+- `pnpm test`: **PASS**, 506 tests y 10 omitidos; `pnpm typecheck` y `pnpm lint`: **PASS**.
+- Pruebas directas cubren esquema ausente/inválido, campo desconocido, ámbito no permitido y esquema activo diferente del demo; el comparador rechaza J extra, J en otra ejecución y operaciones E/S/Repair sobrantes.
+- `pnpm build`: **PASS**. No se ha llamado a OpenAI ni modificado el oráculo o las capturas.

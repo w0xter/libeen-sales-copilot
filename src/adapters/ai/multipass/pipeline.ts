@@ -121,7 +121,7 @@ export async function runPipeline(options: { runId: string; snapshot: Snapshot; 
     const failure = fail('incomplete_contextual_review');
     return { ...failure, diagnostics: grouped.diagnostics };
   }
-  const binding = bindSubjects({ groups: grouped.groups, reviews: contextual.reviews, messages: snapshot.messages, historicalAssertions: snapshot.historicalAssertions, knownSubjects: snapshot.knownSubjects, caseId: snapshot.caseId, diagnostics: grouped.diagnostics });
+  const binding = bindSubjects({ factSchema: snapshot.factSchema, groups: grouped.groups, reviews: contextual.reviews, messages: snapshot.messages, historicalAssertions: snapshot.historicalAssertions, knownSubjects: snapshot.knownSubjects, caseId: snapshot.caseId, diagnostics: grouped.diagnostics });
   const additionalSignals = contextual.candidates ?? [];
   const distinctAdditional = additionalSignals.filter(candidate => {
     const original = scanResult.candidates.filter(signal => signal.signalId === candidate.signalId);
