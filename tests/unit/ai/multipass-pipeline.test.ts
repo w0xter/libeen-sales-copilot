@@ -21,6 +21,24 @@ const empty = (role: Request['role']) => role === 'S1' ? { status: 'complete', c
 const run = (transport: FakeTransport, snapshot = base(), extra: { signal?: AbortSignal; timeoutMs?: number; totalTimeoutMs?: number } = {}) => runPipeline({ runId: 'test', snapshot, transport, ...extra });
 
 describe('pipeline boundaries', () => {
+  it('allows 20-second operations across a 40-second stage by default', async () => {
+    vi.useFakeTimers();
+    try {
+      const pending = run({ execute: async r => { await new Promise(resolve => setTimeout(resolve, 20_000)); return empty(r.role); } });
+      await vi.advanceTimersByTimeAsync(40_000);
+      expect((await pending).result.status).toBe('consolidated');
+    } finally { vi.useRealTimers(); }
+  });
+  it('aborts a stalled operation at the default 25-second limit', async () => {
+    vi.useFakeTimers();
+    try {
+      const pending = run({ execute: async r => r.role === 'S1' ? new Promise(() => {}) : empty(r.role) });
+      await vi.advanceTimersByTimeAsync(24_999);
+      await vi.advanceTimersByTimeAsync(1);
+      const result = await pending;
+      expect(result.trace.operations.find(o => o.role === 'S1')).toMatchObject({ status: 'timeout', durationMs: 25_000 });
+    } finally { vi.useRealTimers(); }
+  });
   it('starts initial passes concurrently, keeps S1 blind and waits before S2', async () => {
     const starts: string[] = []; const releases: (() => void)[] = [];
     const work = run({ execute: async request => { starts.push(request.role); if (request.role === 'S1') expect(request.input).not.toHaveProperty('candidates'); if (request.role !== 'S2') await new Promise<void>(resolve => releases.push(resolve)); return empty(request.role); } });

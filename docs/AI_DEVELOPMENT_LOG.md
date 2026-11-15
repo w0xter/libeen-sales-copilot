@@ -288,3 +288,7 @@ Se añadió una simulación con adaptadores de producción y transportes sintét
 ### 2026-11-15 — F-02 cierre offline, avance parcial
 
 Se separaron guiones, fixtures y proyección del oráculo; se añadió el recorrido `staged-interpreter`, transferencias históricas, señales y hechos simulados de los seis escenarios, cancelación propagada, detección parcial de ocurrencias y evidencias, y pruebas de mutación y red interceptada. Los resultados siguen siendo simulados. Las métricas pendientes y la falta de revisión independiente se describen en `docs/evaluation/F02_MULTIPASS_PREP.md`; MP-G6 PREP permanece parcial. Sin llamadas al proveedor.
+
+### 2026-11-15 — F-02 repetición C01 con timeouts alineados
+
+Se cambió el timeout predeterminado multipass a 25 s por operación y 75 s por etapa, sin modificar el presupuesto ni single-pass. Lint y typecheck pasaron; la suite pasó con 453 tests y 5 omitidos, incluidas pruebas de cancelación y presupuesto. Una única comparación real con `gpt-5.4-mini` consumió 9 de 18 intentos: single completó ambas etapas (4 intentos, 9,26 s); multipass terminó la primera con `MODEL_OUTPUT_INVALID` (5 intentos, 13,16 s). El informe local permanece ignorado por Git. El fallo anterior `MODEL_UNAVAILABLE` no demuestra que la causa fuera el timeout; multipass sigue sin ser evaluable para la corrección C01.

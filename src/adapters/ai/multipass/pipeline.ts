@@ -16,7 +16,7 @@ function freeze<T>(value: T): T { if (value && typeof value === 'object' && !Obj
 export async function runPipeline(options: { runId: string; snapshot: Snapshot; transport: FakeTransport; signal?: AbortSignal; timeoutMs?: number; totalTimeoutMs?: number; instructionVersion?: string; schemaVersion?: string }) {
   const snapshot = freeze(structuredClone(options.snapshot));
   const trace = createTrace(options.runId);
-  const scheduler = new Scheduler(options.transport, trace, { timeoutMs: options.timeoutMs ?? 10000, totalTimeoutMs: options.totalTimeoutMs ?? 30000, signal: options.signal, instructionVersion: options.instructionVersion ?? 'multipass-1', schemaVersion: options.schemaVersion ?? 'multipass-1', configVersion: `${snapshot.factSchema.version}/${snapshot.agentProfile.version}` });
+  const scheduler = new Scheduler(options.transport, trace, { timeoutMs: options.timeoutMs ?? 25000, totalTimeoutMs: options.totalTimeoutMs ?? 75000, signal: options.signal, instructionVersion: options.instructionVersion ?? 'multipass-1', schemaVersion: options.schemaVersion ?? 'multipass-1', configVersion: `${snapshot.factSchema.version}/${snapshot.agentProfile.version}` });
   let repaired = false;
   const call = async (role: Role, input: unknown, schema: z.ZodType) => {
     const valid = (v: unknown) => schema.safeParse(v).success;
