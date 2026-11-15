@@ -259,3 +259,4 @@ summary:focus-visible { outline: 3px solid #b94d3d; outline-offset: 3px; }
 :focus-visible { outline: 3px solid #a93a2e; outline-offset: 3px; }
 .crm-export { border-top: 1px solid var(--line); }
 .return-to-work { display: block; margin: 0 0 16px; }
+:root { --muted: #52605c; }
