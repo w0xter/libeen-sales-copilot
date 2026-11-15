@@ -75,7 +75,7 @@ export async function runPipeline(options: { runId: string; snapshot: Snapshot; 
   }
   if (binding.status === 'success' && !conflictingReview && result.status === 'human_review_required' && result.disputes.length && trace.consumed < 7) {
     const dispute = result.disputes[0];
-    const answer = await call('J', freeze({ snapshot, dispute, group: grouped.groups.find(g => g.groupId === dispute.groupId), reviews: contextual.reviews, safetyFindings: result.safetyFindings }), AdjudicationResponseSchema);
+    const answer = await call('J', freeze({ snapshot, dispute, group: binding.groups.find(g => g.groupId === dispute.groupId), reviews: contextual.reviews, safetyFindings: result.safetyFindings }), AdjudicationResponseSchema);
     if (answer !== undefined) { const adjudication = AdjudicationResponseSchema.parse(answer); const next = reconcile({ ...input, adjudications: [adjudication] }); if (next.status !== 'failed') { result = next; trace.resolutions = adjudication.resolution.status === 'selected' ? 1 : 0; } }
   }
   result = ReconciliationResultSchema.parse(result);

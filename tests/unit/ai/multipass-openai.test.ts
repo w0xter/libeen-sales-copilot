@@ -219,6 +219,95 @@ it('reuses canonical subjects and assertions when the same transcript is reanaly
   expect(second.value.assertions.map(a => [a.assertionId, a.subjectRef])).toEqual(first.value.assertions.map(a => [a.assertionId, a.subjectRef]));
 });
 
+type JudgeMode = 'valid' | 'unresolved' | 'invented' | 'foreign-evidence' | 'invalid-wire' | 'repair' | 'exhausted' | 'refusal' | 'error' | 'contradictory' | 'binding-rejected';
+async function sdkDispute(mode: JudgeMode) {
+  const base = fullClient('laura');
+  const calls: { role: string; instructions: string; input: string }[] = [];
+  const client = { responses: { create: async (body: never) => {
+    const b = body as { instructions: string; input: string; text: { format: { name: string } } };
+    const role = b.text.format.name; calls.push({ role, instructions: b.instructions, input: b.input });
+    if (mode === 'exhausted' && role === 'multipass_e1' && !b.instructions.includes('Regenerate')) return response({ invalid: true });
+    if (role === 'multipass_j') {
+      const input = JSON.parse(b.input) as { dispute: { disputeId: string }; alternatives: { candidateId: string; incomeBasis: string; evidenceRefs: unknown[] }[] };
+      const selected = input.alternatives.find(c => c.incomeBasis === 'net')!;
+      if (mode === 'error') throw Error('provider failure');
+      if (mode === 'refusal') return { status: 'completed', output: [{ type: 'message', content: [{ type: 'refusal' }] }], output_text: '' };
+      if (mode === 'invalid-wire' || mode === 'exhausted' || (mode === 'repair' && !b.instructions.includes('Regenerate'))) return response({ invalid: true });
+      if (mode === 'unresolved') return response({ disputeId: input.dispute.disputeId, resolution: { status: 'unresolved', candidateId: null, justification: 'uncertain', evidenceRefs: null } });
+      return response({ disputeId: input.dispute.disputeId, resolution: { status: 'selected', candidateId: mode === 'invented' ? 'invented' : selected.candidateId, justification: 'Supported by the occurrence', evidenceRefs: mode === 'foreign-evidence' ? [{ messageId: 'laura-m1', quote: 'Valencia', start: null, end: null }] : selected.evidenceRefs.map(e => ({ ...(e as object), start: null, end: null })) } });
+    }
+    const output = await base.client.responses.create(body);
+    const parsed = JSON.parse(output.output_text);
+    if (role === 'multipass_e3') parsed.claims.find((c: { fieldId: string }) => c.fieldId === 'declared_monthly_income').incomeBasis = 'gross';
+    if (role === 'multipass_s2' && (mode === 'contradictory' || mode === 'binding-rejected')) {
+      const review = parsed.reviews.find((r: { candidateId: string }) => r.candidateId === 'E3-1');
+      if (mode === 'contradictory') review.support = 'refuted';
+      else review.subjectAttribution = null;
+    }
+    return response(parsed);
+  } } };
+  const adapters = createAIAdapters({ AI_MODE: 'openai', OPENAI_API_KEY: 'test', AI_INTERPRETER_STRATEGY: 'multipass' }, { complete: async () => null }, openAIMultipassTransport('test', 'model', client));
+  if (!adapters.ok) throw Error('factory');
+  const fetchSpy = vi.spyOn(globalThis, 'fetch');
+  try {
+    const result = await adapters.value.interpreter.interpret({ caseSnapshot: base.caseSnapshot, messages: base.caseSnapshot.messages, factSchema: demoBundle.factSchema, agentProfile: demoBundle.agentProfile });
+    expect(fetchSpy).not.toHaveBeenCalled();
+    return { result, calls };
+  } finally { fetchSpy.mockRestore(); }
+}
+
+it('sends the adjudicator canonical subjects and selectable candidate IDs through the SDK', async () => {
+  const { result, calls } = await sdkDispute('valid');
+  expect(result.ok).toBe(true);
+  if (result.ok) expect(result.value.assertions.find(a => a.fieldId === 'declared_monthly_income')).toMatchObject({ value: 3800, incomeBasis: 'net', subjectRef: { scope: 'buying_unit', id: expect.stringMatching(/^unit-/) } });
+  const judge = calls.find(c => c.role === 'multipass_j')!;
+  const input = JSON.parse(judge.input) as { alternatives: { candidateId: string; subjectRef: { id: string } }[] };
+  expect(input.alternatives).toHaveLength(2);
+  expect(input.alternatives.every(a => a.subjectRef.id.startsWith('unit-'))).toBe(true);
+  expect(input.alternatives.map(a => a.candidateId)).toEqual(['candidate-1', 'candidate-2']);
+  expect(judge.input).not.toMatch(/E[123]-\d+/);
+  expect(judge.input).not.toContain('extractorId'); expect(judge.input).not.toContain('"reviews"');
+  expect(calls).toHaveLength(6);
+});
+
+it.each(['unresolved', 'invented', 'foreign-evidence', 'refusal', 'error'] as const)('keeps SDK adjudication %s in human review', async mode => {
+  const { result, calls } = await sdkDispute(mode);
+  expect(result).toMatchObject({ ok: false, error: { code: 'MODEL_OUTPUT_INVALID' } });
+  expect(calls).toHaveLength(6);
+  expect(calls.filter(c => c.role === 'multipass_j')).toHaveLength(1);
+});
+
+it.each(['contradictory', 'binding-rejected'] as const)('does not invoke J when %s prevents authorization', async mode => {
+  const { result, calls } = await sdkDispute(mode);
+  expect(result).toMatchObject({ ok: false, error: { code: 'MODEL_OUTPUT_INVALID' } });
+  expect(calls).toHaveLength(5); expect(calls.some(c => c.role === 'multipass_j')).toBe(false);
+});
+
+it.each(['repair', 'invalid-wire', 'exhausted'] as const)('enforces the seven-call SDK budget for %s', async mode => {
+  const { result, calls } = await sdkDispute(mode);
+  expect(result.ok).toBe(mode === 'repair');
+  if (mode !== 'repair') expect(result).toMatchObject({ ok: false, error: { code: 'MODEL_OUTPUT_INVALID' } });
+  expect(calls).toHaveLength(7);
+  expect(calls.filter(c => c.instructions.includes('Regenerate'))).toHaveLength(1);
+  const judgeCalls = calls.filter(c => c.role === 'multipass_j');
+  expect(judgeCalls).toHaveLength(mode === 'exhausted' ? 1 : 2);
+  if (mode !== 'exhausted') {
+    expect(judgeCalls[1].instructions).toContain('Regenerate');
+    expect(judgeCalls[1].input).toEqual(judgeCalls[0].input);
+  }
+});
+
+it('constructs the real SDK client with automatic retries disabled', async () => {
+  let options: unknown;
+  vi.resetModules();
+  vi.doMock('openai', () => ({ default: class { constructor(value: unknown) { options = value; } } }));
+  try {
+    const { openAIMultipassTransport: create } = await import('../../../src/adapters/ai/multipass/openai-transport');
+    create('test', 'model');
+    expect(options).toMatchObject({ maxRetries: 0, apiKey: 'test' });
+  } finally { vi.doUnmock('openai'); vi.resetModules(); }
+});
+
 it('uses six SDK calls when one malformed extraction is regenerated', async () => {
   const calls: string[] = [];
   const client = { responses: { create: async (body: never) => {
