@@ -1,0 +1,217 @@
+{
+  "snapshotId": "LBE-04-S0",
+  "model": "gpt-5.4-mini",
+  "durationMs": 3086,
+  "messages": [
+    {
+      "id": "m1",
+      "role": "customer",
+      "text": "Buenas, me gustaría entrar en SmartHousing. Busco vivienda en Bilbao para marzo de 2027."
+    },
+    {
+      "id": "m2",
+      "role": "advisor",
+      "text": "¿Compras con alguien? ¿Cómo estás de números?"
+    },
+    {
+      "id": "m3",
+      "role": "customer",
+      "text": "Voy yo sola. Me quedan 2.150 € netos al mes y tengo 9.000 € ahorrados."
+    },
+    {
+      "id": "m4",
+      "role": "customer",
+      "text": "Por cierto, deudas ninguna, 0 € de cuotas."
+    }
+  ],
+  "raw": {
+    "candidates": [
+      {
+        "field": "interest",
+        "value": "me gustaría entrar en SmartHousing",
+        "messageId": "m1",
+        "quote": "me gustaría entrar en SmartHousing",
+        "precision": "explicit",
+        "subject": "individual",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      },
+      {
+        "field": "location",
+        "value": "Bilbao",
+        "messageId": "m1",
+        "quote": "Busco vivienda en Bilbao para marzo de 2027",
+        "precision": "explicit",
+        "subject": "individual",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      },
+      {
+        "field": "horizon",
+        "value": "marzo de 2027",
+        "messageId": "m1",
+        "quote": "Busco vivienda en Bilbao para marzo de 2027",
+        "precision": "explicit",
+        "subject": "individual",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      },
+      {
+        "field": "buyers",
+        "value": "1",
+        "messageId": "m3",
+        "quote": "Voy yo sola",
+        "precision": "explicit",
+        "subject": "individual",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      },
+      {
+        "field": "income",
+        "value": "2.150 € netos al mes",
+        "messageId": "m3",
+        "quote": "Me quedan 2.150 € netos al mes",
+        "precision": "explicit",
+        "subject": "individual",
+        "incomeBasis": "net",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      },
+      {
+        "field": "savings",
+        "value": "9.000 €",
+        "messageId": "m3",
+        "quote": "tengo 9.000 € ahorrados",
+        "precision": "explicit",
+        "subject": "individual",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      },
+      {
+        "field": "debts",
+        "value": "0 € de cuotas",
+        "messageId": "m4",
+        "quote": "deudas ninguna, 0 € de cuotas",
+        "precision": "explicit",
+        "subject": "individual",
+        "incomeBasis": "unknown",
+        "debtIncluded": "excluded",
+        "uncertainty": null
+      }
+    ],
+    "semanticIssues": []
+  },
+  "discarded": [],
+  "extraction": {
+    "ok": true,
+    "fields": {
+      "interest": [
+        {
+          "field": "interest",
+          "value": "me gustaría entrar en SmartHousing",
+          "messageId": "m1",
+          "quote": "me gustaría entrar en SmartHousing",
+          "precision": "explicit",
+          "subject": "individual",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": null
+        }
+      ],
+      "location": [
+        {
+          "field": "location",
+          "value": "Bilbao",
+          "messageId": "m1",
+          "quote": "Busco vivienda en Bilbao para marzo de 2027",
+          "precision": "explicit",
+          "subject": "individual",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": null
+        }
+      ],
+      "horizon": [
+        {
+          "field": "horizon",
+          "value": "marzo de 2027",
+          "messageId": "m1",
+          "quote": "Busco vivienda en Bilbao para marzo de 2027",
+          "precision": "explicit",
+          "subject": "individual",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": null
+        }
+      ],
+      "buyers": [
+        {
+          "field": "buyers",
+          "value": "1",
+          "messageId": "m3",
+          "quote": "Voy yo sola",
+          "precision": "explicit",
+          "subject": "individual",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": null
+        }
+      ],
+      "income": [
+        {
+          "field": "income",
+          "value": "2.150 € netos al mes",
+          "messageId": "m3",
+          "quote": "Me quedan 2.150 € netos al mes",
+          "precision": "explicit",
+          "subject": "individual",
+          "incomeBasis": "net",
+          "debtIncluded": "unknown",
+          "uncertainty": null
+        }
+      ],
+      "savings": [
+        {
+          "field": "savings",
+          "value": "9.000 €",
+          "messageId": "m3",
+          "quote": "tengo 9.000 € ahorrados",
+          "precision": "explicit",
+          "subject": "individual",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": null
+        }
+      ],
+      "debts": [
+        {
+          "field": "debts",
+          "value": "0 € de cuotas",
+          "messageId": "m4",
+          "quote": "deudas ninguna, 0 € de cuotas",
+          "precision": "explicit",
+          "subject": "individual",
+          "incomeBasis": "unknown",
+          "debtIncluded": "excluded",
+          "uncertainty": null
+        }
+      ]
+    },
+    "discarded": 0,
+    "semanticIssues": []
+  },
+  "issues": {
+    "ok": true,
+    "issues": [],
+    "incomplete": false
+  },
+  "intervention": {
+    "kind": "none",
+    "label": "Sin preguntas pendientes prioritarias"
+  }
+}

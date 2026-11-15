@@ -1,0 +1,244 @@
+{
+  "snapshotId": "LBE-22-S0",
+  "model": "gpt-5.4-mini",
+  "durationMs": 3674,
+  "messages": [
+    {
+      "id": "m1",
+      "role": "customer",
+      "text": "Necesitamos vivienda en Almería en diez días; somos mi mujer y yo. Lo de SmartHousing podría ser una opción."
+    },
+    {
+      "id": "m2",
+      "role": "advisor",
+      "text": "¿Cómo estáis de ahorro?"
+    },
+    {
+      "id": "m3",
+      "role": "customer",
+      "text": "Tenemos 0 € ahorrados ahora, y entre los dos entran 1.650 € al mes."
+    },
+    {
+      "id": "m4",
+      "role": "customer",
+      "text": "Si me garantizáis por escrito que nos vais a aprobar y dar casa para esa fecha, sigo hablando."
+    }
+  ],
+  "raw": {
+    "candidates": [
+      {
+        "field": "location",
+        "value": "Almería",
+        "messageId": "m1",
+        "quote": "Necesitamos vivienda en Almería en diez días; somos mi mujer y yo.",
+        "precision": "explicit",
+        "subject": "joint",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      },
+      {
+        "field": "horizon",
+        "value": "en diez días",
+        "messageId": "m1",
+        "quote": "Necesitamos vivienda en Almería en diez días; somos mi mujer y yo.",
+        "precision": "explicit",
+        "subject": "joint",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      },
+      {
+        "field": "buyers",
+        "value": "mi mujer y yo",
+        "messageId": "m1",
+        "quote": "Necesitamos vivienda en Almería en diez días; somos mi mujer y yo.",
+        "precision": "explicit",
+        "subject": "joint",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      },
+      {
+        "field": "interest",
+        "value": "Lo de SmartHousing podría ser una opción",
+        "messageId": "m1",
+        "quote": "Lo de SmartHousing podría ser una opción.",
+        "precision": "approximate",
+        "subject": "joint",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": "Interés condicional/no firme."
+      },
+      {
+        "field": "savings",
+        "value": "0 €",
+        "messageId": "m3",
+        "quote": "Tenemos 0 € ahorrados ahora, y entre los dos entran 1.650 € al mes.",
+        "precision": "explicit",
+        "subject": "joint",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      },
+      {
+        "field": "income",
+        "value": "1.650 € al mes",
+        "messageId": "m3",
+        "quote": "Tenemos 0 € ahorrados ahora, y entre los dos entran 1.650 € al mes.",
+        "precision": "explicit",
+        "subject": "joint",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": "No se especifica si es neto o bruto."
+      }
+    ],
+    "semanticIssues": [
+      {
+        "category": "sensitive",
+        "field": null,
+        "messageId": "m4",
+        "quote": "Si me garantizáis por escrito que nos vais a aprobar y dar casa para esa fecha, sigo hablando.",
+        "explanation": "Solicita una garantía/aprobación vinculante por escrito."
+      },
+      {
+        "category": "ambiguous",
+        "field": "income",
+        "messageId": "m3",
+        "quote": "Tenemos 0 € ahorrados ahora, y entre los dos entran 1.650 € al mes.",
+        "explanation": "Los ingresos declarados no aclaran si son netos o brutos."
+      }
+    ]
+  },
+  "discarded": [],
+  "extraction": {
+    "ok": true,
+    "fields": {
+      "interest": [
+        {
+          "field": "interest",
+          "value": "Lo de SmartHousing podría ser una opción",
+          "messageId": "m1",
+          "quote": "Lo de SmartHousing podría ser una opción.",
+          "precision": "approximate",
+          "subject": "joint",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": "Interés condicional/no firme."
+        }
+      ],
+      "location": [
+        {
+          "field": "location",
+          "value": "Almería",
+          "messageId": "m1",
+          "quote": "Necesitamos vivienda en Almería en diez días; somos mi mujer y yo.",
+          "precision": "explicit",
+          "subject": "joint",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": null
+        }
+      ],
+      "horizon": [
+        {
+          "field": "horizon",
+          "value": "en diez días",
+          "messageId": "m1",
+          "quote": "Necesitamos vivienda en Almería en diez días; somos mi mujer y yo.",
+          "precision": "explicit",
+          "subject": "joint",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": null
+        }
+      ],
+      "buyers": [
+        {
+          "field": "buyers",
+          "value": "mi mujer y yo",
+          "messageId": "m1",
+          "quote": "Necesitamos vivienda en Almería en diez días; somos mi mujer y yo.",
+          "precision": "explicit",
+          "subject": "joint",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": null
+        }
+      ],
+      "income": [
+        {
+          "field": "income",
+          "value": "1.650 € al mes",
+          "messageId": "m3",
+          "quote": "Tenemos 0 € ahorrados ahora, y entre los dos entran 1.650 € al mes.",
+          "precision": "explicit",
+          "subject": "joint",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": "No se especifica si es neto o bruto."
+        }
+      ],
+      "savings": [
+        {
+          "field": "savings",
+          "value": "0 €",
+          "messageId": "m3",
+          "quote": "Tenemos 0 € ahorrados ahora, y entre los dos entran 1.650 € al mes.",
+          "precision": "explicit",
+          "subject": "joint",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": null
+        }
+      ],
+      "debts": []
+    },
+    "discarded": 0,
+    "semanticIssues": [
+      {
+        "category": "sensitive",
+        "field": null,
+        "messageId": "m4",
+        "quote": "Si me garantizáis por escrito que nos vais a aprobar y dar casa para esa fecha, sigo hablando.",
+        "explanation": "Solicita una garantía/aprobación vinculante por escrito."
+      },
+      {
+        "category": "ambiguous",
+        "field": "income",
+        "messageId": "m3",
+        "quote": "Tenemos 0 € ahorrados ahora, y entre los dos entran 1.650 € al mes.",
+        "explanation": "Los ingresos declarados no aclaran si son netos o brutos."
+      }
+    ]
+  },
+  "issues": {
+    "ok": true,
+    "issues": [
+      {
+        "id": "issue-1",
+        "category": "sensitive",
+        "messageId": "m4",
+        "quote": "Si me garantizáis por escrito que nos vais a aprobar y dar casa para esa fecha, sigo hablando.",
+        "description": "Solicita una garantía/aprobación vinculante por escrito.",
+        "review": "human"
+      },
+      {
+        "id": "issue-2",
+        "category": "ambiguous",
+        "field": "income",
+        "messageId": "m3",
+        "quote": "Tenemos 0 € ahorrados ahora, y entre los dos entran 1.650 € al mes.",
+        "description": "Los ingresos declarados no aclaran si son netos o brutos.",
+        "review": "clarification"
+      }
+    ],
+    "incomplete": false
+  },
+  "intervention": {
+    "kind": "human_review",
+    "label": "Revisión del asesor",
+    "reason": "Solicita una garantía/aprobación vinculante por escrito.",
+    "issueId": "issue-1"
+  }
+}

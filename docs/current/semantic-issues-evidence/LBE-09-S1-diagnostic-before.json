@@ -1,0 +1,259 @@
+{
+  "snapshotId": "LBE-09-S1",
+  "model": "gpt-5.4-mini",
+  "durationMs": 3886,
+  "messages": [
+    {
+      "id": "m1",
+      "role": "customer",
+      "text": "Estoy mirando SmartHousing en Gijón. Compraría yo sola y preferiría mudarme en abril de 2028."
+    },
+    {
+      "id": "m2",
+      "role": "advisor",
+      "text": "¿Tus ingresos son estables y qué ahorros tienes?"
+    },
+    {
+      "id": "m3",
+      "role": "customer",
+      "text": "Trabajo por campañas: me quedan entre 2.800 y 3.200 € netos al mes según la carga. Tengo 22.000 € ahorrados."
+    },
+    {
+      "id": "m4",
+      "role": "customer",
+      "text": "También estoy pagando una financiación de material de trabajo, 240 € cada mes. Al calcular lo que me queda no recuerdo si ya la resté."
+    },
+    {
+      "id": "m5",
+      "role": "customer",
+      "text": "Miré mis cuentas: los 240 € del material ya estaban descontados al calcular ese rango de 2.800 a 3.200 € netos."
+    }
+  ],
+  "raw": {
+    "candidates": [
+      {
+        "field": "interest",
+        "value": "Estoy mirando SmartHousing",
+        "messageId": "m1",
+        "quote": "Estoy mirando SmartHousing en Gijón.",
+        "precision": "explicit",
+        "subject": "individual",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      },
+      {
+        "field": "location",
+        "value": "Gijón",
+        "messageId": "m1",
+        "quote": "Estoy mirando SmartHousing en Gijón.",
+        "precision": "explicit",
+        "subject": "individual",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      },
+      {
+        "field": "horizon",
+        "value": "abril de 2028",
+        "messageId": "m1",
+        "quote": "... preferiría mudarme en abril de 2028.",
+        "precision": "explicit",
+        "subject": "individual",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      },
+      {
+        "field": "buyers",
+        "value": "1",
+        "messageId": "m1",
+        "quote": "Compraría yo sola",
+        "precision": "explicit",
+        "subject": "individual",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      },
+      {
+        "field": "income",
+        "value": "2.800 a 3.200 € netos al mes",
+        "messageId": "m3",
+        "quote": "me quedan entre 2.800 y 3.200 € netos al mes",
+        "precision": "range",
+        "subject": "individual",
+        "incomeBasis": "net",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      },
+      {
+        "field": "savings",
+        "value": "22.000 €",
+        "messageId": "m3",
+        "quote": "Tengo 22.000 € ahorrados.",
+        "precision": "explicit",
+        "subject": "individual",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      },
+      {
+        "field": "debts",
+        "value": "240 € cada mes",
+        "messageId": "m4",
+        "quote": "También estoy pagando una financiación de material de trabajo, 240 € cada mes.",
+        "precision": "explicit",
+        "subject": "individual",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": "La cliente indica después que esa cuota ya estaba descontada al calcular su rango de ingresos."
+      },
+      {
+        "field": "debts",
+        "value": "240 € cada mes",
+        "messageId": "m5",
+        "quote": "los 240 € del material ya estaban descontados al calcular ese rango de 2.800 a 3.200 € netos.",
+        "precision": "explicit",
+        "subject": "individual",
+        "incomeBasis": "unknown",
+        "debtIncluded": "included",
+        "uncertainty": null
+      }
+    ],
+    "semanticIssues": []
+  },
+  "discarded": [
+    {
+      "kind": "candidate",
+      "item": {
+        "field": "horizon",
+        "value": "abril de 2028",
+        "messageId": "m1",
+        "quote": "... preferiría mudarme en abril de 2028.",
+        "precision": "explicit",
+        "subject": "individual",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      },
+      "reason": "quote_not_found"
+    }
+  ],
+  "extraction": {
+    "ok": true,
+    "fields": {
+      "interest": [
+        {
+          "field": "interest",
+          "value": "Estoy mirando SmartHousing",
+          "messageId": "m1",
+          "quote": "Estoy mirando SmartHousing en Gijón.",
+          "precision": "explicit",
+          "subject": "individual",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": null
+        }
+      ],
+      "location": [
+        {
+          "field": "location",
+          "value": "Gijón",
+          "messageId": "m1",
+          "quote": "Estoy mirando SmartHousing en Gijón.",
+          "precision": "explicit",
+          "subject": "individual",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": null
+        }
+      ],
+      "horizon": [],
+      "buyers": [
+        {
+          "field": "buyers",
+          "value": "1",
+          "messageId": "m1",
+          "quote": "Compraría yo sola",
+          "precision": "explicit",
+          "subject": "individual",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": null
+        }
+      ],
+      "income": [
+        {
+          "field": "income",
+          "value": "2.800 a 3.200 € netos al mes",
+          "messageId": "m3",
+          "quote": "me quedan entre 2.800 y 3.200 € netos al mes",
+          "precision": "range",
+          "subject": "individual",
+          "incomeBasis": "net",
+          "debtIncluded": "unknown",
+          "uncertainty": null
+        }
+      ],
+      "savings": [
+        {
+          "field": "savings",
+          "value": "22.000 €",
+          "messageId": "m3",
+          "quote": "Tengo 22.000 € ahorrados.",
+          "precision": "explicit",
+          "subject": "individual",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": null
+        }
+      ],
+      "debts": [
+        {
+          "field": "debts",
+          "value": "240 € cada mes",
+          "messageId": "m4",
+          "quote": "También estoy pagando una financiación de material de trabajo, 240 € cada mes.",
+          "precision": "explicit",
+          "subject": "individual",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": "La cliente indica después que esa cuota ya estaba descontada al calcular su rango de ingresos."
+        },
+        {
+          "field": "debts",
+          "value": "240 € cada mes",
+          "messageId": "m5",
+          "quote": "los 240 € del material ya estaban descontados al calcular ese rango de 2.800 a 3.200 € netos.",
+          "precision": "explicit",
+          "subject": "individual",
+          "incomeBasis": "unknown",
+          "debtIncluded": "included",
+          "uncertainty": null
+        }
+      ]
+    },
+    "discarded": 1,
+    "semanticIssues": []
+  },
+  "issues": {
+    "ok": true,
+    "issues": [
+      {
+        "id": "issue-1",
+        "category": "missing",
+        "field": "horizon",
+        "description": "Falta información sobre horizon.",
+        "review": "clarification"
+      }
+    ],
+    "incomplete": true
+  },
+  "intervention": {
+    "kind": "question",
+    "question": "¿En qué plazo queréis comprar?",
+    "reason": "Falta información sobre horizon.",
+    "field": "horizon",
+    "issueId": "issue-1"
+  }
+}

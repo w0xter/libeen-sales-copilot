@@ -1,0 +1,200 @@
+{
+  "snapshotId": "LBE-21-S1",
+  "model": "gpt-5.4-mini",
+  "durationMs": 2470,
+  "messages": [
+    {
+      "id": "m1",
+      "role": "customer",
+      "text": "Sí quiero información de SmartHousing por Pontevedra, lo miraría yo solo."
+    },
+    {
+      "id": "m2",
+      "role": "advisor",
+      "text": "¿Podemos hablar de plazos y situación económica?"
+    },
+    {
+      "id": "m3",
+      "role": "customer",
+      "text": "Ojo, no me mandéis publicidad por WhatsApp. Si contestáis, solo por aquí."
+    },
+    {
+      "id": "m4",
+      "role": "customer",
+      "text": "De momento no sé fechas ni tengo cifras listas."
+    },
+    {
+      "id": "m5",
+      "role": "customer",
+      "text": "Mejor no. No quiero que volváis a contactarme de ninguna manera, ni por aquí ni por teléfono."
+    }
+  ],
+  "raw": {
+    "candidates": [
+      {
+        "field": "interest",
+        "value": "información de SmartHousing",
+        "messageId": "m1",
+        "quote": "Sí quiero información de SmartHousing por Pontevedra, lo miraría yo solo.",
+        "precision": "explicit",
+        "subject": "individual",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      },
+      {
+        "field": "location",
+        "value": "Pontevedra",
+        "messageId": "m1",
+        "quote": "Sí quiero información de SmartHousing por Pontevedra, lo miraría yo solo.",
+        "precision": "explicit",
+        "subject": "individual",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      },
+      {
+        "field": "buyers",
+        "value": "1",
+        "messageId": "m1",
+        "quote": "Sí quiero información de SmartHousing por Pontevedra, lo miraría yo solo.",
+        "precision": "explicit",
+        "subject": "individual",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      }
+    ],
+    "semanticIssues": [
+      {
+        "category": "sensitive",
+        "field": null,
+        "messageId": "m3",
+        "quote": "Ojo, no me mandéis publicidad por WhatsApp. Si contestáis, solo por aquí.",
+        "explanation": "El cliente pide no recibir publicidad por WhatsApp y prefiere contacto solo por aquí."
+      },
+      {
+        "category": "sensitive",
+        "field": null,
+        "messageId": "m5",
+        "quote": "Mejor no. No quiero que volváis a contactarme de ninguna manera, ni por aquí ni por teléfono.",
+        "explanation": "El cliente solicita no ser contactado de ninguna manera."
+      }
+    ]
+  },
+  "discarded": [],
+  "extraction": {
+    "ok": true,
+    "fields": {
+      "interest": [
+        {
+          "field": "interest",
+          "value": "información de SmartHousing",
+          "messageId": "m1",
+          "quote": "Sí quiero información de SmartHousing por Pontevedra, lo miraría yo solo.",
+          "precision": "explicit",
+          "subject": "individual",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": null
+        }
+      ],
+      "location": [
+        {
+          "field": "location",
+          "value": "Pontevedra",
+          "messageId": "m1",
+          "quote": "Sí quiero información de SmartHousing por Pontevedra, lo miraría yo solo.",
+          "precision": "explicit",
+          "subject": "individual",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": null
+        }
+      ],
+      "horizon": [],
+      "buyers": [
+        {
+          "field": "buyers",
+          "value": "1",
+          "messageId": "m1",
+          "quote": "Sí quiero información de SmartHousing por Pontevedra, lo miraría yo solo.",
+          "precision": "explicit",
+          "subject": "individual",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": null
+        }
+      ],
+      "income": [],
+      "savings": [],
+      "debts": []
+    },
+    "discarded": 0,
+    "semanticIssues": [
+      {
+        "category": "sensitive",
+        "field": null,
+        "messageId": "m3",
+        "quote": "Ojo, no me mandéis publicidad por WhatsApp. Si contestáis, solo por aquí.",
+        "explanation": "El cliente pide no recibir publicidad por WhatsApp y prefiere contacto solo por aquí."
+      },
+      {
+        "category": "sensitive",
+        "field": null,
+        "messageId": "m5",
+        "quote": "Mejor no. No quiero que volváis a contactarme de ninguna manera, ni por aquí ni por teléfono.",
+        "explanation": "El cliente solicita no ser contactado de ninguna manera."
+      }
+    ]
+  },
+  "issues": {
+    "ok": true,
+    "issues": [
+      {
+        "id": "issue-1",
+        "category": "missing",
+        "field": "horizon",
+        "description": "Falta información sobre horizon.",
+        "review": "clarification"
+      },
+      {
+        "id": "issue-2",
+        "category": "missing",
+        "field": "income",
+        "description": "Falta información sobre income.",
+        "review": "clarification"
+      },
+      {
+        "id": "issue-3",
+        "category": "missing",
+        "field": "savings",
+        "description": "Falta información sobre savings.",
+        "review": "clarification"
+      },
+      {
+        "id": "issue-5",
+        "category": "sensitive",
+        "messageId": "m5",
+        "quote": "Mejor no. No quiero que volváis a contactarme de ninguna manera, ni por aquí ni por teléfono.",
+        "description": "El cliente solicita no ser contactado de ninguna manera.",
+        "review": "human"
+      },
+      {
+        "id": "issue-4",
+        "category": "sensitive",
+        "messageId": "m3",
+        "quote": "Ojo, no me mandéis publicidad por WhatsApp. Si contestáis, solo por aquí.",
+        "description": "El cliente pide no recibir publicidad por WhatsApp y prefiere contacto solo por aquí.",
+        "review": "human"
+      }
+    ],
+    "incomplete": false
+  },
+  "intervention": {
+    "kind": "human_review",
+    "label": "Revisión del asesor",
+    "reason": "El cliente solicita no ser contactado de ninguna manera.",
+    "issueId": "issue-5"
+  }
+}

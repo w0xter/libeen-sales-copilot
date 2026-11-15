@@ -1,0 +1,148 @@
+{
+  "snapshotId": "LBE-15-S0",
+  "model": "gpt-5.4-mini",
+  "durationMs": 2639,
+  "messages": [
+    {
+      "id": "m1",
+      "role": "customer",
+      "text": "En Castellón me han hablado de alquiler con opción a compra, pero todavía no he decidido si me interesa SmartHousing."
+    },
+    {
+      "id": "m2",
+      "role": "advisor",
+      "text": "¿Con cuánto ahorro contarías?"
+    },
+    {
+      "id": "m3",
+      "role": "customer",
+      "text": "Si tuviera 30.000 € guardados, ¿me dejaríais entrar? Lo digo como ejemplo, eh."
+    },
+    {
+      "id": "m4",
+      "role": "advisor",
+      "text": "Entiendo que es un supuesto. ¿Y el salario de 2.400 € que mencionaste antes?"
+    },
+    {
+      "id": "m5",
+      "role": "customer",
+      "text": "Yo no mencioné ningún sueldo de 2.400 €. Solo estoy comparando opciones."
+    }
+  ],
+  "raw": {
+    "candidates": [
+      {
+        "field": "location",
+        "value": "Castellón",
+        "messageId": "m1",
+        "quote": "En Castellón me han hablado de alquiler con opción a compra, pero todavía no he decidido si me interesa SmartHousing.",
+        "precision": "explicit",
+        "subject": "individual",
+        "incomeBasis": "unknown",
+        "debtIncluded": "unknown",
+        "uncertainty": null
+      }
+    ],
+    "semanticIssues": [
+      {
+        "category": "ambiguous",
+        "field": "interest",
+        "messageId": "m1",
+        "quote": "En Castellón me han hablado de alquiler con opción a compra, pero todavía no he decidido si me interesa SmartHousing.",
+        "explanation": "El cliente expresa duda sobre su interés en SmartHousing; no confirma interés real."
+      }
+    ]
+  },
+  "discarded": [],
+  "extraction": {
+    "ok": true,
+    "fields": {
+      "interest": [],
+      "location": [
+        {
+          "field": "location",
+          "value": "Castellón",
+          "messageId": "m1",
+          "quote": "En Castellón me han hablado de alquiler con opción a compra, pero todavía no he decidido si me interesa SmartHousing.",
+          "precision": "explicit",
+          "subject": "individual",
+          "incomeBasis": "unknown",
+          "debtIncluded": "unknown",
+          "uncertainty": null
+        }
+      ],
+      "horizon": [],
+      "buyers": [],
+      "income": [],
+      "savings": [],
+      "debts": []
+    },
+    "discarded": 0,
+    "semanticIssues": [
+      {
+        "category": "ambiguous",
+        "field": "interest",
+        "messageId": "m1",
+        "quote": "En Castellón me han hablado de alquiler con opción a compra, pero todavía no he decidido si me interesa SmartHousing.",
+        "explanation": "El cliente expresa duda sobre su interés en SmartHousing; no confirma interés real."
+      }
+    ]
+  },
+  "issues": {
+    "ok": true,
+    "issues": [
+      {
+        "id": "issue-1",
+        "category": "missing",
+        "field": "interest",
+        "description": "Falta información sobre interest.",
+        "review": "clarification"
+      },
+      {
+        "id": "issue-2",
+        "category": "missing",
+        "field": "horizon",
+        "description": "Falta información sobre horizon.",
+        "review": "clarification"
+      },
+      {
+        "id": "issue-3",
+        "category": "missing",
+        "field": "buyers",
+        "description": "Falta información sobre buyers.",
+        "review": "clarification"
+      },
+      {
+        "id": "issue-4",
+        "category": "missing",
+        "field": "income",
+        "description": "Falta información sobre income.",
+        "review": "clarification"
+      },
+      {
+        "id": "issue-5",
+        "category": "missing",
+        "field": "savings",
+        "description": "Falta información sobre savings.",
+        "review": "clarification"
+      },
+      {
+        "id": "issue-6",
+        "category": "ambiguous",
+        "field": "interest",
+        "messageId": "m1",
+        "quote": "En Castellón me han hablado de alquiler con opción a compra, pero todavía no he decidido si me interesa SmartHousing.",
+        "description": "El cliente expresa duda sobre su interés en SmartHousing; no confirma interés real.",
+        "review": "clarification"
+      }
+    ],
+    "incomplete": false
+  },
+  "intervention": {
+    "kind": "question",
+    "question": "¿Podéis aclarar vuestro interés en SmartHousing?",
+    "reason": "El cliente expresa duda sobre su interés en SmartHousing; no confirma interés real.",
+    "field": "interest",
+    "issueId": "issue-6"
+  }
+}
