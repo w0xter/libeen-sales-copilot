@@ -71,5 +71,19 @@ export function identifyIssues(extraction: Extraction, messages: Message[], rule
       if (/\b(?:urgente|urgencia)\b/i.test(sentence) && /\b(?:vivienda|casa|alojamiento|mud(?:ar|anza))\b/i.test(sentence)) add({ category: 'sensitive', messageId: message.id, quote: sentence, description: 'Posible urgencia de vivienda; requiere revisión humana.', review: 'human' });
     }
   }
+  // Un opt-out total posterior debe ser el motivo visible, sin ocultar otros riesgos.
+  const totalOptOut = /\bno\s+quiero\s+que\s+(?:volv[aá]is\s+a\s+)?contactarme\s+de\s+ninguna\s+manera\b/i;
+  const latest = [...messages].reverse().find(m => m.role === 'customer' && m.text && totalOptOut.test(m.text));
+  if (latest?.text) {
+    let issue = issues.find(i => i.category === 'sensitive' && i.messageId === latest.id && i.quote && totalOptOut.test(i.quote));
+    if (!issue) {
+      const quote = latest.text.match(totalOptOut)![0];
+      add({ category: 'sensitive', messageId: latest.id, quote, description: 'El cliente solicita no ser contactado de ninguna manera.', review: 'human' });
+      issue = issues[issues.length - 1];
+    }
+    issues.splice(issues.indexOf(issue), 1);
+    const firstSensitive = issues.findIndex(i => i.category === 'sensitive');
+    issues.splice(firstSensitive < 0 ? issues.length : firstSensitive, 0, issue);
+  }
   return { ok: true, issues, incomplete: extraction.discarded > 0 };
 }

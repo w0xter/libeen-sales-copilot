@@ -18,8 +18,9 @@ const responseSchema = z.strictObject({ candidates: z.array(candidateSchema), se
 type Candidate = z.infer<typeof candidateSchema>;
 type Fields = Record<(typeof fields)[number], Candidate[]>;
 type Transport = (messages: Message[]) => Promise<unknown>;
+export type DiscardDiagnostic = { kind: 'candidate' | 'semanticIssue'; item: unknown; reason: 'invalid_schema' | 'unknown_message' | 'not_customer' | 'inaccessible' | 'quote_not_found' };
 
-export async function extract(messages: Message[], transport: Transport): Promise<
+export async function extract(messages: Message[], transport: Transport, onDiscard?: (diagnostic: DiscardDiagnostic) => void): Promise<
   { ok: true; fields: Fields; discarded: number; semanticIssues?: z.infer<typeof semanticIssueSchema>[] } | { ok: false; error: 'invalid_input' | 'invalid_response' | 'provider_error' }
 > {
   if (!Array.isArray(messages) || messages.some(m => !m.id || !['customer', 'advisor'].includes(m.role) || (m.text !== null && typeof m.text !== 'string')) || new Set(messages.map(m => m.id)).size !== messages.length) return { ok: false, error: 'invalid_input' };
@@ -29,21 +30,32 @@ export async function extract(messages: Message[], transport: Transport): Promis
   if ('semanticIssues' in raw && !Array.isArray(raw.semanticIssues)) return { ok: false, error: 'invalid_response' };
   const result = Object.fromEntries(fields.map(field => [field, []])) as unknown as Fields;
   let discarded = 0;
+  const discard = (kind: DiscardDiagnostic['kind'], item: unknown, reason: DiscardDiagnostic['reason']) => { discarded++; onDiscard?.({ kind, item, reason }); };
+  const sourceError = (messageId: string, quote: string): DiscardDiagnostic['reason'] | null => {
+    const source = messages.find(m => m.id === messageId);
+    if (!source) return 'unknown_message';
+    if (source.role !== 'customer') return 'not_customer';
+    if (source.text === null) return 'inaccessible';
+    return source.text.includes(quote) ? null : 'quote_not_found';
+  };
   for (const item of raw.candidates) {
     const parsed = candidateSchema.safeParse(item);
-    if (!parsed.success) { discarded++; continue; }
-    const c = parsed.data;
-    const source = messages.find(m => m.id === c.messageId);
-    if (!source || source.role !== 'customer' || source.text === null || !source.text.includes(c.quote)) { discarded++; continue; }
+    if (!parsed.success) { discard('candidate', item, 'invalid_schema'); continue; }
+    let c = parsed.data;
+    // Algunos modelos anteponen puntos suspensivos a una cita por lo demás literal.
+    const unprefixed = c.quote.replace(/^(?:\.\.\.|…)\s*/, '');
+    if (unprefixed !== c.quote && unprefixed && sourceError(c.messageId, unprefixed) === null) c = { ...c, quote: unprefixed };
+    const error = sourceError(c.messageId, c.quote);
+    if (error) { discard('candidate', item, error); continue; }
     result[c.field].push(c);
   }
   const semanticIssues: z.infer<typeof semanticIssueSchema>[] = [];
   if ('semanticIssues' in raw && Array.isArray(raw.semanticIssues)) for (const item of raw.semanticIssues) {
     const parsed = semanticIssueSchema.safeParse(item);
-    if (!parsed.success) { discarded++; continue; }
+    if (!parsed.success) { discard('semanticIssue', item, 'invalid_schema'); continue; }
     const issue = parsed.data;
-    const source = messages.find(m => m.id === issue.messageId);
-    if (!source || source.role !== 'customer' || source.text === null || !source.text.includes(issue.quote)) { discarded++; continue; }
+    const error = sourceError(issue.messageId, issue.quote);
+    if (error) { discard('semanticIssue', item, error); continue; }
     semanticIssues.push(issue);
   }
   return { ok: true, fields: result, discarded, ...('semanticIssues' in raw ? { semanticIssues } : {}) };

@@ -30,3 +30,22 @@ describe('señales semánticas en B/D/E', () => {
     expect(result.intervention).toEqual({ kind: 'error', error: 'invalid_response' });
   });
 });
+
+describe('regresiones LBE-09 y LBE-21', () => {
+  it('recupera una cita con elipsis inicial y registra los descartes sin modificar la respuesta pública', async () => {
+    const { extract } = await import('../../../src/intake/extraction');
+    const messages: Message[] = [{ id: 'm1', role: 'customer', text: 'Compraría yo sola y preferiría mudarme en abril de 2028.' }];
+    const diagnostics: unknown[] = [];
+    const result = await extract(messages, async () => ({ candidates: [c('horizon', 'abril de 2028', 'm1', '... preferiría mudarme en abril de 2028.'), c('income', '5', 'm1', '... inventado')], semanticIssues: [] }), x => diagnostics.push(x));
+    expect(result.ok && result.fields.horizon[0].quote).toBe('preferiría mudarme en abril de 2028.');
+    expect(result.ok && result.discarded).toBe(1);
+    expect(diagnostics).toEqual([expect.objectContaining({ kind: 'candidate', reason: 'quote_not_found', item: expect.objectContaining({ field: 'income' }) })]);
+    expect(result).not.toHaveProperty('diagnostics');
+  });
+  it('prioriza el opt-out total posterior y conserva otras alertas sensibles', async () => {
+    const messages: Message[] = [{ id: 'm1', role: 'customer', text: 'No me llaméis.' }, { id: 'm2', role: 'customer', text: 'No confío en vosotros.' }, { id: 'm3', role: 'customer', text: 'No quiero que volváis a contactarme de ninguna manera, ni por aquí ni por teléfono.' }];
+    const result = await runIntake(messages, async () => ({ candidates: [], semanticIssues: [signal('sensitive', null, 'm1', 'No me llaméis.', 'Contacto anterior'), signal('sensitive', null, 'm2', 'No confío en vosotros.', 'Desconfianza'), signal('sensitive', null, 'm3', messages[2].text!, 'Opt-out total')] }));
+    expect(result.intervention).toMatchObject({ kind: 'human_review', reason: 'Opt-out total' });
+    expect(result.issues.ok && result.issues.issues.some(i => i.description === 'Desconfianza')).toBe(true);
+  });
+});
