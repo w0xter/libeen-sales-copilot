@@ -92,3 +92,42 @@ describe('subject binding', () => {
     expect(bindSubjects(value)).toMatchObject({ status: 'human_review_required', groups: [] });
   });
 });
+
+describe('subject binding safeguards for previously known subjects', () => {
+  const text = 'Yo gano 2000 euros.';
+  const message: Message = {messageId:'m',conversationId:'c',role:'customer',occurredAt:'2026-01-01T00:00:00Z',content:{type:'text',text}};
+  const claim: ClaimCandidate = {candidateId:'a',extractorId:'E1',fieldId:'declared_monthly_income',subjectRef:{scope:'participant',id:'known'},value:2000,unit:'EUR',precision:'explicit',occurrence:{messageId:'m',statementSpan:{start:0,end:text.length,text},focusSpan:{start:8,end:12,text:'2000'}},evidenceRefs:[{messageId:'m',quote:'2000',start:8,end:12}]};
+  const make = () => {
+    const grouped = groupClaims([claim],[message],{factSchema:demoBundle.factSchema,assertions:[],caseId:'case'});
+    const reviews: ContextReview[] = [{groupId:grouped.groups[0].groupId,candidateId:'a',atomicity:'atomic',support:'supported',evidenceRefs:claim.evidenceRefs,justification:'supported'}];
+    return {groups:grouped.groups,reviews,messages:[message],historicalAssertions:[],knownSubjects:[{scope:'participant' as const,id:'known'}],caseId:'case',diagnostics:grouped.diagnostics};
+  };
+  it.each(['refuted','uncertain','absent'] as const)('does not verify a known subject when S2 says %s', support => {
+    const value=make(); value.reviews[0].support=support;
+    expect(bindSubjects(value)).toMatchObject({status:'human_review_required',groups:[],diagnostics:[{reason:`Subject attribution requires review: contextual support ${support}`}]});
+  });
+  it('does not verify a known subject with unrelated review evidence', () => {
+    const value=make(); value.reviews[0].evidenceRefs=[{messageId:'m',quote:'Yo',start:0,end:2}];
+    expect(bindSubjects(value)).toMatchObject({status:'human_review_required',groups:[]});
+  });
+  it('rejects conflicting extractor subject IDs even if S2 gives the same attribution', () => {
+    const value=make(); const first=value.groups[0].candidates[0];
+    value.groups[0].candidates.push({...first,candidateId:'b',extractorId:'E2',subjectRef:{scope:'participant',id:'different'}});
+    value.reviews[0].subjectAttribution={kind:'local_speaker',messageId:'m',evidenceRefs:[{messageId:'m',quote:'Yo',start:0,end:2}],justification:'speaker'};
+    value.reviews.push({...value.reviews[0],candidateId:'b'});
+    expect(bindSubjects(value)).toMatchObject({status:'human_review_required',groups:[]});
+  });
+});
+
+describe('multiple individual declarations in one message', () => {
+  it.each(['Yo gano 2400 y mi pareja gana 1800.', 'Yo gano 2000 y mi pareja gana 2000.'])('does not merge distinct occurrences into one speaker: %s', text => {
+    const message: Message = {messageId:'m',conversationId:'c',role:'customer',occurredAt:'2026-01-01T00:00:00Z',content:{type:'text',text}};
+    const positions = [...text.matchAll(/\d{4}/g)].map(m=>m.index!);
+    const candidates: ClaimCandidate[] = positions.map((start,i)=>({candidateId:`c${i}`,extractorId:`E${i}`,fieldId:'declared_monthly_income',subjectRef:{scope:'participant',id:`p${i}`},value:Number(text.slice(start,start+4)),unit:'EUR',precision:'explicit',occurrence:{messageId:'m',statementSpan:{start:0,end:text.length,text},focusSpan:{start,end:start+4,text:text.slice(start,start+4)}},evidenceRefs:[{messageId:'m',quote:text.slice(start,start+4),start,end:start+4}]}));
+    const grouped = groupClaims(candidates,[message],{factSchema:demoBundle.factSchema,assertions:[],caseId:'case'});
+    expect(grouped.groups).toHaveLength(2);
+    const reviews:ContextReview[] = grouped.groups.flatMap(g=>g.candidates.map(c=>({groupId:g.groupId,candidateId:c.candidateId,atomicity:'atomic',support:'supported',evidenceRefs:c.evidenceRefs,justification:'speaker',subjectAttribution:{kind:'local_speaker',messageId:'m',evidenceRefs:[{messageId:'m',quote:'Yo',start:0,end:2}],justification:'speaker'}})));
+    const result=bindSubjects({groups:grouped.groups,reviews,messages:[message],historicalAssertions:[],knownSubjects:[],caseId:'case',diagnostics:grouped.diagnostics});
+    expect(result).toMatchObject({status:'human_review_required',groups:[],authorizedSubjects:[]});
+  });
+});

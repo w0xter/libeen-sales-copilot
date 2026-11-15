@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import type { FactAssertion, Message, SubjectRef } from '../../../contracts';
 import type { ClaimGroup, ContextReview } from './contracts';
 import { validateOccurrence } from './evidence';
-import { sameEvidence } from './safety';
+import { evidenceAnchored, sameEvidence } from './safety';
 
 /** S2 supplies semantic classification; this stage verifies its provenance and
  * consistency. Canonical IDs are pseudonymous references, not authentication. */
@@ -17,16 +17,21 @@ export function bindSubjects(input: { groups: ClaimGroup[]; reviews: ContextRevi
     const scopes = new Set(group.candidates.map(c => c.subjectRef.scope));
     const matched = group.candidates.map(c => reviews.filter(r => r.groupId === group.groupId && r.candidateId === c.candidateId));
     const kinds = new Set(matched.flatMap(rs => rs.flatMap(r => r.subjectAttribution ? [r.subjectAttribution.kind] : [])));
-    let rejected = scopes.size !== 1 || kinds.size > 1 || matched.some(rs => rs.length !== 1);
+    const claimedSubjects = new Set(group.candidates.map(c => JSON.stringify(c.subjectRef)));
+    // Separate occurrences in one message may describe different people. A
+    // message-local ID cannot safely identify either without stronger binding.
+    const competingOccurrences = kinds.has('local_speaker') && group.candidates.some(c => c.subjectRef.scope === 'participant' && groups.some(other => other.groupId !== group.groupId && other.fieldId === group.fieldId && other.candidates.some(peer => peer.subjectRef.scope === 'participant' && peer.occurrence.messageId === c.occurrence.messageId)));
+    let rejected = scopes.size !== 1 || claimedSubjects.size !== 1 || kinds.size > 1 || matched.some(rs => rs.length !== 1) || competingOccurrences;
     const normalized = group.candidates.map((c, i) => {
       const review = matched[i][0]; const a = review?.subjectAttribution;
       const known = knownSubjects.some(s => s.scope === c.subjectRef.scope && s.id === c.subjectRef.id);
       const compatible = c.subjectRef.scope === 'case' ? 'case' : c.subjectRef.scope === 'buying_unit' ? 'buying_unit' : 'local_speaker';
       let subject: SubjectRef | undefined;
+      const supported = review?.atomicity === 'atomic' && review.support === 'supported' && validateOccurrence(c.occurrence, messages) && evidenceAnchored(review.evidenceRefs, messages) && sameEvidence(review.evidenceRefs, c.evidenceRefs, messages);
       // A known participant ID does not prove continuity in a different
       // message. The case itself is intrinsic; other references need S2.
-      if (!a && known && ((c.subjectRef.scope === 'case' && c.subjectRef.id === caseId) || c.correction || !historicalAssertions.some(h => h.subjectRef.scope === c.subjectRef.scope && h.subjectRef.id === c.subjectRef.id))) subject = c.subjectRef;
-      else if (a && a.kind === compatible && a.messageId === c.occurrence.messageId && review.atomicity === 'atomic' && review.support === 'supported' && a.justification.trim() && validateOccurrence(c.occurrence, messages)) {
+      if (!a && supported && known && ((c.subjectRef.scope === 'case' && c.subjectRef.id === caseId) || c.correction || !historicalAssertions.some(h => h.subjectRef.scope === c.subjectRef.scope && h.subjectRef.id === c.subjectRef.id))) subject = c.subjectRef;
+      else if (a && supported && a.kind === compatible && a.messageId === c.occurrence.messageId && a.justification.trim()) {
         const message = messages.find(m => m.messageId === a.messageId);
         const span = c.occurrence.statementSpan;
         const valid = message?.content.type === 'text' && a.evidenceRefs.length > 0 && a.evidenceRefs.every(ref => {
@@ -51,7 +56,11 @@ export function bindSubjects(input: { groups: ClaimGroup[]; reviews: ContextRevi
       return { candidate: c, subject };
     });
     if (new Set(normalized.flatMap(x => x.subject ? [JSON.stringify(x.subject)] : [])).size > 1) rejected = true;
-    for (const entry of normalized) diagnostics.push({ groupId: group.groupId, candidateId: entry.candidate.candidateId, status: rejected ? 'rejected' : JSON.stringify(entry.candidate.subjectRef) === JSON.stringify(entry.subject) ? 'verified' : 'normalized', reason: rejected ? 'Subject attribution requires review' : 'Subject attribution accepted' });
+    for (const entry of normalized) {
+      const support = reviews.find(r => r.groupId === group.groupId && r.candidateId === entry.candidate.candidateId)?.support;
+      const reason = rejected ? support && support !== 'supported' ? `Subject attribution requires review: contextual support ${support}` : 'Subject attribution requires review' : 'Subject attribution accepted';
+      diagnostics.push({ groupId: group.groupId, candidateId: entry.candidate.candidateId, status: rejected ? 'rejected' : JSON.stringify(entry.candidate.subjectRef) === JSON.stringify(entry.subject) ? 'verified' : 'normalized', reason });
+    }
     if (rejected) continue;
     const candidates = normalized.map(({ candidate, subject }) => ({ ...candidate, subjectRef: subject! }));
     for (const c of candidates) if (!knownSubjects.some(s => s.scope === c.subjectRef.scope && s.id === c.subjectRef.id) && !authorized.some(s => s.scope === c.subjectRef.scope && s.id === c.subjectRef.id)) authorized.push(c.subjectRef);
