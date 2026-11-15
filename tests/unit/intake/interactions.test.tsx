@@ -18,6 +18,7 @@ describe('interacciones de la interfaz', () => {
     act(() => renderer.root.findByProps({ id: 'manual-alert' }).props.onChange({ target: { value: 'Revisar contacto' } }));
     act(() => renderer.root.findAllByType('form')[0].props.onSubmit({ preventDefault() {} }));
     expect(button(renderer.root, 'Copiar pregunta').props.disabled).toBe(true);
+    expect(renderer.root.findByProps({ 'aria-label': 'Pregunta sugerida editable' }).props.disabled).toBe(true);
     act(() => button(renderer.root, 'Marcar resuelta').props.onClick());
     act(() => button(renderer.root, 'He revisado la pregunta').props.onClick());
     expect(button(renderer.root, 'Copiar pregunta').props.disabled).toBe(false);
