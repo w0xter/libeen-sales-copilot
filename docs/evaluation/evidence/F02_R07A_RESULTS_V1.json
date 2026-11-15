@@ -1,0 +1,2438 @@
+{
+  "version": "1.0.0",
+  "archiveSha256": "d28d6f8bb31b4fc0d1cdb809256677e4e6a85a26cce1e6c84e8257ac9823380f",
+  "provenance": "Codex provisional; no independent adjudication; synthetic data",
+  "method": "R02 observations; labels R07a; synthetic additions have no model calls and are not_evaluable",
+  "records": [
+    {
+      "annotation": {
+        "id": "B10",
+        "occurrence": "javier-opt-out-addition",
+        "category": "OPT_OUT",
+        "quote": "No quiero que me contactéis más",
+        "expected": true,
+        "intent": "Pide cesar el contacto",
+        "rationale": "Petición explícita dirigida al interlocutor",
+        "certainty": "high",
+        "source": "R01_capture",
+        "review": "provisional_not_independent"
+      },
+      "trace": {
+        "s1CallIndex": 4,
+        "s1Proposals": [
+          {
+            "signalId": "signal-optout-1",
+            "category": "OPT_OUT",
+            "evidenceRefs": [
+              {
+                "messageId": "javier-opt-out-addition",
+                "quote": "No quiero que me contactéis más.",
+                "start": 0,
+                "end": 31
+              }
+            ]
+          }
+        ],
+        "s2CallIndex": 5,
+        "s2AdditionalCandidates": [
+          {
+            "signalId": "signal-optout-1",
+            "category": "OPT_OUT",
+            "evidenceRefs": [
+              {
+                "messageId": "javier-opt-out-addition",
+                "quote": "No quiero que me contactéis más.",
+                "start": 0,
+                "end": 32
+              }
+            ]
+          }
+        ],
+        "s2Verdicts": [
+          {
+            "signalId": "signal-optout-1",
+            "status": "confirmed",
+            "justification": "The customer explicitly says they do not want further contact: 'No quiero que me contactéis más.'",
+            "evidenceRefs": [
+              {
+                "messageId": "javier-opt-out-addition",
+                "quote": "No quiero que me contactéis más.",
+                "start": 0,
+                "end": 32
+              }
+            ]
+          }
+        ],
+        "sharedIds": []
+      },
+      "stages": {
+        "S1": {
+          "observed": true,
+          "classification": "true_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "javier-opt-out-addition",
+              "quote": "No quiero que me contactéis más.",
+              "start": 0,
+              "end": 31
+            },
+            {
+              "messageId": "javier-opt-out-addition",
+              "quote": "No quiero que me contactéis más.",
+              "start": 0,
+              "end": 32
+            }
+          ]
+        },
+        "S2": {
+          "observed": true,
+          "classification": "true_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "javier-opt-out-addition",
+              "quote": "No quiero que me contactéis más.",
+              "start": 0,
+              "end": 31
+            },
+            {
+              "messageId": "javier-opt-out-addition",
+              "quote": "No quiero que me contactéis más.",
+              "start": 0,
+              "end": 32
+            }
+          ]
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "javier-opt-out-addition",
+              "quote": "No quiero que me contactéis más.",
+              "start": 0,
+              "end": 31
+            },
+            {
+              "messageId": "javier-opt-out-addition",
+              "quote": "No quiero que me contactéis más.",
+              "start": 0,
+              "end": 32
+            }
+          ]
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "B08",
+        "occurrence": "rosa-m3",
+        "category": "BINDING_CLAIM",
+        "quote": "Mi hijo dice que os pida por escrito que estamos aprobados antes de seguir.",
+        "expected": true,
+        "intent": "Solicita confirmación escrita de aprobación",
+        "rationale": "La hablante transmite la petición como propia; no es mera referencia a una aprobación ajena",
+        "certainty": "high",
+        "source": "R01_capture",
+        "review": "provisional_not_independent"
+      },
+      "trace": {
+        "s1CallIndex": 4,
+        "s1Proposals": [],
+        "s2CallIndex": 5,
+        "s2AdditionalCandidates": [],
+        "s2Verdicts": [],
+        "sharedIds": []
+      },
+      "stages": {
+        "S1": {
+          "observed": false,
+          "classification": "false_negative",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": false,
+          "classification": "false_negative",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "F01D1-trust_real-P1-V2",
+        "occurrence": "F01D1-trust_real-P1-V2-m1",
+        "category": "TRUST",
+        "quote": "Antes de daros los datos bancarios, ¿cómo sé que esta empresa es fiable y no una estafa? Mi ciudad de referencia es Madrid.",
+        "expected": true,
+        "intent": "Cuestiona la fiabilidad del servicio",
+        "rationale": "La intención comunicada se interpreta en contexto, no por palabras aisladas",
+        "certainty": "high",
+        "source": "R01_capture",
+        "review": "provisional_not_independent"
+      },
+      "trace": {
+        "s1CallIndex": 9,
+        "s1Proposals": [
+          {
+            "signalId": "F01D1-trust_real-P1-V2-m1",
+            "category": "TRUST",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-trust_real-P1-V2-m1",
+                "quote": "Antes de daros los datos bancarios, ¿cómo sé que esta empresa es fiable y no es una estafa?",
+                "start": 0,
+                "end": 85
+              }
+            ]
+          }
+        ],
+        "s2CallIndex": 10,
+        "s2AdditionalCandidates": [
+          {
+            "signalId": "F01D1-trust_real-P1-V2-m1",
+            "category": "TRUST",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-trust_real-P1-V2-m1",
+                "quote": "Antes de daros los datos bancarios, ¿cómo sé que esta empresa es fiable y no es una estafa?",
+                "start": 0,
+                "end": 85
+              }
+            ]
+          }
+        ],
+        "s2Verdicts": [
+          {
+            "signalId": "F01D1-trust_real-P1-V2-m1",
+            "status": "confirmed",
+            "justification": "The customer explicitly questions whether the company is reliable and says it may be a scam before sharing bank details. That is a clear trust concern, not merely a generic topic mention.",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-trust_real-P1-V2-m1",
+                "quote": "Antes de daros los datos bancarios, ¿cómo sé que esta empresa es fiable y no es una estafa?",
+                "start": 0,
+                "end": 85
+              }
+            ]
+          }
+        ],
+        "sharedIds": []
+      },
+      "stages": {
+        "S1": {
+          "observed": true,
+          "classification": "true_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-trust_real-P1-V2-m1",
+              "quote": "Antes de daros los datos bancarios, ¿cómo sé que esta empresa es fiable y no es una estafa?",
+              "start": 0,
+              "end": 85
+            },
+            {
+              "messageId": "F01D1-trust_real-P1-V2-m1",
+              "quote": "Antes de daros los datos bancarios, ¿cómo sé que esta empresa es fiable y no es una estafa?",
+              "start": 0,
+              "end": 85
+            }
+          ]
+        },
+        "S2": {
+          "observed": true,
+          "classification": "true_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-trust_real-P1-V2-m1",
+              "quote": "Antes de daros los datos bancarios, ¿cómo sé que esta empresa es fiable y no es una estafa?",
+              "start": 0,
+              "end": 85
+            },
+            {
+              "messageId": "F01D1-trust_real-P1-V2-m1",
+              "quote": "Antes de daros los datos bancarios, ¿cómo sé que esta empresa es fiable y no es una estafa?",
+              "start": 0,
+              "end": 85
+            }
+          ]
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-trust_real-P1-V2-m1",
+              "quote": "Antes de daros los datos bancarios, ¿cómo sé que esta empresa es fiable y no es una estafa?",
+              "start": 0,
+              "end": 85
+            },
+            {
+              "messageId": "F01D1-trust_real-P1-V2-m1",
+              "quote": "Antes de daros los datos bancarios, ¿cómo sé que esta empresa es fiable y no es una estafa?",
+              "start": 0,
+              "end": 85
+            }
+          ]
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "F01D1-trust_real-P2-V2",
+        "occurrence": "F01D1-trust_real-P2-V2-m1",
+        "category": "TRUST",
+        "quote": "He leído comentarios que me hacen desconfiar de vosotros. ¿Quién garantiza que el servicio es auténtico? Mi ciudad de referencia es Madrid.",
+        "expected": true,
+        "intent": "Cuestiona la fiabilidad del servicio",
+        "rationale": "La intención comunicada se interpreta en contexto, no por palabras aisladas",
+        "certainty": "high",
+        "source": "R01_capture",
+        "review": "provisional_not_independent"
+      },
+      "trace": {
+        "s1CallIndex": 4,
+        "s1Proposals": [
+          {
+            "signalId": "trust-1",
+            "category": "TRUST",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-trust_real-P2-V2-m1",
+                "quote": "He leído comentarios que me hacen desconfiar de vosotros. ¿Quién garantiza que el servicio es auténtico?",
+                "start": 0,
+                "end": 98
+              }
+            ]
+          }
+        ],
+        "s2CallIndex": 5,
+        "s2AdditionalCandidates": [
+          {
+            "signalId": "trust-1",
+            "category": "TRUST",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-trust_real-P2-V2-m1",
+                "quote": "He leído comentarios que me hacen desconfiar de vosotros. ¿Quién garantiza que el servicio es auténtico?",
+                "start": 0,
+                "end": 104
+              }
+            ]
+          }
+        ],
+        "s2Verdicts": [
+          {
+            "signalId": "trust-1",
+            "status": "confirmed",
+            "justification": "Hay una preocupación explícita por la fiabilidad: 'me hacen desconfiar de vosotros' y una pregunta sobre si el servicio es auténtico. Esto encaja con TRUST como señal de desconfianza/reliabilidad.",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-trust_real-P2-V2-m1",
+                "quote": "He leído comentarios que me hacen desconfiar de vosotros. ¿Quién garantiza que el servicio es auténtico?",
+                "start": 0,
+                "end": 104
+              }
+            ]
+          }
+        ],
+        "sharedIds": []
+      },
+      "stages": {
+        "S1": {
+          "observed": true,
+          "classification": "true_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-trust_real-P2-V2-m1",
+              "quote": "He leído comentarios que me hacen desconfiar de vosotros. ¿Quién garantiza que el servicio es auténtico?",
+              "start": 0,
+              "end": 98
+            },
+            {
+              "messageId": "F01D1-trust_real-P2-V2-m1",
+              "quote": "He leído comentarios que me hacen desconfiar de vosotros. ¿Quién garantiza que el servicio es auténtico?",
+              "start": 0,
+              "end": 104
+            }
+          ]
+        },
+        "S2": {
+          "observed": true,
+          "classification": "true_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-trust_real-P2-V2-m1",
+              "quote": "He leído comentarios que me hacen desconfiar de vosotros. ¿Quién garantiza que el servicio es auténtico?",
+              "start": 0,
+              "end": 98
+            },
+            {
+              "messageId": "F01D1-trust_real-P2-V2-m1",
+              "quote": "He leído comentarios que me hacen desconfiar de vosotros. ¿Quién garantiza que el servicio es auténtico?",
+              "start": 0,
+              "end": 104
+            }
+          ]
+        },
+        "public": {
+          "observed": true,
+          "classification": "true_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-trust_real-P2-V2-m1",
+              "quote": "He leído comentarios que me hacen desconfiar de vosotros. ¿Quién garantiza que el servicio es auténtico?",
+              "start": 0,
+              "end": 98
+            },
+            {
+              "messageId": "F01D1-trust_real-P2-V2-m1",
+              "quote": "He leído comentarios que me hacen desconfiar de vosotros. ¿Quién garantiza que el servicio es auténtico?",
+              "start": 0,
+              "end": 104
+            }
+          ]
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "F01D1-trust_false_friend-P1-V2",
+        "occurrence": "F01D1-trust_false_friend-P1-V2-m1",
+        "category": "TRUST",
+        "quote": "Pagamos una cuota de 180 € del coche; no sé si cuenta para los ingresos que os dije.",
+        "expected": false,
+        "intent": "Consulta un cálculo económico",
+        "rationale": "La intención comunicada se interpreta en contexto, no por palabras aisladas",
+        "certainty": "high",
+        "source": "R01_capture",
+        "review": "provisional_not_independent"
+      },
+      "trace": {
+        "s1CallIndex": 9,
+        "s1Proposals": [],
+        "s2CallIndex": 10,
+        "s2AdditionalCandidates": [],
+        "s2Verdicts": [],
+        "sharedIds": []
+      },
+      "stages": {
+        "S1": {
+          "observed": false,
+          "classification": "true_negative",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": false,
+          "classification": "true_negative",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "F01D1-trust_false_friend-P2-V2",
+        "occurrence": "F01D1-trust_false_friend-P2-V2-m1",
+        "category": "TRUST",
+        "quote": "En los cálculos de vivienda, ¿restáis la cuota mensual de financiación de nuestro coche de 180 euros? Es lo que me genera dudas.",
+        "expected": false,
+        "intent": "Consulta un cálculo económico",
+        "rationale": "La intención comunicada se interpreta en contexto, no por palabras aisladas",
+        "certainty": "high",
+        "source": "R01_capture",
+        "review": "provisional_not_independent"
+      },
+      "trace": {
+        "s1CallIndex": 4,
+        "s1Proposals": [
+          {
+            "signalId": "F01D1-trust_false_friend-P2-V2-m1",
+            "category": "TRUST",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-trust_false_friend-P2-V2-m1",
+                "quote": "¿restáis la cuota mensual de financiación de nuestro coche de 180 euros? Es lo que me genera dudas.",
+                "start": 39,
+                "end": 124
+              }
+            ]
+          }
+        ],
+        "s2CallIndex": 5,
+        "s2AdditionalCandidates": [
+          {
+            "signalId": "F01D1-trust_false_friend-P2-V2-m1",
+            "category": "TRUST",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-trust_false_friend-P2-V2-m1",
+                "quote": "¿restáis la cuota mensual de financiación de nuestro coche de 180 euros? Es lo que me genera dudas.",
+                "start": 29,
+                "end": 128
+              }
+            ]
+          }
+        ],
+        "s2Verdicts": [
+          {
+            "signalId": "F01D1-trust_false_friend-P2-V2-m1",
+            "status": "dismissed",
+            "justification": "This is a housing-calculation question about whether a car loan payment is deducted. It shows a factual query, not a concern about the advisor's reliability or trustworthiness.",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-trust_false_friend-P2-V2-m1",
+                "quote": "¿restáis la cuota mensual de financiación de nuestro coche de 180 euros? Es lo que me genera dudas.",
+                "start": 29,
+                "end": 128
+              }
+            ]
+          }
+        ],
+        "sharedIds": []
+      },
+      "stages": {
+        "S1": {
+          "observed": true,
+          "classification": "false_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-trust_false_friend-P2-V2-m1",
+              "quote": "¿restáis la cuota mensual de financiación de nuestro coche de 180 euros? Es lo que me genera dudas.",
+              "start": 39,
+              "end": 124
+            },
+            {
+              "messageId": "F01D1-trust_false_friend-P2-V2-m1",
+              "quote": "¿restáis la cuota mensual de financiación de nuestro coche de 180 euros? Es lo que me genera dudas.",
+              "start": 29,
+              "end": 128
+            }
+          ]
+        },
+        "S2": {
+          "observed": false,
+          "classification": "true_negative",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-trust_false_friend-P2-V2-m1",
+              "quote": "¿restáis la cuota mensual de financiación de nuestro coche de 180 euros? Es lo que me genera dudas.",
+              "start": 39,
+              "end": 124
+            },
+            {
+              "messageId": "F01D1-trust_false_friend-P2-V2-m1",
+              "quote": "¿restáis la cuota mensual de financiación de nuestro coche de 180 euros? Es lo que me genera dudas.",
+              "start": 29,
+              "end": 128
+            }
+          ]
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-trust_false_friend-P2-V2-m1",
+              "quote": "¿restáis la cuota mensual de financiación de nuestro coche de 180 euros? Es lo que me genera dudas.",
+              "start": 39,
+              "end": 124
+            },
+            {
+              "messageId": "F01D1-trust_false_friend-P2-V2-m1",
+              "quote": "¿restáis la cuota mensual de financiación de nuestro coche de 180 euros? Es lo que me genera dudas.",
+              "start": 29,
+              "end": 128
+            }
+          ]
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "F01D1-cost_real-P1-V2",
+        "occurrence": "F01D1-cost_real-P1-V2-m1",
+        "category": "OPT_OUT",
+        "quote": "Vuestra comisión me parece excesiva; por ese coste probablemente no me compense contrataros. Mi ciudad de referencia es Madrid.",
+        "expected": false,
+        "intent": "Expresa objeción económica",
+        "rationale": "La intención comunicada se interpreta en contexto, no por palabras aisladas",
+        "certainty": "high",
+        "source": "R01_capture",
+        "review": "provisional_not_independent"
+      },
+      "trace": {
+        "s1CallIndex": 9,
+        "s1Proposals": [
+          {
+            "signalId": "sig1",
+            "category": "OPT_OUT",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-cost_real-P1-V2-m1",
+                "quote": "no me compense contrataros",
+                "start": 66,
+                "end": 89
+              }
+            ]
+          }
+        ],
+        "s2CallIndex": 10,
+        "s2AdditionalCandidates": [],
+        "s2Verdicts": [
+          {
+            "signalId": "sig1",
+            "status": "confirmed",
+            "justification": "The customer explicitly says 'no me compense contrataros,' which is a clear opt-out or refusal to proceed based on cost.",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-cost_real-P1-V2-m1",
+                "quote": "no me compense contrataros",
+                "start": 65,
+                "end": 91
+              }
+            ]
+          }
+        ],
+        "sharedIds": []
+      },
+      "stages": {
+        "S1": {
+          "observed": true,
+          "classification": "false_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-cost_real-P1-V2-m1",
+              "quote": "no me compense contrataros",
+              "start": 66,
+              "end": 89
+            }
+          ]
+        },
+        "S2": {
+          "observed": true,
+          "classification": "false_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-cost_real-P1-V2-m1",
+              "quote": "no me compense contrataros",
+              "start": 66,
+              "end": 89
+            }
+          ]
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-cost_real-P1-V2-m1",
+              "quote": "no me compense contrataros",
+              "start": 66,
+              "end": 89
+            }
+          ]
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "F01D1-cost_real-P2-V2",
+        "occurrence": "F01D1-cost_real-P2-V2-m1",
+        "category": "OPT_OUT",
+        "quote": "No estoy dispuesto a pagar lo que cobráis por la gestión; me parece demasiado caro. Mi ciudad de referencia es Madrid.",
+        "expected": false,
+        "intent": "Expresa objeción económica",
+        "rationale": "La intención comunicada se interpreta en contexto, no por palabras aisladas",
+        "certainty": "high",
+        "source": "R01_capture",
+        "review": "provisional_not_independent"
+      },
+      "trace": {
+        "s1CallIndex": 4,
+        "s1Proposals": [],
+        "s2CallIndex": 5,
+        "s2AdditionalCandidates": [],
+        "s2Verdicts": [],
+        "sharedIds": []
+      },
+      "stages": {
+        "S1": {
+          "observed": false,
+          "classification": "true_negative",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": false,
+          "classification": "true_negative",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "F01D1-price_question-P1-V2",
+        "occurrence": "F01D1-price_question-P1-V2-m1",
+        "category": "OPT_OUT",
+        "quote": "Buenas, ¿cuánto cuesta exactamente el servicio? Todavía estoy recopilando información. Mi ciudad de referencia es Madrid.",
+        "expected": false,
+        "intent": "Consulta precios",
+        "rationale": "La intención comunicada se interpreta en contexto, no por palabras aisladas",
+        "certainty": "high",
+        "source": "R01_capture",
+        "review": "provisional_not_independent"
+      },
+      "trace": {
+        "s1CallIndex": 10,
+        "s1Proposals": [
+          {
+            "signalId": "F01D1-price_question-P1-V2-m1",
+            "category": "OPT_OUT",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-price_question-P1-V2-m1",
+                "quote": "Todavía estoy recopilando información.",
+                "start": 48,
+                "end": 86
+              }
+            ]
+          }
+        ],
+        "s2CallIndex": 11,
+        "s2AdditionalCandidates": [],
+        "s2Verdicts": [
+          {
+            "signalId": "F01D1-price_question-P1-V2-m1",
+            "status": "dismissed",
+            "justification": "No hay una reclamación vinculante, compromiso o decisión obligatoria; solo se pregunta el precio del servicio.",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-price_question-P1-V2-m1",
+                "quote": "¿cuánto cuesta exactamente el servicio?",
+                "start": 8,
+                "end": 47
+              }
+            ]
+          },
+          {
+            "signalId": "F01D1-price_question-P1-V2-m1",
+            "status": "confirmed",
+            "justification": "El cliente expresa que aún está recopilando información, lo que muestra que no hay urgencia contextual ni necesidad apremiante.",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-price_question-P1-V2-m1",
+                "quote": "Todavía estoy recopilando información.",
+                "start": 48,
+                "end": 86
+              }
+            ]
+          }
+        ],
+        "sharedIds": [
+          "F01D1-price_question-P1-V2-m1"
+        ]
+      },
+      "stages": {
+        "S1": {
+          "observed": true,
+          "classification": "false_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-price_question-P1-V2-m1",
+              "quote": "Todavía estoy recopilando información.",
+              "start": 48,
+              "end": 86
+            }
+          ]
+        },
+        "S2": {
+          "observed": null,
+          "classification": "unresolved",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-price_question-P1-V2-m1",
+              "quote": "Todavía estoy recopilando información.",
+              "start": 48,
+              "end": 86
+            }
+          ]
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-price_question-P1-V2-m1",
+              "quote": "Todavía estoy recopilando información.",
+              "start": 48,
+              "end": 86
+            }
+          ]
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "F01D1-price_question-P2-V2",
+        "occurrence": "F01D1-price_question-P2-V2-m1",
+        "category": "OPT_OUT",
+        "quote": "¿Tenéis una tabla de precios? Quiero entender las tarifas antes de decidir. Mi ciudad de referencia es Madrid.",
+        "expected": false,
+        "intent": "Consulta precios",
+        "rationale": "La intención comunicada se interpreta en contexto, no por palabras aisladas",
+        "certainty": "high",
+        "source": "R01_capture",
+        "review": "provisional_not_independent"
+      },
+      "trace": {
+        "s1CallIndex": 4,
+        "s1Proposals": [
+          {
+            "signalId": "F01D1-price_question-P2-V2-m1",
+            "category": "OPT_OUT",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-price_question-P2-V2-m1",
+                "quote": "Quiero entender las tarifas antes de decidir.",
+                "start": 31,
+                "end": 69
+              }
+            ]
+          }
+        ],
+        "s2CallIndex": 5,
+        "s2AdditionalCandidates": [],
+        "s2Verdicts": [
+          {
+            "signalId": "F01D1-price_question-P2-V2-m1",
+            "status": "dismissed",
+            "justification": "The text is a pricing question and asks for tariffs before deciding, but it does not express an opt-out from contact or service.",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-price_question-P2-V2-m1",
+                "quote": "Quiero entender las tarifas antes de decidir.",
+                "start": 30,
+                "end": 75
+              }
+            ]
+          }
+        ],
+        "sharedIds": []
+      },
+      "stages": {
+        "S1": {
+          "observed": true,
+          "classification": "false_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-price_question-P2-V2-m1",
+              "quote": "Quiero entender las tarifas antes de decidir.",
+              "start": 31,
+              "end": 69
+            }
+          ]
+        },
+        "S2": {
+          "observed": false,
+          "classification": "true_negative",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-price_question-P2-V2-m1",
+              "quote": "Quiero entender las tarifas antes de decidir.",
+              "start": 31,
+              "end": 69
+            }
+          ]
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-price_question-P2-V2-m1",
+              "quote": "Quiero entender las tarifas antes de decidir.",
+              "start": 31,
+              "end": 69
+            }
+          ]
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "F01D1-urgent_real-P1-V2",
+        "occurrence": "F01D1-urgent_real-P1-V2-m1",
+        "category": "URGENT",
+        "quote": "El casero nos obliga a dejar la vivienda en 10 días y no tenemos dónde ir después. Necesitamos una solución urgente.",
+        "expected": true,
+        "intent": "Expresa urgencia de vivienda",
+        "rationale": "La intención comunicada se interpreta en contexto, no por palabras aisladas",
+        "certainty": "high",
+        "source": "R01_capture",
+        "review": "provisional_not_independent"
+      },
+      "trace": {
+        "s1CallIndex": 9,
+        "s1Proposals": [
+          {
+            "signalId": "F01D1-urgent_real-P1-V2-m1",
+            "category": "URGENT",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-urgent_real-P1-V2-m1",
+                "quote": "El casero nos obliga a dejar la vivienda en 10 días y no tenemos dónde ir después. Necesitamos una solución urgente.",
+                "start": 0,
+                "end": 112
+              }
+            ]
+          }
+        ],
+        "s2CallIndex": 10,
+        "s2AdditionalCandidates": [
+          {
+            "signalId": "F01D1-urgent_real-P1-V2-m1",
+            "category": "URGENT",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-urgent_real-P1-V2-m1",
+                "quote": "El casero nos obliga a dejar la vivienda en 10 días y no tenemos dónde ir después. Necesitamos una solución urgente.",
+                "start": 0,
+                "end": 116
+              }
+            ]
+          }
+        ],
+        "s2Verdicts": [
+          {
+            "signalId": "F01D1-urgent_real-P1-V2-m1",
+            "status": "confirmed",
+            "justification": "The customer states both a housing deadline of 10 days and that they need an urgent solution, which clearly establishes contextual urgency.",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-urgent_real-P1-V2-m1",
+                "quote": "El casero nos obliga a dejar la vivienda en 10 días y no tenemos dónde ir después. Necesitamos una solución urgente.",
+                "start": 0,
+                "end": 116
+              }
+            ]
+          }
+        ],
+        "sharedIds": []
+      },
+      "stages": {
+        "S1": {
+          "observed": true,
+          "classification": "true_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-urgent_real-P1-V2-m1",
+              "quote": "El casero nos obliga a dejar la vivienda en 10 días y no tenemos dónde ir después. Necesitamos una solución urgente.",
+              "start": 0,
+              "end": 112
+            },
+            {
+              "messageId": "F01D1-urgent_real-P1-V2-m1",
+              "quote": "El casero nos obliga a dejar la vivienda en 10 días y no tenemos dónde ir después. Necesitamos una solución urgente.",
+              "start": 0,
+              "end": 116
+            }
+          ]
+        },
+        "S2": {
+          "observed": true,
+          "classification": "true_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-urgent_real-P1-V2-m1",
+              "quote": "El casero nos obliga a dejar la vivienda en 10 días y no tenemos dónde ir después. Necesitamos una solución urgente.",
+              "start": 0,
+              "end": 112
+            },
+            {
+              "messageId": "F01D1-urgent_real-P1-V2-m1",
+              "quote": "El casero nos obliga a dejar la vivienda en 10 días y no tenemos dónde ir después. Necesitamos una solución urgente.",
+              "start": 0,
+              "end": 116
+            }
+          ]
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-urgent_real-P1-V2-m1",
+              "quote": "El casero nos obliga a dejar la vivienda en 10 días y no tenemos dónde ir después. Necesitamos una solución urgente.",
+              "start": 0,
+              "end": 112
+            },
+            {
+              "messageId": "F01D1-urgent_real-P1-V2-m1",
+              "quote": "El casero nos obliga a dejar la vivienda en 10 días y no tenemos dónde ir después. Necesitamos una solución urgente.",
+              "start": 0,
+              "end": 116
+            }
+          ]
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "F01D1-urgent_real-P2-V2",
+        "occurrence": "F01D1-urgent_real-P2-V2-m1",
+        "category": "URGENT",
+        "quote": "Nos han comunicado el desahucio para dentro de 10 días; si no encontramos algo nos quedamos sin techo.",
+        "expected": true,
+        "intent": "Expresa urgencia de vivienda",
+        "rationale": "La intención comunicada se interpreta en contexto, no por palabras aisladas",
+        "certainty": "high",
+        "source": "R01_capture",
+        "review": "provisional_not_independent"
+      },
+      "trace": {
+        "s1CallIndex": 4,
+        "s1Proposals": [
+          {
+            "signalId": "F01D1-urgent_real-P2-V2-m1",
+            "category": "URGENT",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-urgent_real-P2-V2-m1",
+                "quote": "Nos han comunicado el desahucio para dentro de 10 días; si no encontramos algo nos quedamos sin techo.",
+                "start": 0,
+                "end": 99
+              }
+            ]
+          }
+        ],
+        "s2CallIndex": 5,
+        "s2AdditionalCandidates": [
+          {
+            "signalId": "F01D1-urgent_real-P2-V2-m1",
+            "category": "URGENT",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-urgent_real-P2-V2-m1",
+                "quote": "Nos han comunicado el desahucio para dentro de 10 días; si no encontramos algo nos quedamos sin techo.",
+                "start": 0,
+                "end": 102
+              }
+            ]
+          }
+        ],
+        "s2Verdicts": [
+          {
+            "signalId": "F01D1-urgent_real-P2-V2-m1",
+            "status": "confirmed",
+            "justification": "The customer reports an eviction in 10 days and says they will be without housing if they do not find something, which is a clear contextual urgency beyond merely mentioning a timeframe.",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-urgent_real-P2-V2-m1",
+                "quote": "Nos han comunicado el desahucio para dentro de 10 días; si no encontramos algo nos quedamos sin techo.",
+                "start": 0,
+                "end": 102
+              }
+            ]
+          }
+        ],
+        "sharedIds": []
+      },
+      "stages": {
+        "S1": {
+          "observed": true,
+          "classification": "true_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-urgent_real-P2-V2-m1",
+              "quote": "Nos han comunicado el desahucio para dentro de 10 días; si no encontramos algo nos quedamos sin techo.",
+              "start": 0,
+              "end": 99
+            },
+            {
+              "messageId": "F01D1-urgent_real-P2-V2-m1",
+              "quote": "Nos han comunicado el desahucio para dentro de 10 días; si no encontramos algo nos quedamos sin techo.",
+              "start": 0,
+              "end": 102
+            }
+          ]
+        },
+        "S2": {
+          "observed": true,
+          "classification": "true_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-urgent_real-P2-V2-m1",
+              "quote": "Nos han comunicado el desahucio para dentro de 10 días; si no encontramos algo nos quedamos sin techo.",
+              "start": 0,
+              "end": 99
+            },
+            {
+              "messageId": "F01D1-urgent_real-P2-V2-m1",
+              "quote": "Nos han comunicado el desahucio para dentro de 10 días; si no encontramos algo nos quedamos sin techo.",
+              "start": 0,
+              "end": 102
+            }
+          ]
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-urgent_real-P2-V2-m1",
+              "quote": "Nos han comunicado el desahucio para dentro de 10 días; si no encontramos algo nos quedamos sin techo.",
+              "start": 0,
+              "end": 99
+            },
+            {
+              "messageId": "F01D1-urgent_real-P2-V2-m1",
+              "quote": "Nos han comunicado el desahucio para dentro de 10 días; si no encontramos algo nos quedamos sin techo.",
+              "start": 0,
+              "end": 102
+            }
+          ]
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "F01D1-time_nonurgent-P1-V2",
+        "occurrence": "F01D1-time_nonurgent-P1-V2-m1",
+        "category": "OPT_OUT",
+        "quote": "Estamos pensando en mudarnos el año que viene, aún no tenemos ninguna prisa. Mi ciudad de referencia es Madrid.",
+        "expected": false,
+        "intent": "Aplaza la mudanza",
+        "rationale": "La intención comunicada se interpreta en contexto, no por palabras aisladas",
+        "certainty": "high",
+        "source": "R01_capture",
+        "review": "provisional_not_independent"
+      },
+      "trace": {
+        "s1CallIndex": 9,
+        "s1Proposals": [
+          {
+            "signalId": "opt_out_non_urgent",
+            "category": "OPT_OUT",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-time_nonurgent-P1-V2-m1",
+                "quote": "aún no tenemos ninguna prisa",
+                "start": 39,
+                "end": 64
+              }
+            ]
+          }
+        ],
+        "s2CallIndex": 10,
+        "s2AdditionalCandidates": [],
+        "s2Verdicts": [
+          {
+            "signalId": "opt_out_non_urgent",
+            "status": "confirmed",
+            "justification": "The customer explicitly says there is no hurry: 'aún no tenemos ninguna prisa'.",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-time_nonurgent-P1-V2-m1",
+                "quote": "aún no tenemos ninguna prisa",
+                "start": 47,
+                "end": 75
+              }
+            ]
+          }
+        ],
+        "sharedIds": []
+      },
+      "stages": {
+        "S1": {
+          "observed": true,
+          "classification": "false_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-time_nonurgent-P1-V2-m1",
+              "quote": "aún no tenemos ninguna prisa",
+              "start": 39,
+              "end": 64
+            }
+          ]
+        },
+        "S2": {
+          "observed": true,
+          "classification": "false_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-time_nonurgent-P1-V2-m1",
+              "quote": "aún no tenemos ninguna prisa",
+              "start": 39,
+              "end": 64
+            }
+          ]
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-time_nonurgent-P1-V2-m1",
+              "quote": "aún no tenemos ninguna prisa",
+              "start": 39,
+              "end": 64
+            }
+          ]
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "F01D1-time_nonurgent-P2-V2",
+        "occurrence": "F01D1-time_nonurgent-P2-V2-m1",
+        "category": "OPT_OUT",
+        "quote": "No buscamos nada inmediato. Quizá cambiemos de piso dentro de doce meses o más. Mi ciudad de referencia es Madrid.",
+        "expected": false,
+        "intent": "Aplaza la mudanza",
+        "rationale": "La intención comunicada se interpreta en contexto, no por palabras aisladas",
+        "certainty": "high",
+        "source": "R01_capture",
+        "review": "provisional_not_independent"
+      },
+      "trace": {
+        "s1CallIndex": 4,
+        "s1Proposals": [
+          {
+            "signalId": "moving_horizon",
+            "category": "OPT_OUT",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-time_nonurgent-P2-V2-m1",
+                "quote": "No buscamos nada inmediato. Quizá cambiemos de piso dentro de doce meses o más.",
+                "start": 0,
+                "end": 76
+              }
+            ]
+          }
+        ],
+        "s2CallIndex": 5,
+        "s2AdditionalCandidates": [
+          {
+            "signalId": "moving_horizon",
+            "category": "OPT_OUT",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-time_nonurgent-P2-V2-m1",
+                "quote": "No buscamos nada inmediato. Quizá cambiemos de piso dentro de doce meses o más.",
+                "start": 0,
+                "end": 79
+              }
+            ]
+          }
+        ],
+        "s2Verdicts": [
+          {
+            "signalId": "moving_horizon",
+            "status": "confirmed",
+            "justification": "The customer explicitly says they do not want anything immediate and may move in twelve months or more, which is a clear non-urgent timing signal.",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-time_nonurgent-P2-V2-m1",
+                "quote": "No buscamos nada inmediato. Quizá cambiemos de piso dentro de doce meses o más.",
+                "start": 0,
+                "end": 79
+              }
+            ]
+          }
+        ],
+        "sharedIds": []
+      },
+      "stages": {
+        "S1": {
+          "observed": true,
+          "classification": "false_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-time_nonurgent-P2-V2-m1",
+              "quote": "No buscamos nada inmediato. Quizá cambiemos de piso dentro de doce meses o más.",
+              "start": 0,
+              "end": 76
+            },
+            {
+              "messageId": "F01D1-time_nonurgent-P2-V2-m1",
+              "quote": "No buscamos nada inmediato. Quizá cambiemos de piso dentro de doce meses o más.",
+              "start": 0,
+              "end": 79
+            }
+          ]
+        },
+        "S2": {
+          "observed": true,
+          "classification": "false_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-time_nonurgent-P2-V2-m1",
+              "quote": "No buscamos nada inmediato. Quizá cambiemos de piso dentro de doce meses o más.",
+              "start": 0,
+              "end": 76
+            },
+            {
+              "messageId": "F01D1-time_nonurgent-P2-V2-m1",
+              "quote": "No buscamos nada inmediato. Quizá cambiemos de piso dentro de doce meses o más.",
+              "start": 0,
+              "end": 79
+            }
+          ]
+        },
+        "public": {
+          "observed": true,
+          "classification": "false_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-time_nonurgent-P2-V2-m1",
+              "quote": "No buscamos nada inmediato. Quizá cambiemos de piso dentro de doce meses o más.",
+              "start": 0,
+              "end": 76
+            },
+            {
+              "messageId": "F01D1-time_nonurgent-P2-V2-m1",
+              "quote": "No buscamos nada inmediato. Quizá cambiemos de piso dentro de doce meses o más.",
+              "start": 0,
+              "end": 79
+            }
+          ]
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "F01D1-documentation_request-P1-V2",
+        "occurrence": "F01D1-documentation_request-P1-V2-m1",
+        "category": "OPT_OUT",
+        "quote": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing? Mi ciudad de referencia es Madrid.",
+        "expected": false,
+        "intent": "Pide documentación",
+        "rationale": "La intención comunicada se interpreta en contexto, no por palabras aisladas",
+        "certainty": "high",
+        "source": "R01_capture",
+        "review": "provisional_not_independent"
+      },
+      "trace": {
+        "s1CallIndex": 9,
+        "s1Proposals": [
+          {
+            "signalId": "initial_intent",
+            "category": "OPT_OUT",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-documentation_request-P1-V2-m1",
+                "quote": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing?",
+                "start": 0,
+                "end": 82
+              }
+            ]
+          },
+          {
+            "signalId": "product_intent",
+            "category": "OPT_OUT",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-documentation_request-P1-V2-m1",
+                "quote": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing?",
+                "start": 0,
+                "end": 82
+              }
+            ]
+          },
+          {
+            "signalId": "desired_locations",
+            "category": "OPT_OUT",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-documentation_request-P1-V2-m1",
+                "quote": "Mi ciudad de referencia es Madrid.",
+                "start": 87,
+                "end": 120
+              }
+            ]
+          }
+        ],
+        "s2CallIndex": 10,
+        "s2AdditionalCandidates": [
+          {
+            "signalId": "initial_intent",
+            "category": "OPT_OUT",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-documentation_request-P1-V2-m1",
+                "quote": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing?",
+                "start": 0,
+                "end": 84
+              }
+            ]
+          },
+          {
+            "signalId": "product_intent",
+            "category": "OPT_OUT",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-documentation_request-P1-V2-m1",
+                "quote": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing?",
+                "start": 0,
+                "end": 84
+              }
+            ]
+          },
+          {
+            "signalId": "desired_locations",
+            "category": "OPT_OUT",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-documentation_request-P1-V2-m1",
+                "quote": "Mi ciudad de referencia es Madrid.",
+                "start": 85,
+                "end": 119
+              }
+            ]
+          }
+        ],
+        "s2Verdicts": [
+          {
+            "signalId": "initial_intent",
+            "status": "dismissed",
+            "justification": "This is an explicit request for information/documentation, not an opt-out signal.",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-documentation_request-P1-V2-m1",
+                "quote": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing?",
+                "start": 0,
+                "end": 84
+              }
+            ]
+          },
+          {
+            "signalId": "product_intent",
+            "status": "dismissed",
+            "justification": "The customer asks for an explanatory brochure; that is not an opt-out signal.",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-documentation_request-P1-V2-m1",
+                "quote": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing?",
+                "start": 0,
+                "end": 84
+              }
+            ]
+          },
+          {
+            "signalId": "desired_locations",
+            "status": "dismissed",
+            "justification": "Madrid is a location reference, not an opt-out signal.",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-documentation_request-P1-V2-m1",
+                "quote": "Mi ciudad de referencia es Madrid.",
+                "start": 85,
+                "end": 119
+              }
+            ]
+          }
+        ],
+        "sharedIds": []
+      },
+      "stages": {
+        "S1": {
+          "observed": true,
+          "classification": "false_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-documentation_request-P1-V2-m1",
+              "quote": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing?",
+              "start": 0,
+              "end": 82
+            },
+            {
+              "messageId": "F01D1-documentation_request-P1-V2-m1",
+              "quote": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing?",
+              "start": 0,
+              "end": 82
+            },
+            {
+              "messageId": "F01D1-documentation_request-P1-V2-m1",
+              "quote": "Mi ciudad de referencia es Madrid.",
+              "start": 87,
+              "end": 120
+            },
+            {
+              "messageId": "F01D1-documentation_request-P1-V2-m1",
+              "quote": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing?",
+              "start": 0,
+              "end": 84
+            },
+            {
+              "messageId": "F01D1-documentation_request-P1-V2-m1",
+              "quote": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing?",
+              "start": 0,
+              "end": 84
+            },
+            {
+              "messageId": "F01D1-documentation_request-P1-V2-m1",
+              "quote": "Mi ciudad de referencia es Madrid.",
+              "start": 85,
+              "end": 119
+            }
+          ]
+        },
+        "S2": {
+          "observed": false,
+          "classification": "true_negative",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-documentation_request-P1-V2-m1",
+              "quote": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing?",
+              "start": 0,
+              "end": 82
+            },
+            {
+              "messageId": "F01D1-documentation_request-P1-V2-m1",
+              "quote": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing?",
+              "start": 0,
+              "end": 82
+            },
+            {
+              "messageId": "F01D1-documentation_request-P1-V2-m1",
+              "quote": "Mi ciudad de referencia es Madrid.",
+              "start": 87,
+              "end": 120
+            },
+            {
+              "messageId": "F01D1-documentation_request-P1-V2-m1",
+              "quote": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing?",
+              "start": 0,
+              "end": 84
+            },
+            {
+              "messageId": "F01D1-documentation_request-P1-V2-m1",
+              "quote": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing?",
+              "start": 0,
+              "end": 84
+            },
+            {
+              "messageId": "F01D1-documentation_request-P1-V2-m1",
+              "quote": "Mi ciudad de referencia es Madrid.",
+              "start": 85,
+              "end": 119
+            }
+          ]
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-documentation_request-P1-V2-m1",
+              "quote": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing?",
+              "start": 0,
+              "end": 82
+            },
+            {
+              "messageId": "F01D1-documentation_request-P1-V2-m1",
+              "quote": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing?",
+              "start": 0,
+              "end": 82
+            },
+            {
+              "messageId": "F01D1-documentation_request-P1-V2-m1",
+              "quote": "Mi ciudad de referencia es Madrid.",
+              "start": 87,
+              "end": 120
+            },
+            {
+              "messageId": "F01D1-documentation_request-P1-V2-m1",
+              "quote": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing?",
+              "start": 0,
+              "end": 84
+            },
+            {
+              "messageId": "F01D1-documentation_request-P1-V2-m1",
+              "quote": "¿Me podéis mandar un folleto explicativo sobre cómo funciona el modelo SmartHousing?",
+              "start": 0,
+              "end": 84
+            },
+            {
+              "messageId": "F01D1-documentation_request-P1-V2-m1",
+              "quote": "Mi ciudad de referencia es Madrid.",
+              "start": 85,
+              "end": 119
+            }
+          ]
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "F01D1-documentation_request-P2-V2",
+        "occurrence": "F01D1-documentation_request-P2-V2-m1",
+        "category": "OPT_OUT",
+        "quote": "Querría leer las condiciones generales del servicio, sin que eso implique solicitar aprobación. Mi ciudad de referencia es Madrid.",
+        "expected": false,
+        "intent": "Pide documentación",
+        "rationale": "La intención comunicada se interpreta en contexto, no por palabras aisladas",
+        "certainty": "high",
+        "source": "R01_capture",
+        "review": "provisional_not_independent"
+      },
+      "trace": {
+        "s1CallIndex": 4,
+        "s1Proposals": [
+          {
+            "signalId": "documentation_request",
+            "category": "OPT_OUT",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-documentation_request-P2-V2-m1",
+                "quote": "sin que eso implique solicitar aprobación",
+                "start": 47,
+                "end": 84
+              }
+            ]
+          }
+        ],
+        "s2CallIndex": 5,
+        "s2AdditionalCandidates": [
+          {
+            "signalId": "documentation_request",
+            "category": "OPT_OUT",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-documentation_request-P2-V2-m1",
+                "quote": "sin que eso implique solicitar aprobación",
+                "start": 53,
+                "end": 94
+              }
+            ]
+          }
+        ],
+        "s2Verdicts": [
+          {
+            "signalId": "documentation_request",
+            "status": "confirmed",
+            "justification": "The customer explicitly says they want to read the general service conditions and that this should not imply requesting approval, which is a clear opt-out from approval.",
+            "evidenceRefs": [
+              {
+                "messageId": "F01D1-documentation_request-P2-V2-m1",
+                "quote": "sin que eso implique solicitar aprobación",
+                "start": 53,
+                "end": 94
+              }
+            ]
+          }
+        ],
+        "sharedIds": []
+      },
+      "stages": {
+        "S1": {
+          "observed": true,
+          "classification": "false_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-documentation_request-P2-V2-m1",
+              "quote": "sin que eso implique solicitar aprobación",
+              "start": 47,
+              "end": 84
+            },
+            {
+              "messageId": "F01D1-documentation_request-P2-V2-m1",
+              "quote": "sin que eso implique solicitar aprobación",
+              "start": 53,
+              "end": 94
+            }
+          ]
+        },
+        "S2": {
+          "observed": true,
+          "classification": "false_positive",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-documentation_request-P2-V2-m1",
+              "quote": "sin que eso implique solicitar aprobación",
+              "start": 47,
+              "end": 84
+            },
+            {
+              "messageId": "F01D1-documentation_request-P2-V2-m1",
+              "quote": "sin que eso implique solicitar aprobación",
+              "start": 53,
+              "end": 94
+            }
+          ]
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": [
+            {
+              "messageId": "F01D1-documentation_request-P2-V2-m1",
+              "quote": "sin que eso implique solicitar aprobación",
+              "start": 47,
+              "end": 84
+            },
+            {
+              "messageId": "F01D1-documentation_request-P2-V2-m1",
+              "quote": "sin que eso implique solicitar aprobación",
+              "start": 53,
+              "end": 94
+            }
+          ]
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "o1",
+        "occurrence": "m1",
+        "category": "OPT_OUT",
+        "quote": "Por favor, borrad mi número y dejad de escribirme.",
+        "expected": true,
+        "intent": "Cese explícito",
+        "rationale": "Incluye petición de no escribir",
+        "certainty": "high",
+        "source": "synthetic_r07a",
+        "review": "provisional_not_independent"
+      },
+      "trace": null,
+      "stages": {
+        "S1": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "o2",
+        "occurrence": "m1",
+        "category": "OPT_OUT",
+        "quote": "No deseo recibir llamadas ni mensajes vuestros en adelante.",
+        "expected": true,
+        "intent": "Cese explícito",
+        "rationale": "Excluye canales de contacto",
+        "certainty": "high",
+        "source": "synthetic_r07a",
+        "review": "provisional_not_independent"
+      },
+      "trace": null,
+      "stages": {
+        "S1": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "o3",
+        "occurrence": "m1",
+        "category": "OPT_OUT",
+        "quote": "No estoy diciendo que dejéis de contactarme; enviadme el folleto.",
+        "expected": false,
+        "intent": "Niega el cese",
+        "rationale": "La negación invierte la frase citada",
+        "certainty": "high",
+        "source": "synthetic_r07a",
+        "review": "provisional_not_independent"
+      },
+      "trace": null,
+      "stages": {
+        "S1": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "o4",
+        "occurrence": "m1",
+        "category": "OPT_OUT",
+        "quote": "Mi hermano os pidió que no le contactaseis; yo sí quiero información.",
+        "expected": false,
+        "intent": "Preferencia de un tercero",
+        "rationale": "No atribuir al hablante la petición ajena",
+        "certainty": "high",
+        "source": "synthetic_r07a",
+        "review": "provisional_not_independent"
+      },
+      "trace": null,
+      "stages": {
+        "S1": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "o5",
+        "occurrence": "m1",
+        "category": "OPT_OUT",
+        "quote": "Ayer escribí «no me llaméis más», pero rectifico: podéis contactarme.",
+        "expected": false,
+        "intent": "Rectificación explícita",
+        "rationale": "La cita previa queda rectificada en el mensaje",
+        "certainty": "high",
+        "source": "synthetic_r07a",
+        "review": "provisional_not_independent"
+      },
+      "trace": null,
+      "stages": {
+        "S1": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "o6",
+        "occurrence": "m1",
+        "category": "OPT_OUT",
+        "quote": "Si os dijera «no me contactéis», ¿cómo lo gestionaríais?",
+        "expected": false,
+        "intent": "Hipótesis",
+        "rationale": "La pregunta no comunica la petición hipotética",
+        "certainty": "high",
+        "source": "synthetic_r07a",
+        "review": "provisional_not_independent"
+      },
+      "trace": null,
+      "stages": {
+        "S1": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "o7",
+        "occurrence": "m1",
+        "category": "OPT_OUT",
+        "quote": "Ahora prefiero que lo dejemos aquí.",
+        "expected": null,
+        "intent": "Posible pausa o cese",
+        "rationale": "No se concreta el alcance ni la duración",
+        "certainty": "medium",
+        "source": "synthetic_r07a",
+        "review": "provisional_not_independent"
+      },
+      "trace": null,
+      "stages": {
+        "S1": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "o8",
+        "occurrence": "m1",
+        "category": "OPT_OUT",
+        "quote": "Esperaré un año para comprar, pero no volváis a escribirme.",
+        "expected": true,
+        "intent": "Compra aplazada y cese",
+        "rationale": "La intención de cese coexiste con el aplazamiento",
+        "certainty": "high",
+        "source": "synthetic_r07a",
+        "review": "provisional_not_independent"
+      },
+      "trace": null,
+      "stages": {
+        "S1": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "b1",
+        "occurrence": "m1",
+        "category": "BINDING_CLAIM",
+        "quote": "¿Cómo funciona el proceso de aprobación?",
+        "expected": false,
+        "intent": "Consulta informativa",
+        "rationale": "No pide una decisión o garantía",
+        "certainty": "high",
+        "source": "synthetic_r07a",
+        "review": "provisional_not_independent"
+      },
+      "trace": null,
+      "stages": {
+        "S1": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "b2",
+        "occurrence": "m1",
+        "category": "BINDING_CLAIM",
+        "quote": "Confirmadme por escrito que ya tenemos la financiación aprobada.",
+        "expected": true,
+        "intent": "Exige confirmación de aprobación",
+        "rationale": "Pide compromiso concreto para su caso",
+        "certainty": "high",
+        "source": "synthetic_r07a",
+        "review": "provisional_not_independent"
+      },
+      "trace": null,
+      "stages": {
+        "S1": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "b3",
+        "occurrence": "m1",
+        "category": "BINDING_CLAIM",
+        "quote": "Mi vecina ya obtuvo una aprobación; ¿qué documentos necesitáis?",
+        "expected": false,
+        "intent": "Aprobación ajena",
+        "rationale": "No solicita compromiso para su caso",
+        "certainty": "high",
+        "source": "synthetic_r07a",
+        "review": "provisional_not_independent"
+      },
+      "trace": null,
+      "stages": {
+        "S1": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "b4",
+        "occurrence": "m1",
+        "category": "BINDING_CLAIM",
+        "quote": "No os pido que me garanticéis la aprobación, solo explicad el procedimiento.",
+        "expected": false,
+        "intent": "Niega solicitud de garantía",
+        "rationale": "Solicita información general",
+        "certainty": "high",
+        "source": "synthetic_r07a",
+        "review": "provisional_not_independent"
+      },
+      "trace": null,
+      "stages": {
+        "S1": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "b5",
+        "occurrence": "m1",
+        "category": "BINDING_CLAIM",
+        "quote": "Si me garantizarais una casa, ¿qué significaría eso?",
+        "expected": false,
+        "intent": "Hipótesis informativa",
+        "rationale": "No reclama actualmente una garantía",
+        "certainty": "high",
+        "source": "synthetic_r07a",
+        "review": "provisional_not_independent"
+      },
+      "trace": null,
+      "stages": {
+        "S1": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "b6",
+        "occurrence": "m1",
+        "category": "BINDING_CLAIM",
+        "quote": "¿Podéis dejarlo cerrado por escrito?",
+        "expected": null,
+        "intent": "Posible compromiso",
+        "rationale": "El objeto del compromiso no está especificado",
+        "certainty": "medium",
+        "source": "synthetic_r07a",
+        "review": "provisional_not_independent"
+      },
+      "trace": null,
+      "stages": {
+        "S1": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "b7",
+        "occurrence": "m1",
+        "category": "BINDING_CLAIM",
+        "quote": "Quiero un documento que asegure que el piso será mío.",
+        "expected": true,
+        "intent": "Solicita garantía de vivienda",
+        "rationale": "Pide compromiso comercial específico",
+        "certainty": "high",
+        "source": "synthetic_r07a",
+        "review": "provisional_not_independent"
+      },
+      "trace": null,
+      "stages": {
+        "S1": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "t1",
+        "occurrence": "m1",
+        "category": "TRUST",
+        "quote": "Me preocupa que este servicio sea una estafa.",
+        "expected": true,
+        "intent": "Desconfianza",
+        "rationale": "Cuestiona autenticidad",
+        "certainty": "high",
+        "source": "synthetic_r07a",
+        "review": "provisional_not_independent"
+      },
+      "trace": null,
+      "stages": {
+        "S1": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "t2",
+        "occurrence": "m1",
+        "category": "TRUST",
+        "quote": "Tengo dudas sobre si la cuota incluye impuestos.",
+        "expected": false,
+        "intent": "Consulta de precio",
+        "rationale": "Duda económica sin desconfianza",
+        "certainty": "high",
+        "source": "synthetic_r07a",
+        "review": "provisional_not_independent"
+      },
+      "trace": null,
+      "stages": {
+        "S1": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    },
+    {
+      "annotation": {
+        "id": "u1",
+        "occurrence": "m1",
+        "category": "URGENT",
+        "quote": "Debemos dejar la vivienda en cinco días y no tenemos alternativa.",
+        "expected": true,
+        "intent": "Urgencia de vivienda",
+        "rationale": "Plazo y necesidad explícitos",
+        "certainty": "high",
+        "source": "synthetic_r07a",
+        "review": "provisional_not_independent"
+      },
+      "trace": null,
+      "stages": {
+        "S1": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "S2": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        },
+        "public": {
+          "observed": null,
+          "classification": "not_evaluable",
+          "combinedS1S2CandidateEvidence": []
+        }
+      }
+    }
+  ],
+  "metrics": {
+    "OPT_OUT": {
+      "S1": {
+        "total": 17,
+        "evaluable": 9,
+        "counts": {
+          "true_positive": 1,
+          "true_negative": 1,
+          "false_positive": 7,
+          "false_negative": 0,
+          "unresolved": 0,
+          "unlabeled": 0,
+          "not_evaluable": 8
+        }
+      },
+      "S2": {
+        "total": 17,
+        "evaluable": 8,
+        "counts": {
+          "true_positive": 1,
+          "true_negative": 3,
+          "false_positive": 4,
+          "false_negative": 0,
+          "unresolved": 1,
+          "unlabeled": 0,
+          "not_evaluable": 8
+        }
+      },
+      "public": {
+        "total": 17,
+        "evaluable": 1,
+        "counts": {
+          "true_positive": 0,
+          "true_negative": 0,
+          "false_positive": 1,
+          "false_negative": 0,
+          "unresolved": 0,
+          "unlabeled": 0,
+          "not_evaluable": 16
+        }
+      }
+    },
+    "BINDING_CLAIM": {
+      "S1": {
+        "total": 8,
+        "evaluable": 1,
+        "counts": {
+          "true_positive": 0,
+          "true_negative": 0,
+          "false_positive": 0,
+          "false_negative": 1,
+          "unresolved": 0,
+          "unlabeled": 0,
+          "not_evaluable": 7
+        }
+      },
+      "S2": {
+        "total": 8,
+        "evaluable": 1,
+        "counts": {
+          "true_positive": 0,
+          "true_negative": 0,
+          "false_positive": 0,
+          "false_negative": 1,
+          "unresolved": 0,
+          "unlabeled": 0,
+          "not_evaluable": 7
+        }
+      },
+      "public": {
+        "total": 8,
+        "evaluable": 0,
+        "counts": {
+          "true_positive": 0,
+          "true_negative": 0,
+          "false_positive": 0,
+          "false_negative": 0,
+          "unresolved": 0,
+          "unlabeled": 0,
+          "not_evaluable": 8
+        }
+      }
+    },
+    "TRUST": {
+      "S1": {
+        "total": 6,
+        "evaluable": 4,
+        "counts": {
+          "true_positive": 2,
+          "true_negative": 1,
+          "false_positive": 1,
+          "false_negative": 0,
+          "unresolved": 0,
+          "unlabeled": 0,
+          "not_evaluable": 2
+        }
+      },
+      "S2": {
+        "total": 6,
+        "evaluable": 4,
+        "counts": {
+          "true_positive": 2,
+          "true_negative": 2,
+          "false_positive": 0,
+          "false_negative": 0,
+          "unresolved": 0,
+          "unlabeled": 0,
+          "not_evaluable": 2
+        }
+      },
+      "public": {
+        "total": 6,
+        "evaluable": 1,
+        "counts": {
+          "true_positive": 1,
+          "true_negative": 0,
+          "false_positive": 0,
+          "false_negative": 0,
+          "unresolved": 0,
+          "unlabeled": 0,
+          "not_evaluable": 5
+        }
+      }
+    },
+    "URGENT": {
+      "S1": {
+        "total": 3,
+        "evaluable": 2,
+        "counts": {
+          "true_positive": 2,
+          "true_negative": 0,
+          "false_positive": 0,
+          "false_negative": 0,
+          "unresolved": 0,
+          "unlabeled": 0,
+          "not_evaluable": 1
+        }
+      },
+      "S2": {
+        "total": 3,
+        "evaluable": 2,
+        "counts": {
+          "true_positive": 2,
+          "true_negative": 0,
+          "false_positive": 0,
+          "false_negative": 0,
+          "unresolved": 0,
+          "unlabeled": 0,
+          "not_evaluable": 1
+        }
+      },
+      "public": {
+        "total": 3,
+        "evaluable": 0,
+        "counts": {
+          "true_positive": 0,
+          "true_negative": 0,
+          "false_positive": 0,
+          "false_negative": 0,
+          "unresolved": 0,
+          "unlabeled": 0,
+          "not_evaluable": 3
+        }
+      }
+    }
+  }
+}
