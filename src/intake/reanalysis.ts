@@ -9,5 +9,5 @@ export function candidateKey(candidate: Candidate, source: Message): string {
 /** Comparación conservadora: diferencias textuales se presentan para revisión. */
 export function conflictsForReview(review: Review, candidates: Candidate[]): Candidate[] {
   if (review.status !== 'corrected') return [];
-  return candidates.filter(c => c.field === review.candidate.field && c.value !== review.value && !(c.quote === review.candidate.quote && c.value === review.candidate.value));
+  return candidates.filter(c => c.field === review.candidate.field && c.value !== review.value);
 }

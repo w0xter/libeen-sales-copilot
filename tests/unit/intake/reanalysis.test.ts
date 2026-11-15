@@ -8,10 +8,10 @@ describe('reanálisis', () => {
     expect(candidateKey(c, source)).toBe(candidateKey({ ...c, messageId: 'm2' }, { ...source, id: 'm2' }));
     expect(candidateKey(c, source)).not.toBe(candidateKey(c, { ...source, text: 'Otra intervención: 3.800 €' }));
   });
-  it('señala propuestas diferentes sin borrar la corrección ni confundir la propuesta original', () => {
+  it('detecta valores diferentes de la corrección; la interfaz filtra las fuentes ya conocidas', () => {
     const review = applyReview(c, source, { action: 'correct', value: '3.600 €/mes', note: 'Revisión' })!;
     const newer = { ...c, messageId: 'm3', value: '4.100 €/mes', quote: '4.100 €' };
-    expect(conflictsForReview(review, [c, newer])).toEqual([newer]);
+    expect(conflictsForReview(review, [c, newer])).toEqual([c, newer]);
     expect(review.value).toBe('3.600 €/mes');
   });
 });
