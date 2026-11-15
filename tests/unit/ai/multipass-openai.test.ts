@@ -104,7 +104,7 @@ it('does not accept a newly invented participant in an initial case', async () =
     if (role === 'multipass_s1') return response({ status: 'complete', candidates: [] });
     if (role === 'multipass_s2') {
       const data = JSON.parse(b.input) as { groups: { groupId: string; candidates: { candidateId: string }[] }[] };
-      return response({ status: 'complete', candidates: [], verdicts: [], reviews: data.groups.flatMap(g => g.candidates.map(c => ({ groupId: g.groupId, candidateId: c.candidateId, atomicity: 'atomic', support: 'supported', identitySpan: { start, end: start + focus.length, text: focus }, evidenceRefs: assertion.evidenceRefs, justification: 'supported' }))) });
+      return response({ status: 'complete', candidates: [], verdicts: [], reviews: data.groups.flatMap(g => g.candidates.map(c => ({ groupId: g.groupId, candidateId: c.candidateId, atomicity: 'atomic', support: 'supported', identitySpan: { start, end: start + focus.length, text: focus }, evidenceRefs: assertion.evidenceRefs, justification: 'supported', subjectAttribution: null }))) });
     }
     return response({ claims: [assertion] });
   } } };
@@ -158,7 +158,7 @@ function fullClient(name: string) {
     const b = body as { model: string; instructions: string; text: { format: { name: string } }; input: string }; const role = b.text.format.name; calls.push(role);
     const input = JSON.parse(b.input);
     if (role === 'multipass_s1') return response({ status: 'complete', candidates: signals });
-    if (role === 'multipass_s2') return response({ status: 'complete', candidates: [], verdicts: signals.map(s => ({ signalId: s.signalId, status: s.signalId === 'opt' ? 'dismissed' : 'confirmed', justification: 'contexto simulado', evidenceRefs: s.evidenceRefs })), reviews: input.groups.flatMap((g: { groupId: string; candidates: { candidateId: string; occurrence: { focusSpan: unknown }; evidenceRefs: { messageId: string; quote: string }[] }[] }) => g.candidates.map(c => ({ groupId: g.groupId, candidateId: c.candidateId, atomicity: 'atomic', support: 'supported', identitySpan: c.occurrence.focusSpan, evidenceRefs: c.evidenceRefs.map(e => wireRef(e.messageId, e.quote)), justification: 'contexto simulado' }))) });
+    if (role === 'multipass_s2') return response({ status: 'complete', candidates: [], verdicts: signals.map(s => ({ signalId: s.signalId, status: s.signalId === 'opt' ? 'dismissed' : 'confirmed', justification: 'contexto simulado', evidenceRefs: s.evidenceRefs })), reviews: input.groups.flatMap((g: { groupId: string; candidates: { candidateId: string; occurrence: { focusSpan: unknown }; evidenceRefs: { messageId: string; quote: string }[] }[] }) => g.candidates.map(c => ({ groupId: g.groupId, candidateId: c.candidateId, atomicity: 'atomic', support: 'supported', identitySpan: c.occurrence.focusSpan, evidenceRefs: c.evidenceRefs.map(e => wireRef(e.messageId, e.quote)), justification: 'contexto simulado', subjectAttribution: null }))) });
     if (role === 'multipass_j') return response({ disputeId: input.dispute.disputeId, resolution: { status: 'unresolved', candidateId: null, justification: 'incertidumbre', evidenceRefs: null } });
     const claims = fullSpecs[name].map(s => {
       const m = caseSnapshot.messages.find(m => m.messageId === s.messageId)!; if (m.content.type !== 'text') throw Error('expected text');
@@ -243,4 +243,25 @@ it('rejects unexpected fields, malformed evidence and invalid adjudication varia
   expect(() => normalizeWire('E1', { claims: [{ ...claim, evidenceRefs: [{ ...ref, end: null }] }] })).toThrow();
   expect(() => normalizeWire('J', { disputeId: 'd', resolution: { status: 'selected', candidateId: null, justification: 'x', evidenceRefs: null } })).toThrow();
   expect(() => normalizeWire('J', { disputeId: 'd', resolution: { status: 'unresolved', candidateId: 'invented', justification: 'x', evidenceRefs: null } })).toThrow();
+});
+
+describe('contextual subject attribution wire', () => {
+  const attribution = { kind: 'local_speaker', messageId: 'm', evidenceRefs: [{ messageId: 'm', quote: 'yo', start: 0, end: 2 }], justification: 'Explicit first person' };
+  const review = { groupId: 'g', candidateId: 'c', atomicity: 'atomic', support: 'supported', identitySpan: null, evidenceRefs: [{ messageId: 'm', quote: 'yo', start: 0, end: 2 }], justification: 'supported', subjectAttribution: attribution };
+  it('retains S2 attribution and evidence separately from identitySpan', () => {
+    expect(normalizeWire('S2', { status: 'complete', reviews: [review], candidates: [], verdicts: [] })).toMatchObject({ reviews: [{ subjectAttribution: attribution }] });
+  });
+  it('rejects an unsupported attribution kind or missing evidence', () => {
+    expect(() => normalizeWire('S2', { status: 'complete', reviews: [{ ...review, subjectAttribution: { ...attribution, kind: 'invented' } }], candidates: [], verdicts: [] })).toThrow();
+    expect(() => normalizeWire('S2', { status: 'complete', reviews: [{ ...review, subjectAttribution: { ...attribution, evidenceRefs: [] } }], candidates: [], verdicts: [] })).toThrow();
+  });
+});
+
+it('instructs S2 to review the subject separately from the occurrence', async () => {
+  let instructions = '';
+  const client = { responses: { create: async (body: never) => { instructions = (body as { instructions: string }).instructions; return response({ status: 'complete', reviews: [], candidates: [], verdicts: [] }); } } };
+  await openAIMultipassTransport('test', 'model', client).execute(request('S2'));
+  expect(instructions).toContain('subject attribution');
+  expect(instructions).toContain('identitySpan');
+  expect(instructions).toContain('local_speaker');
 });

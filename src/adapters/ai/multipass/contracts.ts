@@ -11,7 +11,8 @@ export const ClaimGroupSchema = z.strictObject({ groupId: id, occurrence: Occurr
 export const DisputeSchema = z.strictObject({ disputeId: id, groupId: id, candidateIds: z.array(id).min(1), reason: id, previousAssertionIds: z.array(id).optional(), evidenceRefs: z.array(EvidenceRefSchema).optional() });
 export const ResolutionSchema = z.discriminatedUnion('status', [z.strictObject({ status: z.literal('selected'), candidateId: id, justification: id, evidenceRefs: z.array(EvidenceRefSchema).min(1) }), z.strictObject({ status: z.literal('unresolved'), justification: id })]);
 export const AdjudicationResponseSchema = z.strictObject({ disputeId: id, resolution: ResolutionSchema });
-export const ContextReviewSchema = z.strictObject({ groupId: id, candidateId: id, atomicity: z.enum(['atomic', 'multiple', 'uncertain']), support: z.enum(['supported', 'refuted', 'uncertain', 'absent']), identitySpan: SpanSchema.optional(), evidenceRefs: z.array(EvidenceRefSchema).min(1), justification: id });
+export const SubjectAttributionSchema = z.strictObject({ kind: z.enum(['case', 'buying_unit', 'local_speaker', 'other_person', 'ambiguous']), messageId: id, evidenceRefs: z.array(EvidenceRefSchema).min(1), justification: id });
+export const ContextReviewSchema = z.strictObject({ groupId: id, candidateId: id, atomicity: z.enum(['atomic', 'multiple', 'uncertain']), support: z.enum(['supported', 'refuted', 'uncertain', 'absent']), identitySpan: SpanSchema.optional(), evidenceRefs: z.array(EvidenceRefSchema).min(1), justification: id, subjectAttribution: SubjectAttributionSchema.optional() });
 const trace = z.array(z.strictObject({ groupId: id, candidateId: id, decision: z.enum(['accepted', 'excluded', 'pending']), reason: id }));
 export const ReconciliationResultSchema = z.discriminatedUnion('status', [
   z.strictObject({ status: z.literal('consolidated'), interpretation: InterpretationSchema, trace, safetyFindings: z.array(SafetyFindingSchema) }),
