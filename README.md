@@ -17,6 +17,10 @@ Abre http://localhost:3000. Selecciona Laura, Javier o Rosa, o pega una conversa
 
 Revisa candidatos y alertas, confirma la etapa sugerida si corresponde y copia la vista previa CRM para cargarla manualmente. Un cambio de conversación exige reanálisis; las correcciones y evidencias contradictorias se muestran para resolución. Una alerta sensible pendiente bloquea copiar la pregunta. Cualificado indica completitud comercial, no solvencia ni aprobación.
 
+## Configuración mínima
+
+Los campos comerciales obligatorios y su orden, el orden de ambigüedades y la prioridad de la base de ingresos se editan en `src/intake/rules.ts`. Reinicia o reconstruye tras cambiarlo; no hay editor de reglas en la interfaz.
+
 ## Comprobación
 
 ```sh
