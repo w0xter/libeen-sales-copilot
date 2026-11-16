@@ -30,3 +30,20 @@ La revisión del contrato mantiene **NO-GO**: el nuevo reservado real omitió ta
 ### Demo PoC supervisada 80/20
 
 Propuesta **GO WITH LIMITATIONS**, sujeta a aceptación humana, exclusivamente para demo supervisada con datos ficticios. Usar un caso ficticio nuevo, revisar fuente y estado de la cuota, resolver manualmente si la aclaración no se representó, revisar la siguiente pregunta y copiar la ficha de forma manual. Explicar que la revisión humana no cambia por sí sola el metadato `unknown`, que no se ha medido la estabilidad del modelo y que no existe envío, sincronización ni aprobación financiera. El NO-GO histórico sigue aplicando al criterio anterior de resolución automática.
+
+## Guion de grabación vigente (3–4 minutos; máximo 5)
+
+El vídeo es opcional según el enunciado. La aceptación vigente es la del responsable para la PoC supervisada; las secciones anteriores documentan evaluaciones históricas. Preparar una conversación de prueba ficticia de Alicante:
+
+> Cliente: Quiero explorar SmartHousing en Alicante. Compraría yo sola y me gustaría mudarme dentro de ocho meses. Gano unos 2.750 euros netos al mes, tengo 11.000 euros ahorrados y pago una cuota de 145 euros mensuales; no sé si la cuota está descontada de mis ingresos.
+
+**Antes de grabar:** usar una ventana de navegador de escritorio a 1920×1080 o tamaño legible, zoom 100 % y comprobar que no se corta la interfaz; cerrar notificaciones, pestañas y datos privados. Instalar dependencias, configurar `OPENAI_API_KEY` y, si se desea, `OPENAI_MODEL` en `.env.local`, iniciar `pnpm dev` y abrir `http://localhost:3000`. No mostrar la clave. Usar exclusivamente datos ficticios. Ensayar el recorrido y preparar la explicación de una salida parcial o error sin ocultarlos.
+
+| Tiempo | Mostrar y explicar |
+| --- | --- |
+| 0:00–0:30 | El asesor transforma conversaciones en información comercial revisable; se eligió una PoC supervisada, sin decisiones financieras ni envíos. |
+| 0:30–1:45 | Abrir **Texto libre**, introducir alias ficticio y el texto de Alicante, pulsar **Analizar conversación**. Mostrar candidatos y abrir sus fuentes; son declaraciones e interpretaciones, no verificación. Si faltan campos o falla el proveedor, mostrar el estado y explicar que se conservan la conversación y la necesidad de revisión; no afirmar que todos fueron extraídos. |
+| 1:45–2:45 | Revisar la incidencia de cuota y su fuente; si procede, resolverla manualmente y explicar que la inclusión puede seguir como `unknown`. Revisar la pregunta y etapa. Abrir la ficha CRM y copiarla si está habilitada; si hay bloqueo, explicar y resolver solo con evidencia o mostrar el bloqueo sin inventar datos. La copia es para carga manual. |
+| 2:45–3:45 | Explicar B → D → E: interpretación del modelo, decisiones deterministas y revisión del asesor. Contar la revisión humana P8.1, pruebas y aprendizaje: preguntas genéricas y errores de interés motivaron intervención; la PoC fue aceptada con límites. Declarar variabilidad, datos ficticios, ausencia de persistencia e integración CRM. |
+
+**Qué demuestra cada evidencia:** una inferencia real anterior sobre Alicante produjo siete candidatos con fuentes y la pregunta específica ([respuesta registrada](hardening/poc-real.json)); una nueva inferencia puede producir otro resultado. La resolución, continuación, conservación/reapertura y copia se comprobaron en navegador con respuestas controladas, no como un único recorrido completo con inferencia real final. Si la salida observada no permite completar un paso, explicarlo y mostrar la revisión o el bloqueo; no simular el éxito.
