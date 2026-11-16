@@ -1,0 +1,3 @@
+# Expectativas previas: Marta ficticia
+
+Fijadas antes de ejecutar la prueba con proveedor real. Cliente declara interés en explorar SmartHousing; Zaragoza; aproximadamente ocho meses; dos compradores; ingresos conjuntos aproximados de 3.400 € netos/mes; ahorros aproximados de 12.000 € (sujeto no expresado de forma inequívoca); cuota de 180 €/mes con inclusión en ingresos desconocida. La pregunta del asesor no aporta valores. Cada candidato debe citar un fragmento del cliente; no convertir aproximaciones en cifras exactas ni decidir si la cuota está descontada. Una pregunta sobre esa ambigüedad o revisión humana es admisible. La mera presencia de un campo no acredita corrección.

@@ -42,3 +42,6 @@ next-env.d.ts
 
 !.env.example
 .taste-skill/
+# Playwright generated reports and traces
+/playwright-report/
+/test-results/

@@ -1,0 +1,325 @@
+{
+  "config": {
+    "argv": [
+      "/Users/luispozogilo/.nvm/versions/node/v22.22.0/bin/node",
+      "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/node_modules/.pnpm/@playwright+test@1.65.1/node_modules/@playwright/test/cli.js",
+      "test"
+    ],
+    "configFile": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/playwright.config.ts",
+    "rootDir": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.pw.ts"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "",
+        "testDir": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e",
+        "snapshotDir": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e",
+        "testIgnore": [],
+        "testMatch": "**/*.pw.ts",
+        "timeout": 45000,
+        "use": {
+          "baseURL": "http://localhost:3000",
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": ""
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": {
+      "command": "pnpm dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": false,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "intake.pw.ts",
+      "file": "intake.pw.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "controlado: revisión, portapapeles, desactualización y recuperación",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1722,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T01:24:20.379Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "39836ff13eb052b2b5e9-91e3a81fbda4b25b6ac4",
+          "file": "intake.pw.ts",
+          "line": 9,
+          "column": 1
+        },
+        {
+          "title": "controlado: conflicto bloquea exportación y permite adoptar declaración",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1150,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T01:24:22.515Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "39836ff13eb052b2b5e9-7e1ce8f8cf7857296319",
+          "file": "intake.pw.ts",
+          "line": 15,
+          "column": 1
+        },
+        {
+          "title": "controlado: alerta manual sensible bloquea pregunta",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 545,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T01:24:23.673Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "39836ff13eb052b2b5e9-d542beb273d2c9f12cff",
+          "file": "intake.pw.ts",
+          "line": 18,
+          "column": 1
+        },
+        {
+          "title": "navegador: entrada vacía, autor no reconocido y viewport estrecho",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1336,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T01:24:24.223Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "39836ff13eb052b2b5e9-fec1af2e0a7e176cd6f9",
+          "file": "intake.pw.ts",
+          "line": 19,
+          "column": 1
+        },
+        {
+          "title": "OpenAI real: conversación inédita ficticia",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "Opt-in: necesita clave y red; sin interceptación",
+                  "location": {
+                    "file": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e/intake.pw.ts",
+                    "line": 20,
+                    "column": 77
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "skipped",
+                  "duration": 87,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T01:24:25.568Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Opt-in: necesita clave y red; sin interceptación",
+                      "location": {
+                        "file": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e/intake.pw.ts",
+                        "line": 20,
+                        "column": 77
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "39836ff13eb052b2b5e9-d735a645cc8bb054a91d",
+          "file": "intake.pw.ts",
+          "line": 20,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-16T01:24:17.211Z",
+    "duration": 8511.354,
+    "expected": 4,
+    "skipped": 1,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
