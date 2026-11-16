@@ -6,6 +6,10 @@ Una herramienta de asistencia comercial que transforma conversaciones no estruct
 
 **Estado:** Proof of Concept funcional, validada para una demostración supervisada con limitaciones. No preparada para producción.
 
+**[Vídeo de la Demo](https://nomulabs-my.sharepoint.com/:v:/p/luis/IQDdKF378eYuRbWc5xw3F2IDAaZ96sHPvi8cMUiGNx3edpM?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D&e=dzgXcl)** 
+
+**Acceso a la Demo Online:**  [https://libeen-sales-copilot.vercel.app/](https://libeen-sales-copilot.vercel.app/)
+
 ## Índice
 
 1. [Executive Summary](#1-executive-summary)
