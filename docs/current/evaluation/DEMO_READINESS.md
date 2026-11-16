@@ -4,6 +4,10 @@
 
 > **Estado vigente:** demo supervisada de PoC aceptada con limitaciones. Los NO-GO posteriores en este documento registran evaluaciones históricas del criterio de automatización original. Véanse [criterios y pendientes](POC_EVALUATION_CRITERIA.md).
 
+> **Guion actual para la entrega:** ir directamente a [Guion de grabación vigente (3–4 minutos; máximo 5)](#guion-de-grabación-vigente-34-minutos-máximo-5). La decisión actual es **PoC supervisada aceptada con limitaciones**. Las evaluaciones NO-GO y los guiones preliminares que siguen se conservan como antecedentes de un criterio de aceptación más estricto, no como bloqueo actual de la demo. La resolución automática de aclaraciones continúa sin demostrarse; la revisión manual forma parte del recorrido aprobado.
+
+## Archivo de evaluaciones y guiones anteriores
+
 No hay evidencia suficiente para recomendar una demo de aceptación completa: faltan los recorridos reales de Laura, Javier y Rosa, revisión de fuentes/metadatos, bloqueos CRM completos y accesibilidad. La pregunta real observada no especificó la duda material (F001). Las pruebas controladas sí muestran una corrección, conflicto, bloqueo y copia manual; no prueban semántica. Una llamada real no demuestra robustez.
 
 ## Guion propuesto para cuando se completen las comprobaciones (máximo cinco minutos)
