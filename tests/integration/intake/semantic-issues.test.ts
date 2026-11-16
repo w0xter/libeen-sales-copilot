@@ -13,11 +13,11 @@ describe('señales semánticas en B/D/E', () => {
     expect(result.issues.ok && result.issues.issues.filter(i => i.category === 'sensitive')).toHaveLength(1);
     expect(result.extraction.ok && result.extraction.discarded).toBe(2);
   });
-  it('no revive dudas resueltas, deuda cero ni diferencias entre periodos', async () => {
+  it('conserva periodos y pide revisión cuando las cuotas no pueden reconciliarse con seguridad', async () => {
     const messages: Message[] = [{ id: 'c', role: 'customer', text: 'Deudas 0. En mayo 1600 y en junio 2000. Cuota de 240.' }, { id: 'd', role: 'customer', text: 'La cuota ya estaba descontada.' }];
     const candidates = [c('debts', '0', 'c', 'Deudas 0'), c('income', '1600 mayo', 'c', 'En mayo 1600', { uncertainty: 'Un mes' }), c('income', '2000 junio', 'c', 'en junio 2000'), c('debts', '240', 'c', 'Cuota de 240', { uncertainty: 'No recordaba' }), c('debts', '240', 'd', 'La cuota ya estaba descontada.', { debtIncluded: 'included' })];
     const result = await runIntake(messages, async () => ({ candidates, semanticIssues: [] }));
-    expect(result.issues.ok && result.issues.issues.filter(i => i.category === 'ambiguous')).toEqual([]);
+    expect(result.issues.ok && result.issues.issues.filter(i => i.category === 'ambiguous')).toEqual([expect.objectContaining({ field: 'debts', review: 'human' })]);
   });
   it('conserva una contradicción material única y revisa una garantía condicional', async () => {
     const messages: Message[] = [{ id: 'c', role: 'customer', text: 'En junio fueron 2000 o 1200. Si garantizáis la aprobación, sigo.' }];

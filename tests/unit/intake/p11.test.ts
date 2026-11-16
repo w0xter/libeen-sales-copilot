@@ -32,8 +32,8 @@ describe('P11', () => {
     expect(suggestedStage({ analyzed: true, alias: 'Ejemplo', sheet: usable, pendingIssues: [], rules: onlyLocation })).toBe('Cualificado');
     expect(suggestedStage({ analyzed: true, alias: 'Ejemplo', sheet: { ...usable, savings: { ...empty.savings, status: 'conflict' } }, pendingIssues: [], rules: onlyLocation })).toBe('En cualificación');
     const ambiguities = { ok: true as const, incomplete: false, issues: [
-      { id: 'a', category: 'ambiguous' as const, field: 'income' as const, description: 'No se conoce si los ingresos son netos o brutos.', review: 'clarification' as const },
-      { id: 'b', category: 'ambiguous' as const, field: 'debts' as const, description: 'No se conoce si la cuota está descontada de los ingresos.', review: 'clarification' as const },
+      { id: 'a', category: 'ambiguous' as const, field: 'income' as const, description: 'No se conoce si los ingresos son netos o brutos.', reason: 'income_basis' as const, review: 'clarification' as const },
+      { id: 'b', category: 'ambiguous' as const, field: 'debts' as const, description: 'No se conoce si la cuota está descontada de los ingresos.', reason: 'debt_inclusion' as const, review: 'clarification' as const },
     ] };
     expect(nextQuestion(extraction, ambiguities, { ...rules, prioritizeIncomeBasis: false, ambiguityOrder: ['debts', 'income'] })).toMatchObject({ field: 'debts' });
     expect(nextQuestion(extraction, ambiguities, { ...rules, prioritizeIncomeBasis: true, ambiguityOrder: ['debts', 'income'] })).toMatchObject({ field: 'income' });

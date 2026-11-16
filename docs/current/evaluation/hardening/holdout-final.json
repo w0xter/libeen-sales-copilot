@@ -1,0 +1,141 @@
+{
+  "mode": "openai-real",
+  "status": 200,
+  "body": {
+    "messages": [
+      {
+        "id": "m1",
+        "role": "customer",
+        "text": "Quiero explorar SmartHousing en Málaga. Compraría yo sola y me gustaría mudarme en diez meses. Cobro unos 2.200 euros brutos mensuales y tengo aproximadamente 8.000 euros ahorrados. Pago una cuota de 90 euros al mes y no sé si ya está descontada de mis ingresos."
+      }
+    ],
+    "extraction": {
+      "ok": true,
+      "fields": {
+        "interest": [
+          {
+            "field": "interest",
+            "value": "Quiero explorar SmartHousing en Málaga.",
+            "messageId": "m1",
+            "quote": "Quiero explorar SmartHousing en Málaga.",
+            "precision": "explicit",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "location": [
+          {
+            "field": "location",
+            "value": "Málaga",
+            "messageId": "m1",
+            "quote": "Quiero explorar SmartHousing en Málaga.",
+            "precision": "explicit",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "horizon": [
+          {
+            "field": "horizon",
+            "value": "en diez meses",
+            "messageId": "m1",
+            "quote": "me gustaría mudarme en diez meses.",
+            "precision": "explicit",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "buyers": [
+          {
+            "field": "buyers",
+            "value": "1",
+            "messageId": "m1",
+            "quote": "Compraría yo sola",
+            "precision": "explicit",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "income": [
+          {
+            "field": "income",
+            "value": "2.200 euros brutos mensuales",
+            "messageId": "m1",
+            "quote": "Cobro unos 2.200 euros brutos mensuales",
+            "precision": "approximate",
+            "subject": "individual",
+            "incomeBasis": "gross",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "savings": [
+          {
+            "field": "savings",
+            "value": "8.000 euros",
+            "messageId": "m1",
+            "quote": "tengo aproximadamente 8.000 euros ahorrados",
+            "precision": "approximate",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "debts": [
+          {
+            "field": "debts",
+            "value": "90 euros al mes",
+            "messageId": "m1",
+            "quote": "Pago una cuota de 90 euros al mes",
+            "precision": "explicit",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": "El cliente no aclara si la cuota ya está descontada de sus ingresos."
+          }
+        ]
+      },
+      "discarded": 0,
+      "semanticIssues": [
+        {
+          "category": "ambiguous",
+          "field": "debts",
+          "messageId": "m1",
+          "quote": "Pago una cuota de 90 euros al mes y no sé si ya está descontada de mis ingresos.",
+          "explanation": "La inclusión de la cuota en los ingresos no está aclarada."
+        }
+      ]
+    },
+    "issues": {
+      "ok": true,
+      "issues": [
+        {
+          "id": "issue-1",
+          "category": "ambiguous",
+          "field": "debts",
+          "messageId": "m1",
+          "quote": "Pago una cuota de 90 euros al mes y no sé si ya está descontada de mis ingresos.",
+          "description": "La inclusión de la cuota en los ingresos no está aclarada.",
+          "review": "clarification"
+        }
+      ],
+      "incomplete": false
+    },
+    "intervention": {
+      "kind": "question",
+      "question": "¿Podéis aclarar la cuota que habéis indicado?",
+      "reason": "La inclusión de la cuota en los ingresos no está aclarada.",
+      "field": "debts",
+      "issueId": "issue-1"
+    }
+  }
+}

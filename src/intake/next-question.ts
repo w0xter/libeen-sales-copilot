@@ -40,13 +40,14 @@ export function nextQuestion(extraction: Extraction, result: Issues, rules: Inta
 
   const ambiguities = result.issues.filter(issue => issue.category === 'ambiguous');
   // D emite esta descripción concreta para la base; tiene prioridad sobre otras dudas económicas.
-  const basis = rules.prioritizeIncomeBasis ? ambiguities.find(issue => issue.field === 'income' && issue.description === 'No se conoce si los ingresos son netos o brutos.') : undefined;
+  const basis = rules.prioritizeIncomeBasis ? ambiguities.find(issue => issue.field === 'income' && issue.reason === 'income_basis') : undefined;
   const ambiguity = basis ?? rules.ambiguityOrder.map(field => ambiguities.find(issue => issue.field === field)).find(Boolean) ?? ambiguities[0];
   if (ambiguity) {
+    if (ambiguity.reason === 'debt_inclusion' && ambiguity.review === 'human') return { kind: 'human_review', label: 'Revisión del asesor', reason: ambiguity.description, issueId: ambiguity.id, field: 'debts' };
+    if (ambiguity.reason === 'debt_inclusion') return { kind: 'question', question: '¿La cuota que habéis indicado ya está descontada de vuestros ingresos?', reason: ambiguity.description, field: 'debts', issueId: ambiguity.id };
     if (!ambiguity.field) return { kind: 'human_review', label: 'Revisión del asesor', reason: ambiguity.description, issueId: ambiguity.id };
     let question = clarificationQuestions[ambiguity.field];
     if (ambiguity === basis) question = '¿Los ingresos mensuales que habéis indicado son netos o brutos?';
-    if (ambiguity.field === 'debts' && ambiguity.description === 'No se conoce si la cuota está descontada de los ingresos.') question = '¿La cuota que habéis indicado ya está descontada de vuestros ingresos?';
     return { kind: 'question', question, reason: ambiguity.description, field: ambiguity.field, issueId: ambiguity.id };
   }
 

@@ -1,0 +1,143 @@
+{
+  "mode": "openai-real",
+  "status": 200,
+  "body": {
+    "messages": [
+      {
+        "id": "m1",
+        "role": "customer",
+        "text": "Quiero explorar SmartHousing en Alicante. Compraría yo sola y me gustaría mudarme dentro de ocho meses. Gano unos 2.750 euros netos al mes, tengo 11.000 euros ahorrados y pago una cuota de 145 euros mensuales; no sé si la cuota está descontada de mis ingresos."
+      }
+    ],
+    "extraction": {
+      "ok": true,
+      "fields": {
+        "interest": [
+          {
+            "field": "interest",
+            "value": "Quiero explorar SmartHousing en Alicante.",
+            "messageId": "m1",
+            "quote": "Quiero explorar SmartHousing en Alicante.",
+            "precision": "explicit",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "location": [
+          {
+            "field": "location",
+            "value": "Alicante",
+            "messageId": "m1",
+            "quote": "Quiero explorar SmartHousing en Alicante.",
+            "precision": "explicit",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "horizon": [
+          {
+            "field": "horizon",
+            "value": "dentro de ocho meses",
+            "messageId": "m1",
+            "quote": "me gustaría mudarme dentro de ocho meses.",
+            "precision": "explicit",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "buyers": [
+          {
+            "field": "buyers",
+            "value": "1",
+            "messageId": "m1",
+            "quote": "Compraría yo sola",
+            "precision": "explicit",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "income": [
+          {
+            "field": "income",
+            "value": "2.750 euros netos al mes",
+            "messageId": "m1",
+            "quote": "Gano unos 2.750 euros netos al mes",
+            "precision": "approximate",
+            "subject": "individual",
+            "incomeBasis": "net",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "savings": [
+          {
+            "field": "savings",
+            "value": "11.000 euros",
+            "messageId": "m1",
+            "quote": "tengo 11.000 euros ahorrados",
+            "precision": "explicit",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "debts": [
+          {
+            "field": "debts",
+            "value": "cuota de 145 euros mensuales",
+            "messageId": "m1",
+            "quote": "pago una cuota de 145 euros mensuales",
+            "precision": "explicit",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": "No sé si la cuota está descontada de mis ingresos."
+          }
+        ]
+      },
+      "discarded": 0,
+      "semanticIssues": [
+        {
+          "category": "ambiguous",
+          "field": "income",
+          "reason": "debt_inclusion",
+          "messageId": "m1",
+          "quote": "no sé si la cuota está descontada de mis ingresos",
+          "explanation": "El cliente indica una cuota mensual y no aclara si ya está descontada de sus ingresos."
+        }
+      ]
+    },
+    "issues": {
+      "ok": true,
+      "issues": [
+        {
+          "id": "issue-1",
+          "category": "ambiguous",
+          "field": "debts",
+          "reason": "debt_inclusion",
+          "messageId": "m1",
+          "quote": "pago una cuota de 145 euros mensuales",
+          "description": "No se conoce si la cuota está descontada de los ingresos.",
+          "review": "clarification"
+        }
+      ],
+      "incomplete": false
+    },
+    "intervention": {
+      "kind": "question",
+      "question": "¿La cuota que habéis indicado ya está descontada de vuestros ingresos?",
+      "reason": "No se conoce si la cuota está descontada de los ingresos.",
+      "field": "debts",
+      "issueId": "issue-1"
+    }
+  }
+}

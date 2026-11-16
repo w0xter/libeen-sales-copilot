@@ -1,0 +1,158 @@
+{
+  "mode": "openai-real",
+  "status": 200,
+  "body": {
+    "messages": [
+      {
+        "id": "m1",
+        "role": "customer",
+        "text": "¡Hola! Hemos visto vuestro anuncio en Instagram. Somos mi pareja y yo, buscamos piso en Valencia para mudarnos antes del verano."
+      },
+      {
+        "id": "m2",
+        "role": "advisor",
+        "text": "¡Hola! Encantados. Para ver si encajáis, ¿cuánto ganáis al mes entre los dos, después de deudas, y cuánto tenéis ahorrado para la entrada?"
+      },
+      {
+        "id": "m3",
+        "role": "customer",
+        "text": "Unos 3.800 € netos entre los dos. Ahorrado tenemos 18.000 más o menos."
+      },
+      {
+        "id": "m4",
+        "role": "customer",
+        "text": "Ah, y pagamos un préstamo del coche de 250 € al mes, no sé si cuenta."
+      },
+      {
+        "id": "m5",
+        "role": "customer",
+        "text": "Sí, los 3.800 € netos conjuntos ya tienen descontada la cuota del coche."
+      }
+    ],
+    "extraction": {
+      "ok": true,
+      "fields": {
+        "interest": [],
+        "location": [
+          {
+            "field": "location",
+            "value": "Valencia",
+            "messageId": "m1",
+            "quote": "buscamos piso en Valencia",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "horizon": [
+          {
+            "field": "horizon",
+            "value": "antes del verano",
+            "messageId": "m1",
+            "quote": "para mudarnos antes del verano",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "buyers": [
+          {
+            "field": "buyers",
+            "value": "2",
+            "messageId": "m1",
+            "quote": "Somos mi pareja y yo",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "income": [
+          {
+            "field": "income",
+            "value": "3.800 € netos entre los dos",
+            "messageId": "m3",
+            "quote": "Unos 3.800 € netos entre los dos.",
+            "precision": "approximate",
+            "subject": "joint",
+            "incomeBasis": "net",
+            "debtIncluded": "unknown",
+            "uncertainty": "aproximado"
+          }
+        ],
+        "savings": [
+          {
+            "field": "savings",
+            "value": "18.000 €",
+            "messageId": "m3",
+            "quote": "Ahorrado tenemos 18.000 más o menos.",
+            "precision": "approximate",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": "aproximado"
+          }
+        ],
+        "debts": [
+          {
+            "field": "debts",
+            "value": "250 € al mes",
+            "messageId": "m4",
+            "quote": "pagamos un préstamo del coche de 250 € al mes",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": "no sé si cuenta"
+          }
+        ]
+      },
+      "discarded": 0,
+      "semanticIssues": [
+        {
+          "category": "ambiguous",
+          "field": "debts",
+          "reason": "debt_inclusion",
+          "messageId": "m4",
+          "quote": "no sé si cuenta",
+          "explanation": "El cliente declara una cuota de 250 € al mes pero no aclara si está descontada de los ingresos."
+        }
+      ]
+    },
+    "issues": {
+      "ok": true,
+      "issues": [
+        {
+          "id": "issue-1",
+          "category": "missing",
+          "field": "interest",
+          "description": "Falta información sobre interest.",
+          "review": "clarification"
+        },
+        {
+          "id": "issue-2",
+          "category": "ambiguous",
+          "field": "debts",
+          "messageId": "m4",
+          "quote": "no sé si cuenta",
+          "description": "El cliente declara una cuota de 250 € al mes pero no aclara si está descontada de los ingresos.",
+          "reason": "debt_inclusion",
+          "review": "clarification"
+        }
+      ],
+      "incomplete": false
+    },
+    "intervention": {
+      "kind": "question",
+      "question": "¿La cuota que habéis indicado ya está descontada de vuestros ingresos?",
+      "reason": "El cliente declara una cuota de 250 € al mes pero no aclara si está descontada de los ingresos.",
+      "field": "debts",
+      "issueId": "issue-2"
+    }
+  }
+}
