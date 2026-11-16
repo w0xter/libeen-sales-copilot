@@ -746,7 +746,7 @@ Las siguientes iteraciones explorarían la **detección de tareas y compromisos*
 
 El objetivo es que el sistema no solo identifique qué información falta, sino también **quién debe actuar, cuándo y por qué**, manteniendo siempre al asesor en control.
 
-El roadmap completo y las posibles líneas de evolución están documentados en [ROADMAP.md](docs/current//ROADMAP.md).
+El roadmap completo y las posibles líneas de evolución están documentados en [ROADMAP.md](docs/current/roadmap.md).
 
 ---
 
@@ -765,7 +765,7 @@ El roadmap completo y las posibles líneas de evolución están documentados en 
 | [Resultado P8.1](docs/current/P8_1_RESULT.md) | Corrección de la ficha efectiva |
 | [Tests](tests/) | Casos unitarios, integración y E2E |
 | [Desarrollo histórico](docs/legacy/README.md) | Primera propuesta Sales Copilot |
-| [Roadmap mid term](docs/current//ROADMAP.md) | Evolución de la plataforma |
+| [Roadmap mid term](docs/current/roadmap.md) | Evolución de la plataforma |
 
 El desarrollo original permanece preservado en `archive/sales-copilot-v0`.
 
