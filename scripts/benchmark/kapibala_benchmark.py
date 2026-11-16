@@ -60,6 +60,11 @@ def download_sources(cache, revision, offline):
 def rank(case_id):
     return hashlib.sha256((SEED + "|" + case_id).encode()).hexdigest()
 
+def scenario_group(case_id):
+    # Generation arms share the same scenario/script and salesperson style.
+    # e.g. kapibala-sim:talksub_loop:S26_pushy and ...:mstate:S26_pushy.
+    return case_id.rsplit(":", 1)[-1]
+
 def selection(cache):
     records = {x["id"]: x for x in jsonl(cache / FILES[0])}
     labels = {x["id"]: x for x in jsonl(cache / FILES[2])}
@@ -73,18 +78,30 @@ def selection(cache):
             if outcome in OUTCOMES:
                 available.append((case_id, domain, outcome, records[case_id], meta))
     selected = []
+    used_groups = set()
     for domain, target in QUOTAS.items():
         pool = sorted((x for x in available if x[1] == domain), key=lambda x: rank(x[0]))
-        if len(pool) < target:
-            raise RuntimeError("Insuficientes conversaciones en inglés para " + domain)
+        if len({scenario_group(x[0]) for x in pool}) < target:
+            raise RuntimeError("Insuficientes escenarios distintos en inglés para " + domain)
         chosen = []
         for outcome in OUTCOMES:
-            chosen.extend([x for x in pool if x[2] == outcome][:target // len(OUTCOMES)])
-        chosen_ids = {x[0] for x in chosen}
-        chosen.extend(x for x in pool if x[0] not in chosen_ids and len(chosen) < target)
+            for row in pool:
+                if sum(x[2] == outcome for x in chosen) >= target // len(OUTCOMES):
+                    break
+                if row[2] == outcome and scenario_group(row[0]) not in used_groups:
+                    chosen.append(row)
+                    used_groups.add(scenario_group(row[0]))
+        for row in pool:
+            if len(chosen) >= target:
+                break
+            if scenario_group(row[0]) not in used_groups:
+                chosen.append(row)
+                used_groups.add(scenario_group(row[0]))
+        if len(chosen) != target:
+            raise RuntimeError("Selección incompleta para " + domain)
         selected.extend(chosen)
-    if len(selected) != 20 or len({x[0] for x in selected}) != 20:
-        raise RuntimeError("La selección no tiene 20 ids únicos")
+    if len(selected) != 20 or len({scenario_group(x[0]) for x in selected}) != 20:
+        raise RuntimeError("La selección no tiene 20 escenarios distintos")
     return selected
 
 def normalize(item, ordinal):
@@ -99,7 +116,7 @@ def normalize(item, ordinal):
             raise RuntimeError("Turno vacío en " + case_id)
         messages.append({"id": "m" + str(i+1), "role": role, "text": content})
     chat = "\n".join(("Cliente" if x["role"] == "customer" else "Asesor") + ": " + x["text"] for x in messages)
-    return {"case_id": "kapibala-" + f"{ordinal:02d}", "source_id": case_id, "domain": domain,
+    return {"case_id": "kapibala-" + f"{ordinal:02d}", "source_id": case_id, "scenario_group": scenario_group(case_id), "domain": domain,
             "language": "en", "arm": meta.get("arm"), "product": meta.get("product"),
             "source_outcome_L1": outcome, "outcome_is_model_generated": True,
             "messages": messages, "conversation": chat}
@@ -110,7 +127,7 @@ def prepare(args):
     rows = [normalize(x, i) for i, x in enumerate(selection(cache), 1)]
     write_jsonl(root / "inputs/kapibala_20.jsonl", rows)
     csv_path = root / "inputs/kapibala_20_catalog.csv"
-    keys = ["case_id", "source_id", "domain", "arm", "source_outcome_L1", "product", "n_messages"]
+    keys = ["case_id", "source_id", "scenario_group", "domain", "arm", "source_outcome_L1", "product", "n_messages"]
     with csv_path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=keys)
         writer.writeheader()
@@ -125,7 +142,7 @@ def prepare(args):
     ])
     manifest = {"created_utc": dt.datetime.now(dt.timezone.utc).isoformat(), "dataset": DATASET,
                 "revision_requested": args.revision, "seed": SEED, "quotas": QUOTAS,
-                "selection": "Up to quota/4 per outcome, remainder by stable SHA256 rank",
+                "selection": "Unique scenario/style across generation arms; up to quota/4 per L1 outcome, remainder by stable SHA256 rank",
                 "files": sources, "ids": [r["source_id"] for r in rows],
                 "license": "CC BY 4.0; preserve attribution",
                 "limits": ["L1 labels are model judgements, not gold",
