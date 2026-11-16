@@ -1,12 +1,14 @@
 # Criterios vigentes de evaluación del PoC
 
+**Aceptación:** el responsable aceptó expresamente la demo supervisada el 16-11-2026 y dio por cerrada esta etapa. Se mantienen las limitaciones y los pendientes de esta página.
+
 **Decisión de alcance:** tras el hardening se acordó priorizar una demostración supervisada que permita evaluar la dirección del producto. No existe un conjunto de conversaciones suficientemente amplio para calibrar el modelo ni estimar tasas de error. La revisión humana es parte del recorrido; no se cambia retroactivamente el resultado de la evaluación anterior ni se presenta el PoC como producto listo para producción.
 
 ## Dos decisiones diferentes
 
 | Decisión | Criterio | Estado |
 | --- | --- | --- |
-| Demo supervisada de PoC | Con datos ficticios, el asesor puede analizar, revisar fuentes y dudas, corregir, resolver manualmente cuando sea necesario y preparar una copia CRM sin presentar inferencias inciertas como hechos. | **GO WITH LIMITATIONS propuesto**, sujeto a revisión y aceptación humana. |
+| Demo supervisada de PoC | Con datos ficticios, el asesor puede analizar, revisar fuentes y dudas, corregir, resolver manualmente cuando sea necesario y preparar una copia CRM sin presentar inferencias inciertas como hechos. | **ACEPTADA expresamente por el responsable el 16-11-2026**, como demo supervisada con limitaciones. |
 | Aceptación del contrato original | Las puertas originales incluyen resolución automática de la aclaración de Laura y evidencia de estabilidad suficiente para su entrega. | **Pendiente / NO-GO histórico**: esa resolución automática no se ha demostrado y ya no es requisito para la demo PoC acordada. |
 
 El cambio afecta al **criterio de éxito**, no al rigor de la evidencia: se mantienen visibles los fallos originales, los replays, las evaluaciones invalidadas al cambiar el código y los casos que requirieron intervención. Una prueba con transporte controlado o replay no demuestra calidad del modelo; una llamada real satisfactoria tampoco establece fiabilidad estadística. Las pruebas con proveedor se ejecutan con conversaciones ficticias, expectativas anteriores, presupuesto limitado y sin repetir llamadas hasta conseguir un resultado favorable. No se ajusta el prompt después de observar un caso reservado sin invalidar expresamente esa evaluación.
@@ -20,7 +22,7 @@ El cambio afecta al **criterio de éxito**, no al rigor de la evidencia: se mant
 
 ## Pendiente y límites
 
-1. **Auditoría independiente y aceptación expresa** de la demo supervisada y de estos criterios. La recomendación es provisional.
+1. **Auditoría independiente:** no consta su realización. El responsable aceptó expresamente la demo supervisada el 16-11-2026; esa aceptación no constituye una auditoría independiente ni aprobación para producción.
 2. La resolución automática de aclaraciones y la detección general de interés siguen sin garantías. La revisión humana es necesaria, y el filtro conservador puede dejar interés válido pendiente.
 3. La inferencia real es probabilística y solo se ha observado en pocos casos; no hay dataset representativo ni medición de estabilidad, precisión o cobertura. Antes de invertir en más automatización, recopilar aprendizaje de sesiones supervisadas con datos ficticios y decidir si el beneficio compensa.
 4. La copia real de portapapeles y los conflictos se verificaron con respuestas controladas; el recorrido de continuación con el código final no se evaluó con una nueva inferencia real. La accesibilidad se comprobó en los estados indicados, sin auditoría WCAG completa ni lector de pantalla; no se auditó toda la red.

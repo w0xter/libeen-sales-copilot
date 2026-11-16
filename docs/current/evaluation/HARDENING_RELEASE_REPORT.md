@@ -1,6 +1,8 @@
 # Hardening H0–H4 — informe de trabajo
 
-> **Lectura vigente:** el criterio acordado y los pendientes están en [Criterios de evaluación del PoC](POC_EVALUATION_CRITERIA.md). Las secciones siguientes conservan estados y veredictos de momentos anteriores; prevalece la última actualización PoC 80/20. La recomendación actual es GO WITH LIMITATIONS únicamente para demo supervisada, pendiente de aceptación humana.
+> **Cierre de etapa (16-11-2026):** el responsable aceptó expresamente la demo supervisada de PoC. La aceptación no sustituye una auditoría independiente ni modifica los resultados y límites históricos. Véanse [criterios y pendientes](POC_EVALUATION_CRITERIA.md).
+
+> **Lectura vigente:** el criterio acordado y los pendientes están en [Criterios de evaluación del PoC](POC_EVALUATION_CRITERIA.md). Las secciones siguientes conservan estados y veredictos de momentos anteriores; prevalece la última actualización PoC 80/20. La demo supervisada fue aceptada por el responsable con limitaciones; no consta auditoría independiente.
 
 HEAD inicial: `a2e5273cced3565c182f721086802c5200f48766`; rama de trabajo `codex/intake-hardening`. Baseline histórica `72bb02456bb40fa62c5fbc37f9ef46c0a8ff0296`; el único commit intermedio añade `codex-export/`. Árbol inicial limpio. Node 22.22.0, pnpm 12.16.1; suite inicial: 191 PASS, 4 SKIP (opt-in). Notion consultado: plan Draft, con autorización expresa posterior en el encargo.
 

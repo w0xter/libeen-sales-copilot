@@ -1,6 +1,8 @@
-# Preparación para demo: NO-GO
+# Preparación para demo
 
-> **Estado vigente:** GO WITH LIMITATIONS propuesto para demo supervisada de PoC, sujeto a aceptación humana. Los NO-GO posteriores en este documento registran evaluaciones históricas del criterio de automatización original. Véanse [criterios y pendientes](POC_EVALUATION_CRITERIA.md).
+> **Decisión del responsable (16-11-2026):** demo supervisada de PoC aceptada expresamente con las limitaciones descritas en [criterios y pendientes](POC_EVALUATION_CRITERIA.md). No consta auditoría independiente y no se aprueba uso de producción.
+
+> **Estado vigente:** demo supervisada de PoC aceptada con limitaciones. Los NO-GO posteriores en este documento registran evaluaciones históricas del criterio de automatización original. Véanse [criterios y pendientes](POC_EVALUATION_CRITERIA.md).
 
 No hay evidencia suficiente para recomendar una demo de aceptación completa: faltan los recorridos reales de Laura, Javier y Rosa, revisión de fuentes/metadatos, bloqueos CRM completos y accesibilidad. La pregunta real observada no especificó la duda material (F001). Las pruebas controladas sí muestran una corrección, conflicto, bloqueo y copia manual; no prueban semántica. Una llamada real no demuestra robustez.
 
