@@ -1,0 +1,172 @@
+{
+  "status": 200,
+  "body": {
+    "messages": [
+      {
+        "id": "m1",
+        "role": "customer",
+        "text": "¡Hola! Hemos visto vuestro anuncio en Instagram. Somos mi pareja y yo, buscamos piso en Valencia para mudarnos antes del verano."
+      },
+      {
+        "id": "m2",
+        "role": "advisor",
+        "text": "¡Hola! Encantados. Para ver si encajáis, ¿cuánto ganáis al mes entre los dos, después de deudas, y cuánto tenéis ahorrado para la entrada?"
+      },
+      {
+        "id": "m3",
+        "role": "customer",
+        "text": "Unos 3.800 € netos entre los dos. Ahorrado tenemos 18.000 más o menos."
+      },
+      {
+        "id": "m4",
+        "role": "customer",
+        "text": "Ah, y pagamos un préstamo del coche de 250 € al mes, no sé si cuenta."
+      },
+      {
+        "id": "m5",
+        "role": "customer",
+        "text": "Sí, los 3.800 € netos conjuntos ya tienen descontada la cuota del coche."
+      }
+    ],
+    "extraction": {
+      "ok": true,
+      "fields": {
+        "interest": [
+          {
+            "field": "interest",
+            "value": "interés en vuestro anuncio / búsqueda de piso",
+            "messageId": "m1",
+            "quote": "Hemos visto vuestro anuncio en Instagram. Somos mi pareja y yo, buscamos piso en Valencia para mudarnos antes del verano.",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": "El interés es en vivienda en general; no menciona explícitamente SmartHousing."
+          }
+        ],
+        "location": [
+          {
+            "field": "location",
+            "value": "Valencia",
+            "messageId": "m1",
+            "quote": "buscamos piso en Valencia para mudarnos antes del verano",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "horizon": [
+          {
+            "field": "horizon",
+            "value": "antes del verano",
+            "messageId": "m1",
+            "quote": "buscamos piso en Valencia para mudarnos antes del verano",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "buyers": [
+          {
+            "field": "buyers",
+            "value": "2",
+            "messageId": "m1",
+            "quote": "Somos mi pareja y yo",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "income": [
+          {
+            "field": "income",
+            "value": "3.800 € netos entre los dos",
+            "messageId": "m3",
+            "quote": "Unos 3.800 € netos entre los dos.",
+            "precision": "approximate",
+            "subject": "joint",
+            "incomeBasis": "net",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          },
+          {
+            "field": "income",
+            "value": "3.800 € netos conjuntos ya con la cuota del coche descontada",
+            "messageId": "m5",
+            "quote": "Sí, los 3.800 € netos conjuntos ya tienen descontada la cuota del coche.",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "net",
+            "debtIncluded": "included",
+            "uncertainty": "Aclara el tratamiento de la cuota del coche respecto a los ingresos."
+          }
+        ],
+        "savings": [
+          {
+            "field": "savings",
+            "value": "18.000 € más o menos",
+            "messageId": "m3",
+            "quote": "Ahorrado tenemos 18.000 más o menos.",
+            "precision": "approximate",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "debts": [
+          {
+            "field": "debts",
+            "value": "250 € al mes del préstamo del coche",
+            "messageId": "m4",
+            "quote": "pagamos un préstamo del coche de 250 € al mes",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": "El cliente indica después que la cuota ya está descontada de los ingresos."
+          }
+        ]
+      },
+      "discarded": 0,
+      "semanticIssues": [
+        {
+          "category": "ambiguous",
+          "field": "income",
+          "messageId": "m3",
+          "quote": "Unos 3.800 € netos entre los dos.",
+          "explanation": "La mención de neto está clara, pero posteriormente se aclara el tratamiento de la cuota del coche en los ingresos; se conserva como candidato aparte para reflejar la evolución de la información."
+        }
+      ]
+    },
+    "issues": {
+      "ok": true,
+      "issues": [
+        {
+          "id": "issue-1",
+          "category": "ambiguous",
+          "field": "income",
+          "messageId": "m3",
+          "quote": "Unos 3.800 € netos entre los dos.",
+          "description": "La mención de neto está clara, pero posteriormente se aclara el tratamiento de la cuota del coche en los ingresos; se conserva como candidato aparte para reflejar la evolución de la información.",
+          "review": "clarification"
+        }
+      ],
+      "incomplete": false
+    },
+    "intervention": {
+      "kind": "question",
+      "question": "¿Podéis aclarar los ingresos que habéis indicado?",
+      "reason": "La mención de neto está clara, pero posteriormente se aclara el tratamiento de la cuota del coche en los ingresos; se conserva como candidato aparte para reflejar la evolución de la información.",
+      "field": "income",
+      "issueId": "issue-1"
+    },
+    "discarded": 0
+  }
+}

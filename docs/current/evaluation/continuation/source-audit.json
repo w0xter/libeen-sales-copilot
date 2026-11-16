@@ -1,0 +1,192 @@
+{
+  "real-laura-continuation.json": [
+    {
+      "field": "interest",
+      "messageId": "m1",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "location",
+      "messageId": "m1",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "horizon",
+      "messageId": "m1",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "buyers",
+      "messageId": "m1",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "income",
+      "messageId": "m3",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "income",
+      "messageId": "m5",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "savings",
+      "messageId": "m3",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "debts",
+      "messageId": "m4",
+      "customer": true,
+      "quote_in_message": true
+    }
+  ],
+  "real-javier.json": [
+    {
+      "field": "location",
+      "messageId": "m1",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "buyers",
+      "messageId": "m3",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "income",
+      "messageId": "m3",
+      "customer": true,
+      "quote_in_message": true
+    }
+  ],
+  "real-rosa.json": [
+    {
+      "field": "interest",
+      "messageId": "m2",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "horizon",
+      "messageId": "m1",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "buyers",
+      "messageId": "m1",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "income",
+      "messageId": "m1",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "savings",
+      "messageId": "m1",
+      "customer": true,
+      "quote_in_message": true
+    }
+  ],
+  "real-laura-initial.json": [
+    {
+      "field": "interest",
+      "messageId": "m1",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "location",
+      "messageId": "m1",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "horizon",
+      "messageId": "m1",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "buyers",
+      "messageId": "m1",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "income",
+      "messageId": "m3",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "savings",
+      "messageId": "m3",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "debts",
+      "messageId": "m4",
+      "customer": true,
+      "quote_in_message": true
+    }
+  ],
+  "real-marta.json": [
+    {
+      "field": "interest",
+      "messageId": "m2",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "location",
+      "messageId": "m2",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "horizon",
+      "messageId": "m2",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "buyers",
+      "messageId": "m2",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "income",
+      "messageId": "m4",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "savings",
+      "messageId": "m4",
+      "customer": true,
+      "quote_in_message": true
+    },
+    {
+      "field": "debts",
+      "messageId": "m4",
+      "customer": true,
+      "quote_in_message": true
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "status": 200,
+  "body": {
+    "messages": [
+      {
+        "id": "m1",
+        "role": "advisor",
+        "text": "¿Buscáis vivienda?"
+      },
+      {
+        "id": "m2",
+        "role": "customer",
+        "text": "Sí, queremos explorar SmartHousing en Zaragoza. Somos mi pareja y yo y nos mudaríamos en unos ocho meses."
+      },
+      {
+        "id": "m3",
+        "role": "advisor",
+        "text": "¿Ingresos y ahorros?"
+      },
+      {
+        "id": "m4",
+        "role": "customer",
+        "text": "Entre los dos cobramos aproximadamente 3.400 euros netos al mes y tenemos unos 12.000 euros ahorrados. Pagamos una cuota de 180 euros al mes, pero no sé si ya está descontada de esa cifra."
+      }
+    ],
+    "extraction": {
+      "ok": true,
+      "fields": {
+        "interest": [
+          {
+            "field": "interest",
+            "value": "explorar SmartHousing",
+            "messageId": "m2",
+            "quote": "queremos explorar SmartHousing en Zaragoza",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "location": [
+          {
+            "field": "location",
+            "value": "Zaragoza",
+            "messageId": "m2",
+            "quote": "SmartHousing en Zaragoza",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "horizon": [
+          {
+            "field": "horizon",
+            "value": "unos ocho meses",
+            "messageId": "m2",
+            "quote": "nos mudaríamos en unos ocho meses",
+            "precision": "approximate",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "buyers": [
+          {
+            "field": "buyers",
+            "value": "mi pareja y yo",
+            "messageId": "m2",
+            "quote": "Somos mi pareja y yo",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "income": [
+          {
+            "field": "income",
+            "value": "3.400 euros netos al mes",
+            "messageId": "m4",
+            "quote": "Entre los dos cobramos aproximadamente 3.400 euros netos al mes",
+            "precision": "approximate",
+            "subject": "joint",
+            "incomeBasis": "net",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "savings": [
+          {
+            "field": "savings",
+            "value": "12.000 euros",
+            "messageId": "m4",
+            "quote": "tenemos unos 12.000 euros ahorrados",
+            "precision": "approximate",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "debts": [
+          {
+            "field": "debts",
+            "value": "cuota de 180 euros al mes",
+            "messageId": "m4",
+            "quote": "Pagamos una cuota de 180 euros al mes",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": "No está claro si la cuota ya está descontada de los ingresos."
+          }
+        ]
+      },
+      "discarded": 0,
+      "semanticIssues": [
+        {
+          "category": "ambiguous",
+          "field": "debts",
+          "messageId": "m4",
+          "quote": "Pagamos una cuota de 180 euros al mes, pero no sé si ya está descontada de esa cifra.",
+          "explanation": "Hay una cuota mensual declarada, pero no se aclara si está incluida o no en los ingresos."
+        }
+      ]
+    },
+    "issues": {
+      "ok": true,
+      "issues": [
+        {
+          "id": "issue-1",
+          "category": "ambiguous",
+          "field": "debts",
+          "messageId": "m4",
+          "quote": "Pagamos una cuota de 180 euros al mes, pero no sé si ya está descontada de esa cifra.",
+          "description": "Hay una cuota mensual declarada, pero no se aclara si está incluida o no en los ingresos.",
+          "review": "clarification"
+        }
+      ],
+      "incomplete": false
+    },
+    "intervention": {
+      "kind": "question",
+      "question": "¿Podéis aclarar la cuota que habéis indicado?",
+      "reason": "Hay una cuota mensual declarada, pero no se aclara si está incluida o no en los ingresos.",
+      "field": "debts",
+      "issueId": "issue-1"
+    },
+    "discarded": 0
+  }
+}

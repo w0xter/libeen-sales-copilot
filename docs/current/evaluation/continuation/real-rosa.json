@@ -1,0 +1,147 @@
+{
+  "status": 200,
+  "body": {
+    "messages": [
+      {
+        "id": "m1",
+        "role": "customer",
+        "text": "Buenos días. Somos mi marido y yo. Él está jubilado, yo trabajo a media jornada. Entre los dos, 1.400 €. Ahorros no tenemos, pero necesitamos salir del piso en dos semanas."
+      },
+      {
+        "id": "m2",
+        "role": "customer",
+        "text": "Si no podéis vendernos, ¿nos alquiláis algo solo de alquiler?"
+      },
+      {
+        "id": "m3",
+        "role": "customer",
+        "text": "Mi hijo dice que os pida por escrito que estamos aprobados antes de seguir."
+      }
+    ],
+    "extraction": {
+      "ok": true,
+      "fields": {
+        "interest": [
+          {
+            "field": "interest",
+            "value": "solo de alquiler",
+            "messageId": "m2",
+            "quote": "¿nos alquiláis algo solo de alquiler?",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": "Interés en alquiler, no en SmartHousing de forma explícita."
+          }
+        ],
+        "location": [],
+        "horizon": [
+          {
+            "field": "horizon",
+            "value": "dos semanas",
+            "messageId": "m1",
+            "quote": "necesitamos salir del piso en dos semanas.",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "buyers": [
+          {
+            "field": "buyers",
+            "value": "2",
+            "messageId": "m1",
+            "quote": "Somos mi marido y yo.",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "income": [
+          {
+            "field": "income",
+            "value": "1.400 € entre los dos",
+            "messageId": "m1",
+            "quote": "Entre los dos, 1.400 €.",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": "No se especifica si es neto o bruto."
+          }
+        ],
+        "savings": [
+          {
+            "field": "savings",
+            "value": "0",
+            "messageId": "m1",
+            "quote": "Ahorros no tenemos",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "debts": []
+      },
+      "discarded": 0,
+      "semanticIssues": [
+        {
+          "category": "sensitive",
+          "field": null,
+          "messageId": "m1",
+          "quote": "necesitamos salir del piso en dos semanas",
+          "explanation": "Expresa urgencia de vivienda."
+        },
+        {
+          "category": "sensitive",
+          "field": null,
+          "messageId": "m3",
+          "quote": "os pida por escrito que estamos aprobados antes de seguir",
+          "explanation": "Solicita una aprobación por escrito antes de continuar."
+        }
+      ]
+    },
+    "issues": {
+      "ok": true,
+      "issues": [
+        {
+          "id": "issue-1",
+          "category": "missing",
+          "field": "location",
+          "description": "Falta información sobre location.",
+          "review": "clarification"
+        },
+        {
+          "id": "issue-2",
+          "category": "sensitive",
+          "messageId": "m1",
+          "quote": "necesitamos salir del piso en dos semanas",
+          "description": "Expresa urgencia de vivienda.",
+          "review": "human"
+        },
+        {
+          "id": "issue-3",
+          "category": "sensitive",
+          "messageId": "m3",
+          "quote": "os pida por escrito que estamos aprobados antes de seguir",
+          "description": "Solicita una aprobación por escrito antes de continuar.",
+          "review": "human"
+        }
+      ],
+      "incomplete": false
+    },
+    "intervention": {
+      "kind": "human_review",
+      "label": "Revisión del asesor",
+      "reason": "Expresa urgencia de vivienda.",
+      "issueId": "issue-2"
+    },
+    "discarded": 0
+  }
+}

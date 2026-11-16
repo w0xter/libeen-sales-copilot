@@ -1,0 +1,139 @@
+{
+  "status": 200,
+  "body": {
+    "messages": [
+      {
+        "id": "m1",
+        "role": "customer",
+        "text": "buenas, cuanto cuesta esto? me interesa algo por madrid o alrededores"
+      },
+      {
+        "id": "m2",
+        "role": "advisor",
+        "text": "¿Compras solo o con alguien? ¿Y cuánto ganas al mes, más o menos?"
+      },
+      {
+        "id": "m3",
+        "role": "customer",
+        "text": "solo. soy autonomo, depende del mes, entre 2000 y 3000"
+      },
+      {
+        "id": "m4",
+        "role": "customer",
+        "text": null
+      },
+      {
+        "id": "m5",
+        "role": "customer",
+        "text": "y esto es fiable? no sera una estafa no"
+      }
+    ],
+    "extraction": {
+      "ok": true,
+      "fields": {
+        "interest": [],
+        "location": [
+          {
+            "field": "location",
+            "value": "Madrid o alrededores",
+            "messageId": "m1",
+            "quote": "me interesa algo por madrid o alrededores",
+            "precision": "explicit",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "horizon": [],
+        "buyers": [
+          {
+            "field": "buyers",
+            "value": "1",
+            "messageId": "m3",
+            "quote": "solo.",
+            "precision": "explicit",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "income": [
+          {
+            "field": "income",
+            "value": "entre 2000 y 3000",
+            "messageId": "m3",
+            "quote": "soy autonomo, depende del mes, entre 2000 y 3000",
+            "precision": "range",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": "El cliente indica que varía según el mes y no aclara si la cifra es neta o bruta."
+          }
+        ],
+        "savings": [],
+        "debts": []
+      },
+      "discarded": 0,
+      "semanticIssues": [
+        {
+          "category": "sensitive",
+          "field": null,
+          "messageId": "m5",
+          "quote": "y esto es fiable? no sera una estafa no",
+          "explanation": "El cliente expresa desconfianza y pregunta si es una estafa, lo que requiere revisión humana."
+        }
+      ]
+    },
+    "issues": {
+      "ok": true,
+      "issues": [
+        {
+          "id": "issue-1",
+          "category": "missing",
+          "field": "interest",
+          "description": "Falta información sobre interest.",
+          "review": "clarification"
+        },
+        {
+          "id": "issue-2",
+          "category": "missing",
+          "field": "horizon",
+          "description": "Falta información sobre horizon.",
+          "review": "clarification"
+        },
+        {
+          "id": "issue-3",
+          "category": "missing",
+          "field": "savings",
+          "description": "Falta información sobre savings.",
+          "review": "clarification"
+        },
+        {
+          "id": "issue-4",
+          "category": "sensitive",
+          "messageId": "m5",
+          "quote": "y esto es fiable? no sera una estafa no",
+          "description": "El cliente expresa desconfianza y pregunta si es una estafa, lo que requiere revisión humana.",
+          "review": "human"
+        },
+        {
+          "id": "issue-5",
+          "category": "inaccessible",
+          "messageId": "m4",
+          "description": "Mensaje del cliente sin texto accesible.",
+          "review": "human"
+        }
+      ],
+      "incomplete": false
+    },
+    "intervention": {
+      "kind": "human_review",
+      "label": "Revisión del asesor",
+      "reason": "El cliente expresa desconfianza y pregunta si es una estafa, lo que requiere revisión humana.",
+      "issueId": "issue-4"
+    },
+    "discarded": 0
+  }
+}

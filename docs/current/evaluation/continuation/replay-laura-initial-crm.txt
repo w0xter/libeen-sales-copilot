@@ -1,0 +1,31 @@
+Ficha CRM manual · Laura
+Etapa actual: En cualificación (completitud comercial, no aprobación)
+Datos autodeclarados; revisión operativa no equivale a verificación documental.
+
+Interés en SmartHousing: Hemos visto vuestro anuncio en Instagram [candidate]
+  Fuente: m1: «Hemos visto vuestro anuncio en Instagram.»
+  Precisión: explicit; sujeto: joint; base: unknown; cuota: unknown; incertidumbre: El cliente muestra contacto e interés inicial, pero no dice explícitamente que esté interesado en SmartHousing.
+Zona de búsqueda: Valencia [candidate]
+  Fuente: m1: «buscamos piso en Valencia»
+  Precisión: explicit; sujeto: joint; base: unknown; cuota: unknown
+Horizonte de mudanza: antes del verano [candidate]
+  Fuente: m1: «para mudarnos antes del verano»
+  Precisión: explicit; sujeto: joint; base: unknown; cuota: unknown
+Compradores: 2 [candidate]
+  Fuente: m1: «Somos mi pareja y yo»
+  Precisión: explicit; sujeto: joint; base: unknown; cuota: unknown
+Ingresos mensuales: unos 3.800 € netos entre los dos [candidate]
+  Fuente: m3: «Unos 3.800 € netos entre los dos.»
+  Precisión: approximate; sujeto: joint; base: net; cuota: unknown
+Ahorros declarados: 18.000 más o menos [candidate]
+  Fuente: m3: «Ahorrado tenemos 18.000 más o menos.»
+  Precisión: approximate; sujeto: joint; base: unknown; cuota: unknown
+Cuotas / deudas: un préstamo del coche de 250 € al mes [candidate]
+  Fuente: m4: «pagamos un préstamo del coche de 250 € al mes»
+  Precisión: explicit; sujeto: joint; base: unknown; cuota: unknown; incertidumbre: El cliente no aclara si la cuota ya está descontada o cómo debe tratarse respecto a los ingresos.
+
+Incidencias:
+  [pending] ambiguous: La cifra es aproximada ('unos') y no hay aclaración adicional sobre el importe exacto.
+  [pending] ambiguous: Hay una cuota declarada, pero el cliente no aclara si está incluida en los ingresos netos o si debe descontarse.
+
+Copia manual para CRM; no se ha realizado ninguna sincronización.

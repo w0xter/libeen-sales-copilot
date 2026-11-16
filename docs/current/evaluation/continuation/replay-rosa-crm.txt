@@ -1,0 +1,28 @@
+Ficha CRM manual · Laura
+Etapa actual: En cualificación (completitud comercial, no aprobación)
+Datos autodeclarados; revisión operativa no equivale a verificación documental.
+
+Interés en SmartHousing: solo de alquiler [candidate]
+  Fuente: m2: «¿nos alquiláis algo solo de alquiler?»
+  Precisión: explicit; sujeto: joint; base: unknown; cuota: unknown; incertidumbre: Interés en alquiler, no en SmartHousing de forma explícita.
+Zona de búsqueda: Sin informar
+Horizonte de mudanza: dos semanas [candidate]
+  Fuente: m1: «necesitamos salir del piso en dos semanas.»
+  Precisión: explicit; sujeto: joint; base: unknown; cuota: unknown
+Compradores: 2 [candidate]
+  Fuente: m1: «Somos mi marido y yo.»
+  Precisión: explicit; sujeto: joint; base: unknown; cuota: unknown
+Ingresos mensuales: 1.400 € entre los dos [candidate]
+  Fuente: m1: «Entre los dos, 1.400 €.»
+  Precisión: explicit; sujeto: joint; base: unknown; cuota: unknown; incertidumbre: No se especifica si es neto o bruto.
+Ahorros declarados: 0 [candidate]
+  Fuente: m1: «Ahorros no tenemos»
+  Precisión: explicit; sujeto: joint; base: unknown; cuota: unknown
+Cuotas / deudas: Sin informar
+
+Incidencias:
+  [pending] missing: Falta información sobre location.
+  [pending] sensitive: Expresa urgencia de vivienda.
+  [pending] sensitive: Solicita una aprobación por escrito antes de continuar.
+
+Copia manual para CRM; no se ha realizado ninguna sincronización.

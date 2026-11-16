@@ -1,0 +1,17 @@
+{
+  "focus": {
+    "tag": "BUTTON",
+    "text": "↺ Restablecer expediente",
+    "outline": "solid"
+  },
+  "desktop": {
+    "width": 1440,
+    "scrollWidth": 1440
+  },
+  "mobile": {
+    "width": 390,
+    "scrollWidth": 390
+  },
+  "consoleErrors": [],
+  "failed": []
+}

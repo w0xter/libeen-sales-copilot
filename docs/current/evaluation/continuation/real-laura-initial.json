@@ -1,0 +1,172 @@
+{
+  "status": 200,
+  "body": {
+    "messages": [
+      {
+        "id": "m1",
+        "role": "customer",
+        "text": "¡Hola! Hemos visto vuestro anuncio en Instagram. Somos mi pareja y yo, buscamos piso en Valencia para mudarnos antes del verano."
+      },
+      {
+        "id": "m2",
+        "role": "advisor",
+        "text": "¡Hola! Encantados. Para ver si encajáis, ¿cuánto ganáis al mes entre los dos, después de deudas, y cuánto tenéis ahorrado para la entrada?"
+      },
+      {
+        "id": "m3",
+        "role": "customer",
+        "text": "Unos 3.800 € netos entre los dos. Ahorrado tenemos 18.000 más o menos."
+      },
+      {
+        "id": "m4",
+        "role": "customer",
+        "text": "Ah, y pagamos un préstamo del coche de 250 € al mes, no sé si cuenta."
+      }
+    ],
+    "extraction": {
+      "ok": true,
+      "fields": {
+        "interest": [
+          {
+            "field": "interest",
+            "value": "Hemos visto vuestro anuncio en Instagram",
+            "messageId": "m1",
+            "quote": "Hemos visto vuestro anuncio en Instagram.",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": "El cliente muestra contacto e interés inicial, pero no dice explícitamente que esté interesado en SmartHousing."
+          }
+        ],
+        "location": [
+          {
+            "field": "location",
+            "value": "Valencia",
+            "messageId": "m1",
+            "quote": "buscamos piso en Valencia",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "horizon": [
+          {
+            "field": "horizon",
+            "value": "antes del verano",
+            "messageId": "m1",
+            "quote": "para mudarnos antes del verano",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "buyers": [
+          {
+            "field": "buyers",
+            "value": "2",
+            "messageId": "m1",
+            "quote": "Somos mi pareja y yo",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "income": [
+          {
+            "field": "income",
+            "value": "unos 3.800 € netos entre los dos",
+            "messageId": "m3",
+            "quote": "Unos 3.800 € netos entre los dos.",
+            "precision": "approximate",
+            "subject": "joint",
+            "incomeBasis": "net",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "savings": [
+          {
+            "field": "savings",
+            "value": "18.000 más o menos",
+            "messageId": "m3",
+            "quote": "Ahorrado tenemos 18.000 más o menos.",
+            "precision": "approximate",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "debts": [
+          {
+            "field": "debts",
+            "value": "un préstamo del coche de 250 € al mes",
+            "messageId": "m4",
+            "quote": "pagamos un préstamo del coche de 250 € al mes",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": "El cliente no aclara si la cuota ya está descontada o cómo debe tratarse respecto a los ingresos."
+          }
+        ]
+      },
+      "discarded": 0,
+      "semanticIssues": [
+        {
+          "category": "ambiguous",
+          "field": "income",
+          "messageId": "m3",
+          "quote": "Unos 3.800 € netos entre los dos.",
+          "explanation": "La cifra es aproximada ('unos') y no hay aclaración adicional sobre el importe exacto."
+        },
+        {
+          "category": "ambiguous",
+          "field": "debts",
+          "messageId": "m4",
+          "quote": "pagamos un préstamo del coche de 250 € al mes",
+          "explanation": "Hay una cuota declarada, pero el cliente no aclara si está incluida en los ingresos netos o si debe descontarse."
+        }
+      ]
+    },
+    "issues": {
+      "ok": true,
+      "issues": [
+        {
+          "id": "issue-1",
+          "category": "ambiguous",
+          "field": "income",
+          "messageId": "m3",
+          "quote": "Unos 3.800 € netos entre los dos.",
+          "description": "La cifra es aproximada ('unos') y no hay aclaración adicional sobre el importe exacto.",
+          "review": "clarification"
+        },
+        {
+          "id": "issue-2",
+          "category": "ambiguous",
+          "field": "debts",
+          "messageId": "m4",
+          "quote": "pagamos un préstamo del coche de 250 € al mes",
+          "description": "Hay una cuota declarada, pero el cliente no aclara si está incluida en los ingresos netos o si debe descontarse.",
+          "review": "clarification"
+        }
+      ],
+      "incomplete": false
+    },
+    "intervention": {
+      "kind": "question",
+      "question": "¿Podéis aclarar los ingresos que habéis indicado?",
+      "reason": "La cifra es aproximada ('unos') y no hay aclaración adicional sobre el importe exacto.",
+      "field": "income",
+      "issueId": "issue-1"
+    },
+    "discarded": 0
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "focus": [
+    {
+      "tag": "BUTTON",
+      "text": "↺ Restablecer expediente",
+      "outline": "solid"
+    },
+    {
+      "tag": "INPUT",
+      "text": "",
+      "outline": "solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Laura",
+      "outline": "solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Javier",
+      "outline": "solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Rosa",
+      "outline": "solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Texto libre",
+      "outline": "solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Conversación",
+      "outline": "solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Editar texto",
+      "outline": "solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Analizar conversación ↗",
+      "outline": "solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "+ Añadir continuación",
+      "outline": "solid"
+    },
+    {
+      "tag": "NEXTJS-PORTAL",
+      "text": "",
+      "outline": "none"
+    },
+    {
+      "tag": "BODY",
+      "text": "libeen.Lead IntakeEtapa actual · Nuevo● Demo · datos ficticiosSin conexión CRMAnalizar una conversac",
+      "outline": "none"
+    }
+  ],
+  "entry": [
+    {
+      "id": "region",
+      "impact": "moderate",
+      "description": "Ensure all page content is contained by landmarks",
+      "nodes": [
+        {
+          "target": [
+            ".disclaimer"
+          ],
+          "summary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+        }
+      ]
+    }
+  ],
+  "result": [
+    {
+      "id": "region",
+      "impact": "moderate",
+      "description": "Ensure all page content is contained by landmarks",
+      "nodes": [
+        {
+          "target": [
+            ".disclaimer"
+          ],
+          "summary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+        }
+      ]
+    }
+  ]
+}

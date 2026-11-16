@@ -1,0 +1,923 @@
+{
+  "config": {
+    "argv": [
+      "/Users/luispozogilo/.nvm/versions/node/v22.22.0/bin/node",
+      "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/node_modules/.pnpm/@playwright+test@1.65.1/node_modules/@playwright/test/cli.js",
+      "test"
+    ],
+    "configFile": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/playwright.config.ts",
+    "rootDir": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.pw.ts"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "",
+        "testDir": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e",
+        "snapshotDir": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e",
+        "testIgnore": [],
+        "testMatch": "**/*.pw.ts",
+        "timeout": 45000,
+        "use": {
+          "baseURL": "http://localhost:3000",
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": ""
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": {
+      "command": "pnpm dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": false,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "continuation.pw.ts",
+      "file": "continuation.pw.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "controlado: CRM siete campos, revisión, etapa y bloqueo por alerta",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1662,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:36.556Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f8f076c00d5deb48f590-efe55a0d83c616028752",
+          "file": "continuation.pw.ts",
+          "line": 13,
+          "column": 1
+        },
+        {
+          "title": "controlado: sin datos utilizables bloquea copia y ofrece revisión",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 600,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:38.596Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f8f076c00d5deb48f590-79b82490d2f36923a994",
+          "file": "continuation.pw.ts",
+          "line": 23,
+          "column": 1
+        },
+        {
+          "title": "controlado: corrección se mantiene frente a conflicto y fuente original",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1072,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:39.209Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f8f076c00d5deb48f590-de4fbfc5d3357bfc65e1",
+          "file": "continuation.pw.ts",
+          "line": 24,
+          "column": 1
+        },
+        {
+          "title": "controlado: edición, fallo HTTP, JSON inválido y recuperación preservan entrada y revisión",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 938,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:40.285Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f8f076c00d5deb48f590-3b4264ab4716f868c24f",
+          "file": "continuation.pw.ts",
+          "line": 25,
+          "column": 1
+        },
+        {
+          "title": "navegador: teclado, dimensiones y diagnósticos",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 495,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:41.229Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f8f076c00d5deb48f590-60a97be004fbe0c59255",
+          "file": "continuation.pw.ts",
+          "line": 27,
+          "column": 1
+        },
+        {
+          "title": "real: Javier original y alerta manual",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "Proveedor real optativo",
+                  "location": {
+                    "file": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e/continuation.pw.ts",
+                    "line": 32,
+                    "column": 114
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "skipped",
+                  "duration": 86,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:41.730Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Proveedor real optativo",
+                      "location": {
+                        "file": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e/continuation.pw.ts",
+                        "line": 32,
+                        "column": 114
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "f8f076c00d5deb48f590-a6dfe4b3e045e5bc2fd9",
+          "file": "continuation.pw.ts",
+          "line": 32,
+          "column": 47
+        },
+        {
+          "title": "real: Rosa original y alerta manual",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "Proveedor real optativo",
+                  "location": {
+                    "file": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e/continuation.pw.ts",
+                    "line": 32,
+                    "column": 114
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "skipped",
+                  "duration": 69,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:41.822Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Proveedor real optativo",
+                      "location": {
+                        "file": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e/continuation.pw.ts",
+                        "line": 32,
+                        "column": 114
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "f8f076c00d5deb48f590-f778f706c222e0310dbd",
+          "file": "continuation.pw.ts",
+          "line": 32,
+          "column": 47
+        },
+        {
+          "title": "real: Laura original, corrección y continuación",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "Proveedor real optativo",
+                  "location": {
+                    "file": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e/continuation.pw.ts",
+                    "line": 33,
+                    "column": 77
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "skipped",
+                  "duration": 87,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:41.896Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Proveedor real optativo",
+                      "location": {
+                        "file": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e/continuation.pw.ts",
+                        "line": 33,
+                        "column": 77
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "f8f076c00d5deb48f590-cceda91702a0ff951bea",
+          "file": "continuation.pw.ts",
+          "line": 33,
+          "column": 1
+        },
+        {
+          "title": "real: Marta fuentes y metadatos",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "Proveedor real optativo",
+                  "location": {
+                    "file": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e/continuation.pw.ts",
+                    "line": 34,
+                    "column": 61
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "skipped",
+                  "duration": 68,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:41.988Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Proveedor real optativo",
+                      "location": {
+                        "file": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e/continuation.pw.ts",
+                        "line": 34,
+                        "column": 61
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "f8f076c00d5deb48f590-b7e92ab45db39d8f2551",
+          "file": "continuation.pw.ts",
+          "line": 34,
+          "column": 1
+        },
+        {
+          "title": "replay etiquetado: Laura conserva corrección ante ambas propuestas reales registradas",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1264,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:42.062Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f8f076c00d5deb48f590-55d17eac07606e5f0fc8",
+          "file": "continuation.pw.ts",
+          "line": 36,
+          "column": 1
+        },
+        {
+          "title": "accesibilidad automatizada, teclado y referencia visual",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2369,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:43.337Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f8f076c00d5deb48f590-3be675669875773b773d",
+          "file": "continuation.pw.ts",
+          "line": 39,
+          "column": 1
+        },
+        {
+          "title": "replay etiquetado: interés genérico de Laura y Rosa en ficha CRM",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 828,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:45.713Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f8f076c00d5deb48f590-1ed1f09b69e984297d62",
+          "file": "continuation.pw.ts",
+          "line": 42,
+          "column": 1
+        },
+        {
+          "title": "controlado: proveedor con respuesta inválida no sustituye resultado",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 642,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:46.546Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f8f076c00d5deb48f590-2cc2bc04e4faef69c088",
+          "file": "continuation.pw.ts",
+          "line": 43,
+          "column": 1
+        },
+        {
+          "title": "controlado: descartar candidato y resolver incidencia actualiza ficha",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1074,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:47.193Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f8f076c00d5deb48f590-5a0021b904eb94750406",
+          "file": "continuation.pw.ts",
+          "line": 44,
+          "column": 1
+        },
+        {
+          "title": "controlado: cero ahorrado puede contar para cualificación comercial",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 501,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:48.273Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f8f076c00d5deb48f590-1790c491dc8930948433",
+          "file": "continuation.pw.ts",
+          "line": 45,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "intake.pw.ts",
+      "file": "intake.pw.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "controlado: revisión, portapapeles, desactualización y recuperación",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1169,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:48.784Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "39836ff13eb052b2b5e9-91e3a81fbda4b25b6ac4",
+          "file": "intake.pw.ts",
+          "line": 9,
+          "column": 1
+        },
+        {
+          "title": "controlado: conflicto bloquea exportación y permite adoptar declaración",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1512,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:49.960Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "39836ff13eb052b2b5e9-7e1ce8f8cf7857296319",
+          "file": "intake.pw.ts",
+          "line": 15,
+          "column": 1
+        },
+        {
+          "title": "controlado: alerta manual sensible bloquea pregunta",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 556,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:51.478Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "39836ff13eb052b2b5e9-d542beb273d2c9f12cff",
+          "file": "intake.pw.ts",
+          "line": 18,
+          "column": 1
+        },
+        {
+          "title": "navegador: entrada vacía, autor no reconocido y viewport estrecho",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1356,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:52.041Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "39836ff13eb052b2b5e9-fec1af2e0a7e176cd6f9",
+          "file": "intake.pw.ts",
+          "line": 19,
+          "column": 1
+        },
+        {
+          "title": "OpenAI real: conversación inédita ficticia",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "Opt-in: necesita clave y red; sin interceptación",
+                  "location": {
+                    "file": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e/intake.pw.ts",
+                    "line": 20,
+                    "column": 77
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "skipped",
+                  "duration": 84,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-16T08:23:53.404Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Opt-in: necesita clave y red; sin interceptación",
+                      "location": {
+                        "file": "/Users/luispozogilo/Desktop/side/libeen/libeen-sales-copilot/tests/e2e/intake.pw.ts",
+                        "line": 20,
+                        "column": 77
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "39836ff13eb052b2b5e9-d735a645cc8bb054a91d",
+          "file": "intake.pw.ts",
+          "line": 20,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-16T08:23:34.285Z",
+    "duration": 19289.644,
+    "expected": 15,
+    "skipped": 5,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
