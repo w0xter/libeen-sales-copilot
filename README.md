@@ -33,3 +33,5 @@ pnpm build
 Las pruebas con proveedor real son optativas y precisan clave y red; las pruebas deterministas con transporte simulado no prueban la calidad del modelo. Los detalles y limitaciones están en [docs/current](docs/current/README.md). La revisión visual y de accesibilidad en navegador sigue pendiente. No utilizar con datos reales ni como sistema de producción.
 
 El código del Sales Copilot anterior permanece en el repositorio como legado y no es el runtime de esta interfaz. Su documentación está en [docs/legacy](docs/legacy/README.md).
+
+Para una demo de PoC supervisada se propone **GO WITH LIMITATIONS**: una cuota incierta genera una incidencia revisable y una aclaración puede requerir resolución manual, sin convertir el valor desconocido en un hecho. El filtrado de interés es conservador y puede dejar expresiones válidas pendientes de revisión. La aceptación del criterio anterior de resolución automática sigue pendiente. Consulta [criterios de evaluación y pendientes](docs/current/evaluation/POC_EVALUATION_CRITERIA.md) y [resultados y límites](docs/current/evaluation/HARDENING_RELEASE_REPORT.md).

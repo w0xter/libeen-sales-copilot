@@ -4,8 +4,8 @@ import { identifyIssues, type Issue } from '../../../src/intake/issues';
 import { nextQuestion } from '../../../src/intake/next-question';
 
 type Field = 'interest' | 'location' | 'horizon' | 'buyers' | 'income' | 'savings' | 'debts';
-const candidate = (field: Field, value: string, extra: Record<string, unknown> = {}) => ({ field, value, messageId: 'c', quote: 'datos', precision: 'explicit', subject: 'joint', incomeBasis: 'unknown', debtIncluded: 'unknown', uncertainty: null, ...extra });
-const messages: Message[] = [{ id: 'c', role: 'customer', text: 'datos' }];
+const candidate = (field: Field, value: string, extra: Record<string, unknown> = {}) => ({ field, value, messageId: 'c', quote: field === 'interest' ? 'Quiero explorar SmartHousing' : 'datos', precision: 'explicit', subject: 'joint', incomeBasis: 'unknown', debtIncluded: 'unknown', uncertainty: null, ...extra });
+const messages: Message[] = [{ id: 'c', role: 'customer', text: 'datos. Quiero explorar SmartHousing' }];
 const laura = [candidate('location', 'Valencia'), candidate('horizon', 'antes del verano'), candidate('buyers', '2'), candidate('income', '3800 EUR/mes', { incomeBasis: 'net' }), candidate('savings', '18000 EUR'), candidate('debts', '250 EUR/mes')];
 async function run(candidates: unknown[], sensitive?: Issue, discarded = false) {
   const extraction = await extract(messages, async () => ({ candidates: discarded ? [...candidates, {}] : candidates }));

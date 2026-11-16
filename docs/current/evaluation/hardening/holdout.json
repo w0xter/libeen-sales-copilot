@@ -1,0 +1,120 @@
+{
+  "mode": "openai-real",
+  "status": 200,
+  "body": {
+    "messages": [
+      {
+        "id": "m1",
+        "role": "customer",
+        "text": "Quiero explorar SmartHousing en Bilbao. Compraría yo sola y me gustaría mudarme dentro de seis meses. Cobro aproximadamente 2.600 euros netos al mes y no tengo ahorros. Pago una cuota de 130 euros al mes que no está descontada de mis ingresos."
+      }
+    ],
+    "extraction": {
+      "ok": true,
+      "fields": {
+        "interest": [
+          {
+            "field": "interest",
+            "value": "Quiero explorar SmartHousing en Bilbao.",
+            "messageId": "m1",
+            "quote": "Quiero explorar SmartHousing en Bilbao.",
+            "precision": "explicit",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "location": [
+          {
+            "field": "location",
+            "value": "Bilbao",
+            "messageId": "m1",
+            "quote": "Quiero explorar SmartHousing en Bilbao.",
+            "precision": "explicit",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "horizon": [
+          {
+            "field": "horizon",
+            "value": "dentro de seis meses",
+            "messageId": "m1",
+            "quote": "me gustaría mudarme dentro de seis meses",
+            "precision": "explicit",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "buyers": [
+          {
+            "field": "buyers",
+            "value": "1",
+            "messageId": "m1",
+            "quote": "Compraría yo sola",
+            "precision": "explicit",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "income": [
+          {
+            "field": "income",
+            "value": "2.600 euros netos al mes",
+            "messageId": "m1",
+            "quote": "Cobro aproximadamente 2.600 euros netos al mes",
+            "precision": "approximate",
+            "subject": "individual",
+            "incomeBasis": "net",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "savings": [
+          {
+            "field": "savings",
+            "value": "0",
+            "messageId": "m1",
+            "quote": "no tengo ahorros",
+            "precision": "explicit",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "debts": [
+          {
+            "field": "debts",
+            "value": "130 euros al mes",
+            "messageId": "m1",
+            "quote": "Pago una cuota de 130 euros al mes que no está descontada de mis ingresos.",
+            "precision": "explicit",
+            "subject": "individual",
+            "incomeBasis": "unknown",
+            "debtIncluded": "excluded",
+            "uncertainty": null
+          }
+        ]
+      },
+      "discarded": 0,
+      "semanticIssues": []
+    },
+    "issues": {
+      "ok": true,
+      "issues": [],
+      "incomplete": false
+    },
+    "intervention": {
+      "kind": "none",
+      "label": "Sin preguntas pendientes prioritarias"
+    }
+  }
+}

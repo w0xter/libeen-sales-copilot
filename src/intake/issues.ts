@@ -12,6 +12,7 @@ export type Issue = {
   messageId?: string;
   quote?: string;
   review: 'clarification' | 'human';
+  reason?: 'debt_inclusion' | 'income_basis';
 };
 
 
@@ -26,8 +27,37 @@ export function identifyIssues(extraction: Extraction, messages: Message[], rule
     if (!extraction.fields[field].length) add({ category: 'missing', field, description: `Falta información sobre ${field}.`, review: 'clarification' });
   }
   for (const signal of extraction.semanticIssues ?? []) {
+    const income = extraction.fields.income.find(c => c.messageId === signal.messageId && c.quote === signal.quote);
+    // Una aproximación conocida no exige una cifra exacta. No descartar conflictos.
+    const approximationOnly = signal.category === 'ambiguous' && signal.field === 'income' && income?.precision === 'approximate' && income.incomeBasis !== 'unknown' && income.subject !== 'unknown' && /aproximad/i.test(signal.explanation) && /importe exacto|cifra exacta/i.test(signal.explanation) && !/contradic|conflict|incompatib|brut|sujeto/i.test(signal.explanation);
+    const clarifiedHistory = signal.category === 'ambiguous' && signal.field === 'income' && income?.precision === 'approximate' && /posteriormente se aclara/i.test(signal.explanation) && !/contradic|conflict|incompatib/i.test(signal.explanation) && extraction.fields.income.some(c => c.messageId !== signal.messageId && c.debtIncluded !== 'unknown' && /cuota/i.test(c.quote));
+    const moneyCandidate = (signal.field === 'income' || signal.field === 'savings') && extraction.fields[signal.field].find(c => c.messageId === signal.messageId && c.quote === signal.quote);
+    // Solo descripciones completas que expresan aproximación y nada más.
+    const onlyApproximationDescription = /^(?:(?:el |la )?(?:importe|cantidad|cifra) aproximad[oa] de (?:los |las )?(?:ingresos|ahorros)(?: conjuntos?| declarados?)?|(?:los |las )?(?:ingresos|ahorros) son aproximados?)\.?$/i.test(signal.explanation.trim());
+    const approxWithoutMaterialDoubt = signal.category === 'ambiguous' && moneyCandidate && moneyCandidate.precision === 'approximate' && moneyCandidate.subject !== 'unknown' && (signal.field !== 'income' || moneyCandidate.incomeBasis !== 'unknown') && (!moneyCandidate.uncertainty || /^aproximad[oa](?: \(['"]?(?:unos?|m[aá]s o menos|aproximadamente)['"]?\))?\.?$/i.test(moneyCandidate.uncertainty.trim())) && (moneyCandidate.quote.match(/\d[\d.,]*/g) ?? []).length === 1 && !/\b(?:o|quiz[aá]|duda|no s[eé])\b/i.test(moneyCandidate.quote.replace(/m[aá]s o menos/gi, 'aproximadamente')) && onlyApproximationDescription;
+    if (!signal.reason && (approximationOnly || clarifiedHistory || approxWithoutMaterialDoubt)) continue;
+    // Compatibilidad con respuestas anteriores al motivo tipado. No convertir
+    // contradicciones ni incidencias sensibles en una pregunta de cuota.
+    const legacyDebtInclusion = !signal.reason && signal.category === 'ambiguous' && (signal.field === 'debts' || signal.field === 'income') && /cuota/i.test(signal.explanation) && /(?:inclui|inclusi[oó]n|descontad)/i.test(signal.explanation) && /ingres/i.test(signal.explanation) && !/contradic|conflict|incompatib/i.test(signal.explanation);
+    const reason = signal.category === 'ambiguous' && !/contradic|conflict|incompatib/i.test(signal.explanation) && (signal.field === 'income' || signal.field === 'debts')
+      ? signal.reason === 'debt_inclusion' || legacyDebtInclusion ? 'debt_inclusion' : signal.reason === 'income_basis' && signal.field === 'income' ? 'income_basis' : undefined
+      : undefined;
     if (issues.some(i => i.category === signal.category && i.field === (signal.field ?? undefined) && i.messageId === signal.messageId && i.quote === signal.quote)) continue;
-    add({ category: signal.category, ...(signal.field ? { field: signal.field } : {}), messageId: signal.messageId, quote: signal.quote, description: signal.explanation, review: signal.category === 'sensitive' ? 'human' : 'clarification' });
+    add({ category: signal.category, ...(signal.field ? { field: signal.field } : {}), messageId: signal.messageId, quote: signal.quote, description: signal.explanation, ...(reason ? { reason } : {}), review: signal.category === 'sensitive' ? 'human' : 'clarification' });
+  }
+  // Una cuota declarada con inclusión desconocida requiere revisión incluso si
+  // el proveedor omite la señal. No deducir la respuesta de mensajes posteriores.
+  const unresolvedDebts = extraction.fields.debts.filter(c => c.debtIncluded === 'unknown' && !/^\s*0(?:[.,]0+)?\s*(?:€|eur(?:os?)?)?(?:\s*\/\s*mes)?\s*$/i.test(c.value));
+  if (unresolvedDebts.length) {
+    const first = unresolvedDebts[0];
+    const firstIndex = messages.findIndex(m => m.id === first.messageId);
+    const laterCustomer = messages.slice(firstIndex + 1).some(m => m.role === 'customer');
+    const requiresHuman = extraction.fields.debts.length > 1 || extraction.fields.income.length > 1 || laterCustomer;
+    // La incidencia derivada representa la misma duda que una señal del modelo.
+    for (let i = issues.length - 1; i >= 0; i--) if (issues[i].category === 'ambiguous' && issues[i].reason === 'debt_inclusion') issues.splice(i, 1);
+    add({ category: 'ambiguous', field: 'debts', reason: 'debt_inclusion', messageId: first.messageId, quote: first.quote,
+      description: requiresHuman ? 'Revisa la conversación para aclarar si la cuota está descontada de los ingresos.' : 'No se conoce si la cuota está descontada de los ingresos.',
+      review: requiresHuman ? 'human' : 'clarification' });
   }
   for (const field of Object.keys(extraction.fields) as Field[]) {
     const candidates = extraction.fields[field];
@@ -35,8 +65,7 @@ export function identifyIssues(extraction: Extraction, messages: Message[], rule
       const source = { field, messageId: c.messageId, quote: c.quote };
       if (extraction.semanticIssues === undefined) {
       if (c.uncertainty || c.precision === 'uncertain') add({ category: 'ambiguous', ...source, description: c.uncertainty || 'El dato se ha extraído con precisión incierta.', review: 'clarification' });
-      if (field === 'income' && c.incomeBasis === 'unknown') add({ category: 'ambiguous', ...source, description: 'No se conoce si los ingresos son netos o brutos.', review: 'clarification' });
-      if (field === 'debts' && c.debtIncluded === 'unknown') add({ category: 'ambiguous', ...source, description: 'No se conoce si la cuota está descontada de los ingresos.', review: 'clarification' });
+      if (field === 'income' && c.incomeBasis === 'unknown') add({ category: 'ambiguous', ...source, description: 'No se conoce si los ingresos son netos o brutos.', reason: 'income_basis', review: 'clarification' });
       if (['income', 'savings', 'debts'].includes(field) && c.subject === 'unknown') add({ category: 'ambiguous', ...source, description: 'No se conoce el sujeto del dato económico.', review: 'clarification' });
       }
       const message = messages.find(m => m.id === c.messageId);

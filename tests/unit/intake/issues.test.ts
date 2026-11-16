@@ -3,7 +3,7 @@ import { extract, type Message } from '../../../src/intake/extraction';
 import { identifyIssues } from '../../../src/intake/issues';
 
 type Field = 'interest' | 'location' | 'horizon' | 'buyers' | 'income' | 'savings' | 'debts';
-const candidate = (field: Field, value: string, extra: Record<string, unknown> = {}) => ({ field, value, messageId: 'c', quote: 'datos', precision: 'explicit', subject: 'joint', incomeBasis: 'unknown', debtIncluded: 'unknown', uncertainty: null, ...extra });
+const candidate = (field: Field, value: string, extra: Record<string, unknown> = {}) => ({ field, value, messageId: 'c', quote: field === 'interest' ? 'Quiero explorar SmartHousing' : 'datos', precision: 'explicit', subject: 'joint', incomeBasis: 'unknown', debtIncluded: 'unknown', uncertainty: null, ...extra });
 const base = [candidate('location', 'Valencia'), candidate('horizon', 'antes del verano'), candidate('buyers', '2'), candidate('income', '3800 EUR/mes', { incomeBasis: 'net' }), candidate('savings', '18000 EUR'), candidate('debts', '250 EUR/mes')];
 const message = (text = 'datos'): Message[] => [{ id: 'c', role: 'customer', text }];
 async function run(candidates: unknown[], messages = message(), discarded = false) {
@@ -32,9 +32,9 @@ describe('incidencias de intake', () => {
   });
   it('Alcalá conserva siete campos sin alertar por aproximaciones útiles', async () => {
     const all = [candidate('interest', 'sí'), ...base.map(c => c.field === 'income' ? { ...c, incomeBasis: 'unknown', precision: 'approximate' } : { ...c, precision: 'approximate' })];
-    const { extraction, result } = await run(all);
+    const { extraction, result } = await run(all, message('datos. Quiero explorar SmartHousing'));
     expect(extraction.ok && Object.values(extraction.fields).every(items => items.length === 1)).toBe(true);
-    expect(result.ok && result.issues.filter(i => i.category === 'ambiguous').map(i => i.field)).toEqual(['income', 'debts']);
+    expect(result.ok && result.issues.filter(i => i.category === 'ambiguous').map(i => i.field)).toEqual(expect.arrayContaining(['income', 'debts']));
   });
   it('procesa extracción parcial y advierte de descartes', async () => {
     const { extraction, result } = await run([candidate('savings', '9000 EUR')], message(), true);

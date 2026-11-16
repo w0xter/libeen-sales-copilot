@@ -4,7 +4,7 @@ import { candidateKey, conflictsForReview } from './reanalysis';
 
 export const fieldNames = ['interest', 'location', 'horizon', 'buyers', 'income', 'savings', 'debts'] as const;
 export type Field = typeof fieldNames[number];
-export type EffectiveValue = { value: string; provenance: 'candidate' | 'confirmed' | 'corrected' | 'adopted'; source: Message | null; quote: string; note: string; metadata: Pick<Candidate, 'precision' | 'subject' | 'incomeBasis' | 'debtIncluded' | 'uncertainty'> | null };
+export type EffectiveValue = { value: string; provenance: 'candidate' | 'confirmed' | 'corrected' | 'adopted'; source: Message | null; quote: string; note: string; metadata: Pick<Candidate, 'precision' | 'subject' | 'incomeBasis' | 'debtIncluded' | 'uncertainty' | 'debtInclusionSource'> | null };
 export type EffectiveField = { humanReviews: Review[]; status: 'missing' | 'discarded' | 'conflict' | 'available'; selected: EffectiveValue | null; evidence: { candidate: Candidate; source: Message | null }[] };
 export type EffectiveSheet = Record<Field, EffectiveField>;
 type Input = { candidates: Candidate[]; messages: Message[]; reviews: Record<string, Review>; baselines: Record<string, string[]>; resolutions: Record<string, 'keep' | 'adopt'> };
@@ -47,7 +47,7 @@ export function deriveEffective(input: Input): EffectiveSheet {
     }
     if (!chosen) { result[field] = { status: 'conflict', selected: null, evidence, humanReviews }; continue; }
     const corrected = provenance === 'corrected';
-    result[field] = { status: 'available', evidence, humanReviews, selected: { value: corrected ? review.value : chosen.value, provenance, source: corrected ? review.source : source(chosen), quote: corrected ? review.candidate.quote : chosen.quote, note: corrected ? review.note : '', metadata: corrected ? null : { precision: chosen.precision, subject: chosen.subject, incomeBasis: chosen.incomeBasis, debtIncluded: chosen.debtIncluded, uncertainty: chosen.uncertainty } } };
+    result[field] = { status: 'available', evidence, humanReviews, selected: { value: corrected ? review.value : chosen.value, provenance, source: corrected ? review.source : source(chosen), quote: corrected ? review.candidate.quote : chosen.quote, note: corrected ? review.note : '', metadata: corrected ? null : { precision: chosen.precision, subject: chosen.subject, incomeBasis: chosen.incomeBasis, debtIncluded: chosen.debtIncluded, debtInclusionSource: chosen.debtInclusionSource, uncertainty: chosen.uncertainty } } };
   }
   return result;
 }

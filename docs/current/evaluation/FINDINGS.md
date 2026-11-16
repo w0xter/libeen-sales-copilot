@@ -36,3 +36,19 @@ P4/P11 describen falsos negativos en Javier y Rosa. En la continuación se anali
 - **Esperado:** contenido principal y aviso final dentro de landmarks identificables.
 - **Observado:** Axe `region` moderado para `.disclaimer` en entrada y resultado. Frecuencia: ambos estados comprobados en una ejecución.
 - **Causa probable, no confirmada:** aviso situado fuera de `main` y sin landmark propio. Recomendación: incorporar el aviso a una región apropiada y repetir revisión con tecnologías de asistencia.
+
+## Actualización de hardening (16-11-2026)
+
+La evidencia histórica anterior se conserva. [Informe y resultados](HARDENING_RELEASE_REPORT.md): F001 no se reprodujo en Marta real ni en replay; F002 no se reprodujo en Laura/Rosa reales ni las variantes controladas, con cobertura conservadora y limitada; F003 **sigue abierto**, porque Laura real tras aclaración volvió a preguntar ingresos debido a una incidencia «Importe aproximado de ingresos conjuntos». F004 no se reprodujo con Axe `region` en entrada y resultado a 1440 y 390 px. La inversión de rechazo propuesta como F005 se bloqueó en pruebas controladas al conservar la cita como valor, pero la semántica general y citas parciales siguen siendo riesgos, no una garantía universal.
+
+### Reevaluación final
+
+F001 y F003 siguen **abiertos**: el segundo reservado recibió «¿Podéis aclarar la cuota que habéis indicado?» ante la explicación «La inclusión de la cuota en los ingresos no está aclarada»; Laura inicial recibió una pregunta genérica de ingresos ante una señal de inclusión etiquetada `income`. Laura continuación pasó a la pregunta de interés en esa ejecución. Dos replays con expectativas correctas fallan, sin reintentar ni alterar el prompt después del reservado final.
+
+### Evaluación del contrato revisado
+
+El motivo estructurado permite que la pregunta de cuota no dependa del campo asignado y corrige ambos replays finales anteriores. En inferencia real posterior Laura inicial preguntó correctamente, pero su continuación repitió la cuota resuelta y el reservado omitió la incidencia de cuota incierta y no conservó interés explícito. F001/F003 y F002 permanecen abiertos; las causas ahora incluyen señales omitidas o no actualizadas por el modelo, no solo su redacción. La evidencia se conserva en `hardening/contract-*.json`; no se cambió el prompt después del reservado.
+
+### Tratamiento PoC supervisado
+
+F003 no se declara resuelto automáticamente: la incidencia puede requerir revisión humana. Se añade una incidencia conservadora basada en cuota desconocida y una revisión manual visible que sobrevive al reanálisis dentro de la sesión; los metadatos desconocidos no se convierten en hechos. La única inferencia real nueva produjo la pregunta de cuota esperada. F002 sigue sujeto a los límites del filtro conservador. La evidencia y el alcance están en [el informe](HARDENING_RELEASE_REPORT.md).

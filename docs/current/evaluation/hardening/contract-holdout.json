@@ -1,0 +1,119 @@
+{
+  "mode": "openai-real",
+  "status": 200,
+  "body": {
+    "messages": [
+      {
+        "id": "m1",
+        "role": "customer",
+        "text": "Queremos explorar SmartHousing en Sevilla. Compraríamos mi pareja y yo y nos mudaríamos dentro de un año. Entre ambos ingresamos unos 3.600 euros netos al mes y tenemos aproximadamente 15.000 euros ahorrados. Pagamos 175 euros mensuales de un préstamo y no sabemos si esa cuota ya está descontada de los ingresos."
+      }
+    ],
+    "extraction": {
+      "ok": true,
+      "fields": {
+        "interest": [],
+        "location": [
+          {
+            "field": "location",
+            "value": "Sevilla",
+            "messageId": "m1",
+            "quote": "Queremos explorar SmartHousing en Sevilla.",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "horizon": [
+          {
+            "field": "horizon",
+            "value": "dentro de un año",
+            "messageId": "m1",
+            "quote": "nos mudaríamos dentro de un año",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "buyers": [
+          {
+            "field": "buyers",
+            "value": "mi pareja y yo",
+            "messageId": "m1",
+            "quote": "Compraríamos mi pareja y yo",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "income": [
+          {
+            "field": "income",
+            "value": "3.600 euros netos al mes",
+            "messageId": "m1",
+            "quote": "Entre ambos ingresamos unos 3.600 euros netos al mes",
+            "precision": "approximate",
+            "subject": "joint",
+            "incomeBasis": "net",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "savings": [
+          {
+            "field": "savings",
+            "value": "15.000 euros",
+            "messageId": "m1",
+            "quote": "tenemos aproximadamente 15.000 euros ahorrados",
+            "precision": "approximate",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": null
+          }
+        ],
+        "debts": [
+          {
+            "field": "debts",
+            "value": "175 euros mensuales de un préstamo",
+            "messageId": "m1",
+            "quote": "Pagamos 175 euros mensuales de un préstamo",
+            "precision": "explicit",
+            "subject": "joint",
+            "incomeBasis": "unknown",
+            "debtIncluded": "unknown",
+            "uncertainty": "No sabemos si esa cuota ya está descontada de los ingresos."
+          }
+        ]
+      },
+      "discarded": 1,
+      "semanticIssues": []
+    },
+    "issues": {
+      "ok": true,
+      "issues": [
+        {
+          "id": "issue-1",
+          "category": "missing",
+          "field": "interest",
+          "description": "Falta información sobre interest.",
+          "review": "clarification"
+        }
+      ],
+      "incomplete": true
+    },
+    "intervention": {
+      "kind": "question",
+      "question": "¿Os interesa explorar SmartHousing?",
+      "reason": "Falta información sobre interest.",
+      "field": "interest",
+      "issueId": "issue-1"
+    }
+  }
+}

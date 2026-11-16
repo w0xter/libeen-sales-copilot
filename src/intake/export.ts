@@ -21,7 +21,7 @@ export function crmPreview({ alias, stage, sheet, issues, current, stageNeedsRev
       const v = item.selected;
       lines.push(`${fieldLabels[field]}: ${v.value} [${v.provenance}]`);
       lines.push(`  Fuente: ${v.source ? `${v.source.id}: «${v.quote}»` : 'no disponible'}${v.note ? ` · Procedencia humana: ${v.note}` : ''}`);
-      lines.push(v.metadata ? `  Precisión: ${v.metadata.precision}; sujeto: ${v.metadata.subject}; base: ${v.metadata.incomeBasis}; cuota: ${v.metadata.debtIncluded}${v.metadata.uncertainty ? `; incertidumbre: ${v.metadata.uncertainty}` : ''}` : '  Precisión, sujeto y base: no establecidos para la corrección humana');
+      lines.push(v.metadata ? `  Precisión: ${v.metadata.precision}; sujeto: ${v.metadata.subject}; base: ${v.metadata.incomeBasis}; cuota: ${v.metadata.debtIncluded}${v.metadata.uncertainty ? `; incertidumbre: ${v.metadata.uncertainty}` : ''}${v.metadata.debtInclusionSource ? `; fuente de inclusión: ${v.metadata.debtInclusionSource.messageId}: «${v.metadata.debtInclusionSource.quote}»` : ''}` : '  Precisión, sujeto y base: no establecidos para la corrección humana');
     }
     for (const r of item.humanReviews) lines.push(`  Revisión humana conservada: ${r.status} · ${r.value} · fuente original ${r.source.id}: «${r.candidate.quote}»${r.note ? ` · ${r.note}` : ''}`);
     if (item.evidence.length > 1 || item.status === 'conflict' || item.status === 'discarded') for (const e of item.evidence) lines.push(`  Evidencia conservada (no necesariamente seleccionada): ${e.candidate.value} · ${e.source?.id ?? 'fuente no disponible'}: «${e.candidate.quote}»`);
