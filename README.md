@@ -6,6 +6,59 @@ Una herramienta de asistencia comercial que transforma conversaciones no estruct
 
 **Estado:** Proof of Concept funcional, validada para una demostración supervisada con limitaciones. No preparada para producción.
 
+## Índice
+
+1. [Executive Summary](#1-executive-summary)
+2. [Capacidades implementadas](#2-capacidades-implementadas)
+   - [2.1. Análisis de conversaciones](#21-análisis-de-conversaciones)
+   - [2.2. Extracción de información comercial](#22-extracción-de-información-comercial)
+   - [2.3. Detección de incidencias](#23-detección-de-incidencias)
+   - [2.4. Siguiente pregunta prioritaria](#24-siguiente-pregunta-prioritaria)
+   - [2.5. Revisión y reconciliación humana](#25-revisión-y-reconciliación-humana)
+   - [2.6. Etapa comercial y ficha CRM](#26-etapa-comercial-y-ficha-crm)
+3. [Arquitectura y decisiones técnicas](#3-arquitectura-y-decisiones-técnicas)
+   - [3.1. Stack](#31-stack)
+   - [3.2. Pipeline B → D → E](#32-pipeline-b--d--e)
+   - [3.3. Ejemplo de extremo a extremo](#33-ejemplo-de-extremo-a-extremo)
+   - [3.4. Qué dejamos en manos del LLM y qué no](#34-qué-dejamos-en-manos-del-llm-y-qué-no)
+   - [3.5. Configuración](#35-configuración)
+4. [Evolución del producto: por qué simplificamos el enfoque](#4-evolución-del-producto-por-qué-simplificamos-el-enfoque)
+   - [4.1. Primera propuesta: Sales Copilot basado en hitos](#41-primera-propuesta-sales-copilot-basado-en-hitos)
+   - [4.2. Qué revelaron los primeros experimentos](#42-qué-revelaron-los-primeros-experimentos)
+   - [4.3. El pivote a AI Lead Intake](#43-el-pivote-a-ai-lead-intake)
+5. [Fiabilidad: cómo responde el sistema ante errores de la IA](#5-fiabilidad-cómo-responde-el-sistema-ante-errores-de-la-ia)
+   - [5.1. Errores de entrada](#51-errores-de-entrada)
+   - [5.2. Errores del proveedor o de estructura](#52-errores-del-proveedor-o-de-estructura)
+   - [5.3. Candidatos inválidos o sin evidencia](#53-candidatos-inválidos-o-sin-evidencia)
+   - [5.4. Ambigüedad y ausencia de información](#54-ambigüedad-y-ausencia-de-información)
+   - [5.5. Correcciones y reanálisis](#55-correcciones-y-reanálisis)
+   - [5.6. Resultados desactualizados y exportación](#56-resultados-desactualizados-y-exportación)
+   - [5.7. Solicitudes sensibles](#57-solicitudes-sensibles)
+6. [Evaluación y pruebas realizadas](#6-evaluación-y-pruebas-realizadas)
+   - [6.1. Resultados del último cierre PoC](#61-resultados-del-último-cierre-poc)
+   - [6.2. Caso real reservado: Alicante](#62-caso-real-reservado-alicante)
+   - [6.3. Evaluación de flujos de revisión](#63-evaluación-de-flujos-de-revisión)
+   - [6.4. Accesibilidad](#64-accesibilidad)
+   - [6.5. Evolución de los criterios de aceptación](#65-evolución-de-los-criterios-de-aceptación)
+7. [Known Issues y limitaciones](#7-known-issues-y-limitaciones)
+   - [Casos que motivaron el hardening](#casos-que-motivaron-el-hardening)
+   - [Qué no incluye esta versión](#qué-no-incluye-esta-versión)
+8. [Instalación y ejecución](#8-instalación-y-ejecución)
+   - [Requisitos](#requisitos)
+   - [Instalar](#instalar)
+   - [Iniciar aplicación](#iniciar-aplicación)
+   - [Ejecutar pruebas](#ejecutar-pruebas)
+9. [Desarrollo asistido por IA y colaboración humano–Codex](#9-desarrollo-asistido-por-ia-y-colaboración-humanocodex)
+   - [Ejemplo de revisión humana: P8.1](#ejemplo-de-revisión-humana-p81)
+   - [Cómo utilizamos las evaluaciones](#cómo-utilizamos-las-evaluaciones)
+   - [Límites de la trazabilidad](#límites-de-la-trazabilidad)
+10. [Próximos pasos con más tiempo](#10-próximos-pasos-con-más-tiempo)
+    - [Roadmap](#roadmap)
+11. [Documentación y evidencias](#11-documentación-y-evidencias)
+12. [Conclusión](#conclusión)
+
+
+
 ## 1. Executive Summary
 
 ### El problema
@@ -194,35 +247,6 @@ Prioriza las incidencias y propone una única intervención para el asesor.
 El flujo conceptual es:
 
 `Conversación → B: candidatos y fuentes → D: incidencias → E: siguiente intervención → Workspace del asesor → revisión humana → ficha CRM manual`
-
-```mermaid
-flowchart TD
-    A["💬 Conversación comercial"] --> B
-
-    subgraph ENGINE ["Pipeline de AI Lead Intake"]
-        direction TB
-        B["B · Extraction<br/>LLM + Structured Outputs"]
-        D["D · Issues<br/>Reglas y señales semánticas"]
-        E["E · Next Question<br/>Priorización de la intervención"]
-        B -->|"Candidatos + evidencias"| D
-        D -->|"Ausencias, ambigüedades y alertas"| E
-    end
-
-    E --> F["🖥️ Workspace del asesor"]
-    F --> G["Revisión humana<br/>Confirmar · Corregir · Descartar"]
-    G --> H["📋 Ficha CRM<br/>Exportación manual"]
-    F --> I["✏️ Siguiente pregunta<br/>Editable · No enviada"]
-
-    classDef input fill:#e8f1ff,stroke:#4b80c5,color:#172c49
-    classDef engine fill:#f0eaff,stroke:#8161b3,color:#302045
-    classDef human fill:#e6f5ed,stroke:#438967,color:#173e2a
-    classDef output fill:#fff2dc,stroke:#c08a39,color:#533d17
-
-    class A input
-    class B,D,E engine
-    class F,G human
-    class H,I output
-```
 
 
 ### 3.3. Ejemplo de extremo a extremo
@@ -710,6 +734,16 @@ Permitir editar y validar campos esenciales y prioridades sin modificar el códi
 
 La persistencia e integración CRM quedarían para una fase posterior, después de demostrar que el núcleo aporta valor suficiente en sesiones supervisadas.
 
+### Roadmap
+
+La V0 es el primer paso hacia un **Sales Intelligence Copilot** que evolucione de extraer información comercial a comprender y acompañar el progreso de cada oportunidad.
+
+Las siguientes iteraciones explorarían la **detección de tareas y compromisos**, el **análisis del ritmo y sentimiento conversacional**, la **priorización contextual de acciones** y, posteriormente, la **personalización de la comunicación y el coaching comercial**.
+
+El objetivo es que el sistema no solo identifique qué información falta, sino también **quién debe actuar, cuándo y por qué**, manteniendo siempre al asesor en control.
+
+El roadmap completo y las posibles líneas de evolución están documentados en [ROADMAP.md](docs/current//ROADMAP.md).
+
 ---
 
 ## 11. Documentación y evidencias
@@ -727,6 +761,7 @@ La persistencia e integración CRM quedarían para una fase posterior, después 
 | [Resultado P8.1](docs/current/P8_1_RESULT.md) | Corrección de la ficha efectiva |
 | [Tests](tests/) | Casos unitarios, integración y E2E |
 | [Desarrollo histórico](docs/legacy/README.md) | Primera propuesta Sales Copilot |
+| [Roadmap mid term](docs/current//ROADMAP.md) | Evolución de la plataforma |
 
 El desarrollo original permanece preservado en `archive/sales-copilot-v0`.
 
