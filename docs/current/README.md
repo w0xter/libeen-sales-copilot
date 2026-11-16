@@ -3,7 +3,7 @@
 **Estado vigente:** PoC supervisada aceptada con limitaciones; los NO-GO anteriores corresponden al contrato más estricto y se conservan como historia. Solo datos ficticios, con revisión humana.
 
 - [Especificación funcional V0](01_FUNCTIONAL_SPEC_V0.md): problema, alcance y comportamiento.
-- [Arquitectura mínima y módulos B/D/E](02_MINIMAL_BDE_IMPLEMENTATION_PLAN.md): extracción, incidencias y pregunta.
+- [Plan histórico de implementación B/D/E](02_MINIMAL_BDE_IMPLEMENTATION_PLAN.md): decisiones y puertas de planificación, anteriores al desarrollo. La arquitectura efectiva y el recorrido vigente se resumen en el [README principal](../../README.md) y se contrastan con las [evidencias de hardening](evaluation/HARDENING_RELEASE_REPORT.md).
 - [Criterios PoC aprobados](evaluation/POC_EVALUATION_CRITERIA.md) y [último informe de hardening](evaluation/HARDENING_RELEASE_REPORT.md).
 - [Matriz de aceptación](evaluation/ACCEPTANCE_MATRIX.md): resultados históricos y criterio PoC diferenciado.
 - [Preparación y guion de demo](evaluation/DEMO_READINESS.md).
