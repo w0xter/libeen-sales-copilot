@@ -131,4 +131,40 @@ describe('interacciones de la interfaz', () => {
     expect(button(renderer.root, 'Copiar ficha CRM').props.disabled).toBe(true);
   });
 
+  it('bloquea la revisión abierta cuando cambia la conversación', async () => {
+    vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true);
+    const candidate = { field: 'location', value: 'Madrid', messageId: 'm1', quote: 'Hola', precision: 'explicit', subject: 'unknown', incomeBasis: 'unknown', debtIncluded: 'unknown', uncertainty: null };
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ ...response, extraction: { ...response.extraction, fields: { ...fields, location: [candidate] } } }) }));
+    await act(async () => { renderer = create(<IntakeWorkspace />); });
+    await act(async () => { await button(renderer.root, 'Analizar conversación ↗').props.onClick(); });
+    act(() => button(renderer.root, 'Revisar').props.onClick());
+    act(() => button(renderer.root, 'Editar texto').props.onClick());
+    act(() => renderer.root.findByProps({ 'aria-label': 'Texto original de la conversación' }).props.onChange({ target: { value: 'Cliente: otra conversación' } }));
+    expect(button(renderer.root, 'Confirmar dato').props.disabled).toBe(true);
+    expect(button(renderer.root, 'Corregir').props.disabled).toBe(true);
+    expect(button(renderer.root, 'Descartar').props.disabled).toBe(true);
+  });
+  it('informa del éxito y del fallo al copiar la pregunta', async () => {
+    vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true);
+    const writeText = vi.fn().mockResolvedValueOnce(undefined).mockRejectedValueOnce(new Error('denegado'));
+    vi.stubGlobal('navigator', { clipboard: { writeText } });
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => response }));
+    await act(async () => { renderer = create(<IntakeWorkspace />); });
+    await act(async () => { await button(renderer.root, 'Analizar conversación ↗').props.onClick(); });
+    await act(async () => { await button(renderer.root, 'Copiar pregunta').props.onClick(); });
+    expect(renderer.root.findAllByProps({ role: 'status' }).some(n => n.children.includes('Pregunta copiada.'))).toBe(true);
+    await act(async () => { await button(renderer.root, 'Copiar pregunta').props.onClick(); });
+    expect(renderer.root.findAllByProps({ role: 'status' }).some(n => n.children.includes('No se pudo copiar. Selecciona y copia la pregunta.'))).toBe(true);
+  });
+  it('pide confirmación antes de perder un alias editado', async () => {
+    vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true);
+    const confirm = vi.fn().mockReturnValue(false);
+    vi.stubGlobal('window', { confirm });
+    await act(async () => { renderer = create(<IntakeWorkspace />); });
+    act(() => renderer.root.findByProps({ id: 'alias' }).props.onChange({ target: { value: 'Alias ficticio' } }));
+    act(() => button(renderer.root, 'Javier').props.onClick());
+    expect(confirm).toHaveBeenCalledOnce();
+    expect(renderer.root.findByProps({ id: 'alias' }).props.value).toBe('Alias ficticio');
+  });
+
 });
