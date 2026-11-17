@@ -1,0 +1,21 @@
+case_id,source_id,domain,arm,source_outcome_L1,product,n_messages
+kapibala-01,kapibala-sim:talksub_loop:S26_pushy,real estate,talksub_loop,bought,Product Name: Aurelia Heights Studios,19
+kapibala-02,kapibala-sim:mstate:S26_pushy,real estate,mstate,bought,Product Name: Aurelia Heights Studios,21
+kapibala-03,kapibala-sim:mboth:S26_pushy,real estate,mboth,bought,Product Name: Aurelia Heights Studios,19
+kapibala-04,kapibala-sim:mboth:S30_pushy,real estate,mboth,next_step,Product Name: Aegis Plaza Retail Unit 104 by Vertex Realty Group,21
+kapibala-05,kapibala-sim:talksub_loop:S26_standard,real estate,talksub_loop,next_step,Product Name: Aurelia Heights Studios,17
+kapibala-06,kapibala-sim:mstate:S26_standard,real estate,mstate,next_step,Product Name: Aurelia Heights Studios,19
+kapibala-07,kapibala-sim:baseline:S30_standard,real estate,baseline,undecided,Product Name: Aegis Plaza Retail Unit 104 by Vertex Realty Group,15
+kapibala-08,kapibala-sim:baseline:S27_passive,real estate,baseline,undecided,Apex Secure Parking and Storage Package at Greenview Towers offers a premium com,15
+kapibala-09,kapibala-sim:mboth:S30_passive,real estate,mboth,undecided,Product Name: Aegis Plaza Retail Unit 104 by Vertex Realty Group,15
+kapibala-10,kapibala-sim:mboth:S29_passive,real estate,mboth,declined,Autumn Oaks Senior Living Community - The Maple Villa,7
+kapibala-11,kapibala-sim:baseline:S29_standard,real estate,baseline,declined,Autumn Oaks Senior Living Community - The Maple Villa,17
+kapibala-12,kapibala-sim:mstate:S29_pushy,real estate,mstate,declined,Autumn Oaks Senior Living Community - The Maple Villa,19
+kapibala-13,kapibala-sim:baseline:S11_pushy,financial,baseline,bought,,19
+kapibala-14,kapibala-sim:talksub_loop:S13_pushy,financial,talksub_loop,bought,,13
+kapibala-15,kapibala-sim:mboth:S20_pushy,financial,mboth,next_step,,21
+kapibala-16,kapibala-sim:baseline:S16_standard,financial,baseline,next_step,,17
+kapibala-17,kapibala-sim:mboth:S14_passive,financial,mboth,undecided,,17
+kapibala-18,kapibala-sim:mstate:S17_passive,financial,mstate,declined,,9
+kapibala-19,kapibala-sim:talksub_loop:S14_standard,financial,talksub_loop,declined,,17
+kapibala-20,kapibala-sim:mboth:S13_standard,financial,mboth,next_step,,17

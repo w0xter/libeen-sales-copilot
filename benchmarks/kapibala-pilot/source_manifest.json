@@ -1,0 +1,56 @@
+{
+  "created_utc": "2026-11-16T18:51:57.235255+00:00",
+  "dataset": "Thomasgudan/kapibala-sales-dialogues",
+  "revision_requested": "1e253fe",
+  "seed": "libeen-kapibala-pilot-v1-2026-11-16",
+  "quotas": {
+    "real estate": 12,
+    "financial": 8
+  },
+  "selection": "Up to quota/4 per outcome, remainder by stable SHA256 rank",
+  "files": {
+    "conversations.jsonl": {
+      "url": "https://huggingface.co/datasets/Thomasgudan/kapibala-sales-dialogues/resolve/1e253fe/data/conversations.jsonl",
+      "sha256": "ea10d0469f210e2d146e8e6483ad52706c645731d2e6d0e46df37c239898fe58",
+      "bytes": 6179365
+    },
+    "meta.jsonl": {
+      "url": "https://huggingface.co/datasets/Thomasgudan/kapibala-sales-dialogues/resolve/1e253fe/data/meta.jsonl",
+      "sha256": "6e838c0f17787cbba7a4385dfb64e5d0444005b9f2c9c0691036bb46f9879099",
+      "bytes": 216771
+    },
+    "labels_L1_outcome.jsonl": {
+      "url": "https://huggingface.co/datasets/Thomasgudan/kapibala-sales-dialogues/resolve/1e253fe/data/labels_L1_outcome.jsonl",
+      "sha256": "33ba2d9366b95042105879e46080f0ed3e627cb108a7d78fa91cdb84ca0cac05",
+      "bytes": 215673
+    }
+  },
+  "ids": [
+    "kapibala-sim:talksub_loop:S26_pushy",
+    "kapibala-sim:mstate:S26_pushy",
+    "kapibala-sim:mboth:S26_pushy",
+    "kapibala-sim:mboth:S30_pushy",
+    "kapibala-sim:talksub_loop:S26_standard",
+    "kapibala-sim:mstate:S26_standard",
+    "kapibala-sim:baseline:S30_standard",
+    "kapibala-sim:baseline:S27_passive",
+    "kapibala-sim:mboth:S30_passive",
+    "kapibala-sim:mboth:S29_passive",
+    "kapibala-sim:baseline:S29_standard",
+    "kapibala-sim:mstate:S29_pushy",
+    "kapibala-sim:baseline:S11_pushy",
+    "kapibala-sim:talksub_loop:S13_pushy",
+    "kapibala-sim:mboth:S20_pushy",
+    "kapibala-sim:baseline:S16_standard",
+    "kapibala-sim:mboth:S14_passive",
+    "kapibala-sim:mstate:S17_passive",
+    "kapibala-sim:talksub_loop:S14_standard",
+    "kapibala-sim:mboth:S13_standard"
+  ],
+  "license": "CC BY 4.0; preserve attribution",
+  "limits": [
+    "L1 labels are model judgements, not gold",
+    "The current Libeen code is SmartHousing-specific",
+    "Multiline turns are normalized to one line for the Libeen parser"
+  ]
+}
