@@ -1,5 +1,5 @@
 {
-  "version": "1.0-candidate",
+  "version": "1.0",
   "source": "Notion corpus of 48 already exposed to annotator",
   "policy": "2 development / 4 evaluation / 2 reserved_nonblind per family; reserved is not independent holdout",
   "splits": {
@@ -101,5 +101,12 @@
   },
   "blindHoldout": false,
   "blindHoldoutStatus": "requires new unseen cases",
-  "strategy": "Manual stratification with 2/4/2 per family; swapped F1-02↔F1-04 and F2-10↔F2-12 so development and evaluation both cover all seven scored fields. Reserved cases are exposed, not blind."
+  "strategy": "Manual stratification with 2/4/2 per family; swapped F1-02↔F1-04 and F2-10↔F2-12 so development and evaluation both cover all seven scored fields. Reserved cases are exposed, not blind.",
+  "goldApproval": {
+    "status": "approved_by_dataset_owner",
+    "date": "2026-11-18",
+    "scope": "48_cases_51_assertions_and_absences",
+    "frozen": true,
+    "contentChangesAllowedOnlyByNewVersion": true
+  }
 }

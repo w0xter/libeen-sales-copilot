@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "EXP-EXTRACT-01 Structured Gold v1 (agent-reviewed candidate; not independent ground truth)",
+  "title": "EXP-EXTRACT-01 Structured Gold v1 — human validated",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -164,13 +164,13 @@
         "oracleSummary",
         "reviewer",
         "reviewDate",
-        "version"
+        "version",
+        "approval"
       ],
       "properties": {
         "status": {
           "enum": [
-            "agent_reviewed_pending_independent",
-            "independently_reviewed"
+            "user_approved"
           ]
         },
         "source": {
@@ -187,7 +187,28 @@
           "format": "date"
         },
         "version": {
-          "const": "1.0-candidate"
+          "const": "1.0"
+        },
+        "approval": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "date",
+            "scope"
+          ],
+          "properties": {
+            "status": {
+              "const": "approved_by_dataset_owner"
+            },
+            "date": {
+              "type": "string",
+              "format": "date"
+            },
+            "scope": {
+              "const": "full_case_including_assertions_and_absences"
+            }
+          }
         }
       }
     }

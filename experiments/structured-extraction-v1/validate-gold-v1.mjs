@@ -13,12 +13,17 @@ const fields=['interest','location','horizon','buyers','income','savings','debts
 assert.equal(gold.length,48);assert.equal(audit.length,48);
 assert.equal(new Set(gold.map(x=>x.caseId)).size,48);
 assert.equal(manifest.blindHoldout,false);
+assert.equal(manifest.version,'1.0');
+assert.equal(manifest.goldApproval.status,'approved_by_dataset_owner');
+assert.equal(manifest.goldApproval.frozen,true);
 assert.equal(schema.properties.split.enum.includes('reserved_nonblind'),true);
 const seen=new Set(), stats={development:0,evaluation:0,reserved_nonblind:0};
 let count=0;
 for(const r of gold){
  const m=r.input.messages[0];assert.equal(r.caseId,m.messageId);assert.equal(r.family,r.caseId.slice(0,2));
- assert.equal(r.annotation.status,'agent_reviewed_pending_independent');
+ assert.equal(r.annotation.status,'user_approved');
+ assert.equal(r.annotation.version,'1.0');
+ assert.deepEqual(r.annotation.approval,{status:'approved_by_dataset_owner',date:'2026-11-18',scope:'full_case_including_assertions_and_absences'});
  assert.ok(manifest.splits[r.split].includes(r.caseId));
  assert.equal(r.input.messages.length,1);
  const used=new Set();
@@ -44,8 +49,13 @@ for(const split of ['development','evaluation'])for(const field of fields){
  const n=gold.filter(r=>r.split===split).flatMap(r=>r.gold.assertions).filter(a=>a.field===field).length;
  assert.ok(n>0,'missing '+field+' coverage in '+split);
 }
+assert.equal(count,51);
 assert.deepEqual(audit.map(x=>x.caseId),gold.map(x=>x.caseId));
-for(const a of audit){assert.equal(a.review.evidenceValid,true);assert.equal(a.review.sourceTextMatch,true);}
+for(const a of audit){
+ assert.equal(a.review.evidenceValid,true);assert.equal(a.review.sourceTextMatch,true);
+ assert.equal(a.review.independentHumanReview,true);
+ assert.deepEqual(a.review.humanApproval,{status:'approved_by_dataset_owner',date:'2026-11-18'});
+}
 assert.equal(gold.find(x=>x.caseId==='F4-28').gold.assertions[0].value.period,'quincena');
 assert.equal(gold.find(x=>x.caseId==='F6-46').input.messages[0].text,'[Imagen adjunta no accesible] Ahí aparecen mis ingresos.');
 for(const id of ['F4-30','F4-31']){
