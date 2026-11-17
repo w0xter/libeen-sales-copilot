@@ -42,3 +42,38 @@ node experiments/structured-extraction-v1/validate-gold-v1.mjs
 3. Usar `development` para ajustar B y `evaluation` para compararlo con A/C. **No llamar holdout** al bloque `reserved_nonblind`; para una prueba ciega, obtener nuevos casos fuera del entorno de optimización.
 
 **Nota de alcance:** aunque este gold es reproducible, los 48 casos sintéticos no representan una distribución real de clientes y el baseline V0 tiene un criterio más restrictivo para `interest`.
+
+## G1 — Ejecución aislada
+
+El código experimental vive en `adapters/`, `evaluators/`, `runner/` y `cli.mjs`. A invoca `extract()` de V0 mediante un transporte inyectado y conserva respuesta estructurada original, candidatos originales aceptados y diagnósticos de descarte. B y C comparten prompt, esquema Zod, validaciones y normalizador; solo cambia el modelo configurado. Ninguno altera la V0.
+
+Con Node 22.15 o posterior, desde la raíz del repositorio, sin credenciales ni red:
+
+```bash
+node --experimental-strip-types experiments/structured-extraction-v1/cli.mjs --mode=offline --split=development
+pnpm exec vitest run experiments/structured-extraction-v1
+```
+
+Sin `--mock`, el transporte offline devuelve listas vacías para probar infraestructura; el informe se marca **SIMULATED** y no constituye un resultado experimental. Se puede proporcionar `--mock=/ruta/respuestas.json`, con el formato `{ "A": { "F1-01": { "candidates": [], "semanticIssues": [] } }, "B": { "F1-01": { "assertions": [] } }, "C": {} }`. Las entradas omitidas usan listas vacías. `--arms=A,B,C`, `--repeat=1`, `--output=/ruta` y `--split=development|evaluation|reserved_nonblind` son opcionales. A y B usan el mismo `--model`; C usa `--model-c`. Cada invocación crea un directorio nuevo y no sobrescribe corridas anteriores. El destino predeterminado `runs/` se ignora en Git.
+
+El modo `--mode=real` utiliza OpenAI y requiere `OPENAI_API_KEY`; si se incluye C, exige `--model-c`. **No ejecutarlo sin autorización y sin congelar configuración y presupuesto.** A usa exactamente el transporte V0, que no expone uso ni texto JSON original; se conserva el objeto recibido. B/C usan JSON object y conservan el texto y el uso cuando el proveedor los ofrece. La diferencia de formato y los parámetros por defecto están registrados, no se asume igualdad completa. No hay reintentos. El coste se deja como desconocido salvo que el transporte lo proporcione; no se estiman precios.
+
+`run-manifest.json` registra SHA de gold, hash de entradas, versión de Node y dependencias, código y prompt/esquema, configuración, orden y modelos. Al iniciar se comprueba que gold, esquema, partición, auditoría y validador coinciden byte por byte con el commit congelado y pasa el validador existente. `results.jsonl` conserva cada intento y su latencia, salida, candidatos, descartes, errores y evaluación; `report.json` agrupa métricas, cobertura, errores, falsos positivos, evidencia, tokens y latencia. Los errores de proveedor y respuestas inválidas se excluyen del denominador de calidad y se enumeran, de modo que también hay que examinar cobertura. Los datos de prueba no representan clientes.
+
+### Interpretación y límites
+
+El evaluador empareja cada candidato como máximo una vez con el gold y exige campo, derivación y todos los atributos de valor iguales, además de mismo mensaje y una cita que contenga íntegramente la cita adjudicada. Se normalizan únicamente mayúsculas/minúsculas, Unicode NFC y espacios en valores de texto; se ignora `relationEvidence` como atributo porque se comprueba mediante la cita completa. La cita es sensible a caracteres y no se equiparan desconocido, ausente y cero, ni rangos o periodos distintos. Esta regla conservadora puede rechazar citas alternativas válidas; requiere revisión humana, especialmente en casos críticos. El informe incluye TP/FP/FN, precisión, recall y F1 por campo y global, macro-F1 y falsos positivos por 100 casos negativos; denominadores vacíos se indican como `null`.
+
+**A y límites de interpretación.** A devuelve valores de texto libre y no codifica directamente todos los atributos del gold. La normalización conserva el texto original y una lista `normalization.unresolved` para los atributos que no puede establecer. Interpreta importes españoles inequívocos, decimales y rangos explícitos, divisa, periodos declarados, sujeto, negaciones y polaridad cuando existe señal suficiente; no convierte una negación de deuda en cero, no infiere periodicidad ni base neta y no atribuye ingresos conjuntos a una persona. Los atributos no representables, como `kind`, `subjectRef` o disponibilidad restringida cuando A no la expresa, quedan indeterminados. Una normalización no garantiza que la cita respalde semánticamente la afirmación.
+
+El resultado por caso incluye coincidencias estrictas y coincidencias **posibles**: estas últimas usan emparejamiento uno a uno, exigen el mismo campo y la evidencia adjudicada y permiten atributos indeterminados, pero rechazan contradicciones en los atributos conocidos. `comparisonAB` compara únicamente casos y repeticiones donde ambos brazos terminaron, enumera pares incompletos y presenta A estricto y A optimista frente a B estricto, además del intervalo correspondiente a `B − A`. Publica `interest` y los otros seis campos por separado. El intervalo es una **cota operativa bajo estas reglas y esta evidencia**, no un intervalo estadístico ni una garantía de corrección semántica: citas alternativas, normalizaciones no reconocidas y significados erróneos con cita literal exigen revisión humana. Si el intervalo incluye cero o depende de casos indeterminados no adjudicados, la diferencia es inconcluyente. Los fallos de proveedor y descartes se revisan junto con la cobertura.
+
+Así se puede interpretar una comparación **acotada y emparejada**, siempre que A y B usen el mismo modelo y se registren las diferencias de formato y parámetros. No se puede afirmar una diferencia exacta de F1 ni atribuirla solo a la arquitectura cuando hay atributos sin resolver. A además exige SmartHousing en su filtro de `interest` mientras el gold no; esa diferencia de definición se informa por separado. La muestra es sintética y `reserved_nonblind` no es ciego.
+
+### Puertas G2/G3
+
+G2: revisar las normalizaciones indeterminadas y el contrato y prompt B solo con `development`, fijar prompt, esquema, evaluador, parámetros, modelo C y presupuesto antes de evaluación. G3: ejecutar la comparación autorizada y posteriormente analizarla; no se ha realizado ninguna llamada real ni benchmark en G1. `reserved_nonblind` está expuesto y no es holdout ciego; un holdout ciego requiere casos nuevos.
+
+### Verificación local
+
+El validador de gold pasó (48 casos y 51 afirmaciones); `pnpm test` pasó con 263 pruebas y 4 omitidas; `pnpm lint` y `pnpm typecheck` pasaron. La integración offline comprueba dos corridas independientes y una comparación A/B simulada sobre desarrollo. No se probaron llamadas al proveedor ni se calculó un resultado experimental real.
