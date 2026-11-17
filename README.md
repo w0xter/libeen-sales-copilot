@@ -8,7 +8,7 @@ Una herramienta de asistencia comercial que transforma conversaciones no estruct
 
 ### Ver la solución
 
-- **[Vídeo de la demo](https://nomulabs-my.sharepoint.com/:v:/p/luis/IQDdKF378eYuRbWc5xw3F2IDAaZ96sHPvi8cMUiGNx3edpM?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJycmFsTW9kZSI6InZpZXcifX0%3D&e=dzgXcl)** — presentación y recorrido funcional.
+- **[Vídeo de la demo](https://nomulabs-my.sharepoint.com/:v:/p/luis/IQDdKF378eYuRbWc5xw3F2IDAaZ96sHPvi8cMUiGNx3edpM?e=dzgXcl)** — presentación y recorrido funcional.
 - **[Demo online](https://libeen-sales-copilot.vercel.app/)** — aplicación para explorar la PoC.
 - **[Roadmap](docs/current/roadmap.md)** — posibles líneas de evolución.
 
