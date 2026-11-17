@@ -6,7 +6,7 @@
 
 - **48/48 casos revisados por un agente contra el texto y las decisiones semánticas aprobadas**, 51 afirmaciones y sus citas; seis casos con cambios registrados en `audit/gold-v1-audit.jsonl`.
 - `datasets/gold.v0.1.jsonl` se mantiene intacto como histórico. `datasets/gold.v1.jsonl` es un **snapshot candidato auditado**, con `status: agent_reviewed_pending_independent`. No equivale a revisión humana independiente ni certificación para producción.
-- Distribución manual estratificada: 12 `development`, 24 `evaluation` y 12 `reserved_nonblind`, siempre 2/4/2 por familia. Todos los casos ya eran visibles: `reserved_nonblind` **no es holdout ciego**. Un holdout independiente requiere casos *nuevos*, no divulgados al desarrollador del extractor B.
+- Distribución manual estratificada: 12 `development`, 24 `evaluation` y 12 `reserved_nonblind`, siempre 2/4/2 por familia. Los conjuntos `development` y `evaluation` tienen al menos un ejemplo de cada uno de los siete campos; los casos `reserved_nonblind` son casos de contraste adicionales, **no** un holdout independiente. Todos los casos ya eran visibles: `reserved_nonblind` **no es holdout ciego**. Un holdout independiente requiere casos *nuevos*, no divulgados al desarrollador del extractor B.
 - La versión v1 es una referencia versionada en un commit; modificarla exige una revisión documentada y una versión posterior. No se han ejecutado modelos, ni fijado métricas, ni entrenado el extractor.
 
 ## Archivos

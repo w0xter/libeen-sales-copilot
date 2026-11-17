@@ -40,6 +40,10 @@ for(let i=1;i<=6;i++){
  for(const [split,n] of [['development',2],['evaluation',4],['reserved_nonblind',2]])
   assert.equal(gold.filter(x=>x.family===fam&&x.split===split).length,n);
 }
+for(const split of ['development','evaluation'])for(const field of fields){
+ const n=gold.filter(r=>r.split===split).flatMap(r=>r.gold.assertions).filter(a=>a.field===field).length;
+ assert.ok(n>0,'missing '+field+' coverage in '+split);
+}
 assert.deepEqual(audit.map(x=>x.caseId),gold.map(x=>x.caseId));
 for(const a of audit){assert.equal(a.review.evidenceValid,true);assert.equal(a.review.sourceTextMatch,true);}
 assert.equal(gold.find(x=>x.caseId==='F4-28').gold.assertions[0].value.period,'quincena');

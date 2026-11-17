@@ -5,9 +5,9 @@
   "splits": {
     "development": [
       "F1-01",
-      "F1-02",
+      "F1-04",
       "F2-09",
-      "F2-10",
+      "F2-12",
       "F3-19",
       "F3-20",
       "F4-27",
@@ -19,11 +19,11 @@
     ],
     "evaluation": [
       "F1-03",
-      "F1-04",
+      "F1-02",
       "F1-05",
       "F1-08",
       "F2-11",
-      "F2-12",
+      "F2-10",
       "F2-15",
       "F2-16",
       "F3-17",
@@ -61,27 +61,27 @@
   "coverage": {
     "development": {
       "cases": 12,
-      "assertions": 13,
+      "assertions": 14,
       "byField": {
         "interest": 2,
-        "location": 4,
+        "location": 2,
         "horizon": 2,
-        "buyers": 0,
-        "income": 1,
-        "savings": 3,
+        "buyers": 2,
+        "income": 3,
+        "savings": 2,
         "debts": 1
       }
     },
     "evaluation": {
       "cases": 24,
-      "assertions": 29,
+      "assertions": 28,
       "byField": {
         "interest": 3,
-        "location": 4,
+        "location": 6,
         "horizon": 2,
-        "buyers": 6,
-        "income": 8,
-        "savings": 2,
+        "buyers": 4,
+        "income": 6,
+        "savings": 3,
         "debts": 4
       }
     },
@@ -101,5 +101,5 @@
   },
   "blindHoldout": false,
   "blindHoldoutStatus": "requires new unseen cases",
-  "strategy": "manual stratified for label and negative coverage; not random; do not make p-values or leakage claims"
+  "strategy": "Manual stratification with 2/4/2 per family; swapped F1-02↔F1-04 and F2-10↔F2-12 so development and evaluation both cover all seven scored fields. Reserved cases are exposed, not blind."
 }
