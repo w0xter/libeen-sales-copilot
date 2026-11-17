@@ -36,3 +36,28 @@ No interpretar 21/21 como 100 % de exactitud. No medir estadísticamente robuste
 - **Antes de modificar el modelo:** etiquetar 3–5 conversaciones de ámbitos diferentes; contrastar falsos positivos de `debts`, `income`, `savings`, `horizon` y `sensitive` con gold humano. No cambiar las reglas comerciales de la V0 a partir de un corpus ajeno sin consentimiento del responsable.
 
 **Limitación:** El usuario aportó un JSONL de salida, no los ficheros brutos del corpus ni un informe de calibración. Cifras y hallazgos se derivan únicamente de esas tres respuestas.
+
+
+## Segundo smoke — mismo escenario repetido (archivo `smoke-2.jsonl`)
+
+**Procedencia:** segunda entrega de tres registros JSONL por el responsable, el 16/11/2026; analizados sin llamar al proveedor desde el asistente. Misma tríada de `source_id` y `case_id` que el smoke 1; no son nuevos escenarios ni evidencian que la selección corregida se haya aplicado al conjunto de entrada. No se conoce si se conservaron exactamente el mismo modelo, versión de prompt y commit entre corridas.
+
+| Indicador | Smoke 1 | Smoke 2 |
+| --- | ---: | ---: |
+| HTTP 200 | 3/3 | 3/3 |
+| Candidatos aceptados | 21 (12/5/4) | 17 (3/10/4) |
+| Substrings literales válidos | 21/21 | 17/17 |
+| Candidatos descartados | 7 | 6 |
+| Incidencias finales (missing, sensitive, ambiguous) | 20 | 21 (3/10/8) |
+| Intervención human_review | 3/3 | 2/3 |
+| Latencia media | 7,54 s | 5,86 s |
+
+**Hallazgos en el segundo resultado:**
+
+1. `kapibala-01`: ya no se extraen depósitos de reserva como `debts`, pero el modelo propone `buyers=1` citando «my details now» (`m11`), evidencia insuficiente de número de compradores. Intervención `question` sobre interés en SmartHousing pese a una operación inmobiliaria en fase avanzada; acorde con filtro vertical, inapropiada para este producto externo.
+2. `kapibala-02`: 7 incidencias `sensitive` etiquetan urgencia comercial, reserva, firma y pago inminentes, provocando `human_review` sin evidencia de una situación protegida específica. Se extraen 6 `horizon` a partir de actos de reserva, 2 `savings` a partir de dinero sin cuantificar y una localización «city centre» anclada a `m3` que no la menciona literalmente aunque la cita exista.
+3. `kapibala-03`: 5 incidencias `sensitive` por avanzar rápidamente, además de `savings` basado en «I have my funds ready to go» sin importe declarado y `horizon` basado en condiciones para reservar.
+
+**Lectura:** las salidas cambian sustancialmente entre dos observaciones de la misma tríada; no permite atribuir la diferencia a aleatoriedad, ajuste de configuración o cambios de código sin metadatos de modelo/commit/prompts. El 100 % de citas localizables no prueba semántica correcta. Estos casos tampoco representan una muestra independiente ni un gold anotado.
+
+**Próximo paso recomendado:** ejecutar de nuevo `prepare` con el selector que excluye brazos de un mismo escenario; inspeccionar `scenario_group` en `inputs/kapibala_20_catalog.csv` y verificar 20 valores distintos antes de pagar más inferencias. Fijar modelo, commit, prompt/configuración y gold humano para 3–5 ejemplos variados. Tratar por separado las incompatibilidades verticales con SmartHousing y errores de lectura semántica.
