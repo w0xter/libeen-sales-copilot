@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EXP-EXTRACT-01 Gold v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "caseId",
+    "family",
+    "split",
+    "input",
+    "gold",
+    "annotation"
+  ],
+  "properties": {
+    "caseId": {
+      "type": "string",
+      "pattern": "^F[1-6]-[0-9]{2}$"
+    },
+    "family": {
+      "enum": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6"
+      ]
+    },
+    "split": {
+      "enum": [
+        "unassigned",
+        "development",
+        "evaluation",
+        "holdout"
+      ]
+    },
+    "input": {
+      "type": "object",
+      "required": [
+        "messages"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "messages": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "messageId",
+              "role",
+              "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "messageId": {
+                "type": "string"
+              },
+              "role": {
+                "enum": [
+                  "customer",
+                  "advisor"
+                ]
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "gold": {
+      "type": "object",
+      "required": [
+        "assertions",
+        "absentFields",
+        "contextChecks"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "assertions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "field",
+              "value",
+              "evidence",
+              "derivation"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "field": {
+                "enum": [
+                  "interest",
+                  "location",
+                  "horizon",
+                  "buyers",
+                  "income",
+                  "savings",
+                  "debts"
+                ]
+              },
+              "value": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "evidence": {
+                "type": "object",
+                "required": [
+                  "messageId",
+                  "exactQuote"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "messageId": {
+                    "type": "string"
+                  },
+                  "exactQuote": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "derivation": {
+                "enum": [
+                  "explicit",
+                  "inferred"
+                ]
+              }
+            }
+          }
+        },
+        "absentFields": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "interest",
+              "location",
+              "horizon",
+              "buyers",
+              "income",
+              "savings",
+              "debts"
+            ]
+          }
+        },
+        "contextChecks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "annotation": {
+      "type": "object",
+      "required": [
+        "status",
+        "source",
+        "oracleSummary"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "proposed_needs_independent_review",
+            "independently_reviewed"
+          ]
+        },
+        "source": {
+          "type": "string"
+        },
+        "oracleSummary": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
