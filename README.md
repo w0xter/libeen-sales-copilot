@@ -1,93 +1,94 @@
-# Libeen AI Lead Intake V0
+# Libeen AI Lead Intake
 
-**AI Product Engineer — Proof of Concept**
+**Prueba técnica · AI Product Engineer · PoC funcional**
 
-Una herramienta de asistencia comercial que transforma conversaciones no estructuradas en **información revisable**, con fuentes, incertidumbres visibles y una siguiente intervención sugerida. La IA propone; el asesor valida y decide.
+Un asistente para la cualificación comercial que ayuda a convertir una conversación en una ficha revisable: **qué sabemos del cliente, de dónde sale cada dato, qué dudas quedan y qué convendría preguntar después**.
 
-> **Estado de entrega:** PoC aceptada para una **demostración supervisada con limitaciones** (16/11/2026). No es un sistema autónomo ni un producto preparado para producción. La interpretación semántica del modelo es probabilística y requiere revisión humana.
+El asesor mantiene el control. La aplicación no envía mensajes, no aprueba operaciones ni actualiza automáticamente un CRM.
 
-### Ver la solución
+**[Ver demo en vídeo](https://nomulabs-my.sharepoint.com/:v:/p/luis/IQDdKF378eYuRbWc5xw3F2IDAaZ96sHPvi8cMUiGNx3edpM?e=dzgXcl)** · **[Probar la aplicación](https://libeen-sales-copilot.vercel.app/)** · **[Ver roadmap](docs/current/roadmap.md)**
 
-- **[Vídeo de la demo](https://nomulabs-my.sharepoint.com/:v:/p/luis/IQDdKF378eYuRbWc5xw3F2IDAaZ96sHPvi8cMUiGNx3edpM?e=dzgXcl)** — presentación y recorrido funcional.
-- **[Demo online](https://libeen-sales-copilot.vercel.app/)** — aplicación para explorar la PoC.
-- **[Roadmap](docs/current/roadmap.md)** — posibles líneas de evolución.
+## Qué he construido
 
-## Qué resuelve
+En una primera conversación comercial es habitual que los datos importantes estén repartidos entre mensajes: zona, plazo, compradores, ingresos, ahorros, cuotas y nivel de interés. El asesor tiene que reconstruir todo eso, detectar lo que falta y preparar la siguiente intervención.
 
-Durante la cualificación comercial, un asesor necesita reconstruir datos dispersos, identificar lo que falta y decidir qué preguntar a continuación. Esta PoC permite **pegar una conversación ficticia**, analizarla bajo demanda y preparar una ficha comercial revisada, sin automatizar decisiones o comunicaciones.
+AI Lead Intake propone un recorrido sencillo:
 
-El recorrido implementado es:
+1. **Analizar una conversación ficticia** pegada o seleccionada en la interfaz.
+2. **Extraer datos con sus fuentes**, sin tratar las interpretaciones del modelo como hechos verificados.
+3. **Detectar información pendiente o ambigua** y sugerir una pregunta prioritaria.
+4. **Revisar la ficha:** confirmar, corregir, descartar o contrastar declaraciones posteriores.
+5. **Preparar una vista CRM** para copiarla manualmente, con los datos y las incidencias visibles.
 
-1. **Extracción con fuentes (B):** el LLM propone candidatos para siete campos comerciales (interés, zona, horizonte, compradores, ingresos, ahorros y cuotas/deudas), preservando citas y metadatos.
-2. **Incidencias (D):** las reglas y señales semánticas detectan ausencias, ambigüedades, contenido inaccesible y posibles solicitudes sensibles.
-3. **Siguiente intervención (E):** se propone una sola pregunta editable o una revisión humana.
-4. **Supervisión y exportación:** el asesor confirma, corrige o descarta valores; puede revisar conflictos y copiar una ficha para su carga **manual** en el CRM.
+Por ejemplo, si una persona declara que gana **2.750 € netos al mes** y paga una **cuota de 145 €**, pero no sabe si esa cuota ya está descontada, la aplicación puede conservar ambas cifras y proponer una aclaración específica. No deduce la respuesta ni realiza una evaluación financiera.
 
-**Ejemplo:** ante «gano unos 2.750 € netos y pago una cuota de 145 €, pero no sé si ya está descontada», la aplicación puede conservar ambos datos y su fuente, marcar la inclusión como desconocida y sugerir aclararla, **sin inventar una respuesta ni hacer cálculos financieros**.
+[Ver el recorrido completo con el caso ficticio de Alicante](docs/current/PRODUCT_CAPABILITIES.md)
 
-[Capacidades y recorrido detallado](docs/current/PRODUCT_CAPABILITIES.md) · [Arquitectura B → D → E](docs/current/TECHNICAL_ARCHITECTURE.md)
+## La decisión más importante: reducir el alcance
 
-## Por qué cambió el enfoque
+Empecé desarrollando un **Sales Copilot** más amplio, pensado para acompañar una oportunidad por distintos hitos del proceso comercial. Llegué a una primera versión funcional y comprobé que la lógica de negocio podía estructurarse mediante reglas explícitas.
 
-El trabajo comenzó como un **Sales Copilot autónomo** para acompañar todo el proceso comercial mediante hitos, reglas y orquestación. Una primera versión permitió comprobar el componente determinista, pero las evaluaciones mostraron que **extraer información verificable no equivale a tener suficiente certeza para delegar decisiones comerciales**. La complejidad adicional dificultaba demostrar valor en el alcance de la prueba.
+El problema apareció al apoyar esas decisiones en información extraída por un LLM. Las pruebas mostraron interpretaciones incorrectas incluso cuando la salida tenía el formato esperado y citas literales. **Una extracción estructurada no es necesariamente una extracción fiable.**
 
-Opté por reducir el problema a **extraer información útil, hacer visibles las incertidumbres y ayudar al asesor a dar el siguiente paso**. La implementación original se conserva en la rama [`archive/sales-copilot-v0`](https://github.com/w0xter/libeen-sales-copilot/tree/archive/sales-copilot-v0) y en [documentación histórica](docs/legacy/README.md).
+En lugar de seguir ampliando la arquitectura, decidí centrar la entrega en una tarea más acotada: ayudar al asesor a entender una conversación y avanzar, con la incertidumbre y la revisión humana como partes visibles del producto.
 
-[Decisiones y experimentos del cambio de enfoque](docs/current/PRODUCT_EVOLUTION.md)
+[Por qué cambié el enfoque](docs/current/PRODUCT_EVOLUTION.md) · [Arquitectura y decisiones técnicas](docs/current/TECHNICAL_ARCHITECTURE.md)
 
-## Fiabilidad y limitaciones
+## Cómo funciona y qué aprendí al evaluarlo
 
-Ante una entrada mal formada, un error del proveedor o una respuesta inválida, el sistema muestra un fallo y **no inventa resultados ni sustituye la inferencia por un replay oculto**. Los candidatos sin fuente válida pueden descartarse conservando los restantes. Las revisiones humanas y los conflictos se reflejan en la ficha efectiva; el sistema bloquea determinadas exportaciones desactualizadas o inconsistentes.
+El núcleo sigue tres pasos: **B — Extraction** (candidatos y fuentes mediante OpenAI), **D — Issues** (incidencias a partir de señales y comprobaciones) y **E — Next Question** (una intervención prioritaria mediante reglas). La interfaz permite revisar el resultado antes de utilizarlo.
 
-**Límites conocidos:** la detección de interés y de solicitudes sensibles es imperfecta; la formulación de preguntas y la resolución automática de aclaraciones no están garantizadas. Una revisión manual puede seguir siendo necesaria. No hay persistencia entre sesiones, envío de mensajes, sincronización CRM, scoring ni aprobación financiera. Las reglas configurables requieren editar TypeScript.
+Las evaluaciones detectaron problemas que no aparecían en los tests convencionales: interés comercial mal interpretado, preguntas genéricas o repetidas y una inconsistencia entre la selección visual de un valor y la ficha efectiva. Esos hallazgos motivaron cambios en el código y también en el alcance del producto.
 
-[Errores, mecanismos de protección y known issues](docs/current/AI_RELIABILITY_AND_LIMITATIONS.md) · [Hallazgos registrados](docs/current/evaluation/FINDINGS.md)
+En el último cierre documentado se registraron **232 tests PASS / 4 SKIP** en Vitest, **19 PASS / 9 SKIP** en Playwright y comprobaciones satisfactorias de TypeScript, lint y build. La última llamada real registrada sobre un caso ficticio de Alicante extrajo los siete campos y propuso la aclaración esperada sobre una cuota. **Una ejecución satisfactoria no mide la precisión general del modelo**; los tests de navegador controlado tampoco sustituyen la inferencia real.
 
-## Evaluación y colaboración con IA
+Desarrollé la implementación con **Codex**, delegando código, pruebas y documentación técnica mientras dirigía el alcance, revisaba comportamientos y decidía cómo continuar a partir de las evaluaciones.
 
-El último cierre de hardening documenta **232 PASS / 4 SKIP** en Vitest y **19 PASS / 9 SKIP** en Playwright, además de comprobaciones satisfactorias de typecheck, lint y build. Estos tests verifican principalmente reglas y recorridos controlados; **no miden la precisión del modelo**.
+[Qué evalué y qué aprendí](docs/current/EVALUATION_SUMMARY.md) · [Cómo trabajé con Codex](docs/current/DEVELOPMENT_PROCESS.md)
 
-Una llamada real sobre un caso ficticio de Alicante recuperó los siete campos y la pregunta material esperada. Es **una observación**, no una garantía de robustez ni una evaluación estadística. Las evaluaciones fallidas anteriores, los replays y los cambios de criterio se conservan.
+## Alcance de esta entrega
 
-La implementación se desarrolló con **Codex**, bajo definición del alcance, evaluación y revisión humanas. Entre las correcciones documentadas está P8.1: una selección visual no cambiaba el dato efectivo, por lo que se unificó la fuente de verdad de la ficha.
+Esta versión está preparada como **demostración supervisada con datos ficticios**, no para uso comercial real. Decidí cerrar la PoC con ese alcance el 16 de noviembre de 2026; no equivale a una auditoría independiente ni a una aprobación para producción.
 
-[Resumen de evaluación](docs/current/EVALUATION_SUMMARY.md) · [Criterios vigentes de la PoC](docs/current/evaluation/POC_EVALUATION_CRITERIA.md) · [Proceso humano–Codex](docs/current/DEVELOPMENT_PROCESS.md) · [Registro de colaboración](docs/current/AI_COLLABORATION_LOG.md)
+La extracción puede omitir información o interpretarla incorrectamente; la detección de solicitudes sensibles y la reconciliación automática de aclaraciones tampoco son exhaustivas. Por eso el asesor puede revisar fuentes y resolver incertidumbres. No hay persistencia entre sesiones, integración con CRM, envío de mensajes ni decisiones de financiación.
 
-## Ejecutar localmente
+[Cómo responde ante errores y qué sigue pendiente](docs/current/AI_RELIABILITY_AND_LIMITATIONS.md)
 
-**Requisitos:** Node.js 22, pnpm 12.16.1, conexión de red y clave de OpenAI para la inferencia real.
+## Ejecutarlo localmente
+
+**Stack:** Next.js 16, React 19, TypeScript, OpenAI Responses API, Zod, Vitest y Playwright.
+
+**Requisitos:** Node.js 22, pnpm 12.16.1 y una clave de OpenAI válida.
 
 ```bash
 pnpm install --frozen-lockfile
 cp .env.example .env.local
-# Añadir OPENAI_API_KEY en .env.local; OPENAI_MODEL es opcional
+# Configurar OPENAI_API_KEY en .env.local
 pnpm dev
 ```
 
-Abrir **http://localhost:3000**. El modelo predeterminado es `gpt-4.1-mini`. No introducir datos personales reales; esta PoC se ha desarrollado y evaluado con conversaciones ficticias.
+Abrir [http://localhost:3000](http://localhost:3000). El modelo predeterminado es `gpt-4.1-mini`; puede cambiarse con `OPENAI_MODEL`. La clave se utiliza desde el servidor. Las pruebas con proveedor real requieren credenciales, son optativas y pueden generar costes.
 
 ```bash
 pnpm test
 pnpm typecheck
 pnpm lint
 pnpm build
-pnpm exec playwright install chromium  # una vez, si es necesario
+pnpm exec playwright install chromium
 pnpm test:e2e
 ```
 
-Las pruebas con proveedor real son **optativas**, requieren credenciales y pueden tener coste. Véanse [las pruebas y evidencias](docs/current/README.md#pruebas-y-evidencias) para detalles.
+## Documentación de la entrega
 
-## Documentación para la evaluación
-
-| Documento | Qué contiene |
+| Documento | Para qué consultarlo |
 | --- | --- |
-| [Capacidades y recorrido](docs/current/PRODUCT_CAPABILITIES.md) | Entrada, siete campos, incidencias, revisión y ficha CRM |
-| [Arquitectura](docs/current/TECHNICAL_ARCHITECTURE.md) | Stack, pipeline B/D/E, reglas y separación entre LLM y lógica |
-| [Evolución del enfoque](docs/current/PRODUCT_EVOLUTION.md) | Sales Copilot original, experimentos y motivos de simplificación |
-| [Fiabilidad y known issues](docs/current/AI_RELIABILITY_AND_LIMITATIONS.md) | Validaciones, recuperación ante errores, limitaciones y exclusiones |
-| [Resumen de evaluación](docs/current/EVALUATION_SUMMARY.md) | Tests, inferencias reales, accesibilidad y criterios de aceptación |
-| [Proceso de desarrollo](docs/current/DEVELOPMENT_PROCESS.md) | Colaboración humano–Codex, correcciones y dedicación |
-| [Roadmap](docs/current/roadmap.md) | Próximos pasos y posibles capacidades |
-| [Índice documental](docs/current/README.md) | Informes originales, matrices, evidencias y pruebas |
+| [Recorrido y capacidades](docs/current/PRODUCT_CAPABILITIES.md) | Ver lo que puede hacer un asesor, paso a paso |
+| [Arquitectura](docs/current/TECHNICAL_ARCHITECTURE.md) | Entender B/D/E, las reglas y las decisiones de implementación |
+| [Evolución del producto](docs/current/PRODUCT_EVOLUTION.md) | Entender el Sales Copilot inicial y el cambio de enfoque |
+| [Evaluaciones](docs/current/EVALUATION_SUMMARY.md) | Revisar hallazgos, pruebas y resultados |
+| [Fiabilidad y limitaciones](docs/current/AI_RELIABILITY_AND_LIMITATIONS.md) | Ver cómo se tratan los errores y qué falta resolver |
+| [Desarrollo con Codex](docs/current/DEVELOPMENT_PROCESS.md) | Conocer mi forma de trabajo, las revisiones y la dedicación |
+| [Roadmap](docs/current/roadmap.md) | Explorar las siguientes etapas y sus dependencias |
+| [Índice técnico y evidencias](docs/current/README.md) | Acceder a informes, criterios, casos y pruebas detalladas |
 
-**Conclusión:** la dirección del producto consiste en obtener valor de la interpretación de lenguaje natural sin presentar la salida del modelo como verdad verificada. **La IA propone, el sistema estructura y el asesor decide.**
+El primer enfoque queda conservado en [`archive/sales-copilot-v0`](https://github.com/w0xter/libeen-sales-copilot/tree/archive/sales-copilot-v0) y en [`docs/legacy`](docs/legacy/README.md). No forma parte de la aplicación actual.
