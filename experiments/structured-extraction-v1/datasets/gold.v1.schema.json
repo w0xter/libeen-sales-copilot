@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EXP-EXTRACT-01 Structured Gold v1 (agent-reviewed candidate; not independent ground truth)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "caseId",
+    "family",
+    "split",
+    "input",
+    "gold",
+    "annotation"
+  ],
+  "properties": {
+    "caseId": {
+      "type": "string",
+      "pattern": "^F[1-6]-[0-9]{2}$"
+    },
+    "family": {
+      "enum": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6"
+      ]
+    },
+    "split": {
+      "enum": [
+        "development",
+        "evaluation",
+        "reserved_nonblind"
+      ]
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "messages"
+      ],
+      "properties": {
+        "messages": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "messageId",
+              "role",
+              "text"
+            ],
+            "properties": {
+              "messageId": {
+                "type": "string"
+              },
+              "role": {
+                "enum": [
+                  "customer",
+                  "advisor"
+                ]
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "gold": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assertions",
+        "absentFields",
+        "contextChecks"
+      ],
+      "properties": {
+        "assertions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "field",
+              "value",
+              "evidence",
+              "derivation"
+            ],
+            "properties": {
+              "field": {
+                "enum": [
+                  "interest",
+                  "location",
+                  "horizon",
+                  "buyers",
+                  "income",
+                  "savings",
+                  "debts"
+                ]
+              },
+              "value": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "evidence": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "messageId",
+                  "exactQuote"
+                ],
+                "properties": {
+                  "messageId": {
+                    "type": "string"
+                  },
+                  "exactQuote": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "derivation": {
+                "enum": [
+                  "explicit",
+                  "inferred"
+                ]
+              }
+            }
+          }
+        },
+        "absentFields": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "interest",
+              "location",
+              "horizon",
+              "buyers",
+              "income",
+              "savings",
+              "debts"
+            ]
+          }
+        },
+        "contextChecks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "annotation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "source",
+        "oracleSummary",
+        "reviewer",
+        "reviewDate",
+        "version"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "agent_reviewed_pending_independent",
+            "independently_reviewed"
+          ]
+        },
+        "source": {
+          "type": "string"
+        },
+        "oracleSummary": {
+          "type": "string"
+        },
+        "reviewer": {
+          "type": "string"
+        },
+        "reviewDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "version": {
+          "const": "1.0-candidate"
+        }
+      }
+    }
+  }
+}

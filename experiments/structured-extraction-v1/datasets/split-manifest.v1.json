@@ -1,0 +1,105 @@
+{
+  "version": "1.0-candidate",
+  "source": "Notion corpus of 48 already exposed to annotator",
+  "policy": "2 development / 4 evaluation / 2 reserved_nonblind per family; reserved is not independent holdout",
+  "splits": {
+    "development": [
+      "F1-01",
+      "F1-02",
+      "F2-09",
+      "F2-10",
+      "F3-19",
+      "F3-20",
+      "F4-27",
+      "F4-30",
+      "F5-33",
+      "F5-37",
+      "F6-42",
+      "F6-45"
+    ],
+    "evaluation": [
+      "F1-03",
+      "F1-04",
+      "F1-05",
+      "F1-08",
+      "F2-11",
+      "F2-12",
+      "F2-15",
+      "F2-16",
+      "F3-17",
+      "F3-18",
+      "F3-21",
+      "F3-23",
+      "F4-25",
+      "F4-26",
+      "F4-29",
+      "F4-31",
+      "F5-34",
+      "F5-38",
+      "F5-39",
+      "F5-40",
+      "F6-41",
+      "F6-43",
+      "F6-44",
+      "F6-46"
+    ],
+    "reserved_nonblind": [
+      "F1-06",
+      "F1-07",
+      "F2-13",
+      "F2-14",
+      "F3-22",
+      "F3-24",
+      "F4-28",
+      "F4-32",
+      "F5-35",
+      "F5-36",
+      "F6-47",
+      "F6-48"
+    ]
+  },
+  "coverage": {
+    "development": {
+      "cases": 12,
+      "assertions": 13,
+      "byField": {
+        "interest": 2,
+        "location": 4,
+        "horizon": 2,
+        "buyers": 0,
+        "income": 1,
+        "savings": 3,
+        "debts": 1
+      }
+    },
+    "evaluation": {
+      "cases": 24,
+      "assertions": 29,
+      "byField": {
+        "interest": 3,
+        "location": 4,
+        "horizon": 2,
+        "buyers": 6,
+        "income": 8,
+        "savings": 2,
+        "debts": 4
+      }
+    },
+    "reserved_nonblind": {
+      "cases": 12,
+      "assertions": 9,
+      "byField": {
+        "interest": 0,
+        "location": 1,
+        "horizon": 2,
+        "buyers": 1,
+        "income": 1,
+        "savings": 2,
+        "debts": 2
+      }
+    }
+  },
+  "blindHoldout": false,
+  "blindHoldoutStatus": "requires new unseen cases",
+  "strategy": "manual stratified for label and negative coverage; not random; do not make p-values or leakage claims"
+}

@@ -1,29 +1,44 @@
-# EXP-EXTRACT-01 — Structured Gold v0.1
+# EXP-EXTRACT-01 — Gold auditado y particionado
 
-**Status:** proposed, requiring independent human review; **not frozen** and **not evaluated**.
+**Rama:** `experiment/structured-extraction-v1`. La V0 en `main` no se modifica. Fuente: [corpus Notion aprobado](https://app.notion.com/p/41ba4247646881db88eff6c0ff6e93ba) y [especificación del benchmark](https://app.notion.com/p/41ba424764688164ab42c161f163921e).
 
-Source: [approved 48-sentence Notion corpus](https://app.notion.com/p/41ba4247646881db88eff6c0ff6e93ba), [A/B/C protocol](https://app.notion.com/p/41ba424764688164ab42c161f163921e).
+## Estado G0 (18-11-2026)
 
-This directory contains **48 original synthetic messages**, **51 proposed atomic assertions** across the seven agreed business fields, exact quote provenance, negative field expectations, and contextual error checks. Original source sentences are preserved unchanged.
+- **48/48 casos revisados por un agente contra el texto y las decisiones semánticas aprobadas**, 51 afirmaciones y sus citas; seis casos con cambios registrados en `audit/gold-v1-audit.jsonl`.
+- `datasets/gold.v0.1.jsonl` se mantiene intacto como histórico. `datasets/gold.v1.jsonl` es un **snapshot candidato auditado**, con `status: agent_reviewed_pending_independent`. No equivale a revisión humana independiente ni certificación para producción.
+- Distribución manual estratificada: 12 `development`, 24 `evaluation` y 12 `reserved_nonblind`, siempre 2/4/2 por familia. Todos los casos ya eran visibles: `reserved_nonblind` **no es holdout ciego**. Un holdout independiente requiere casos *nuevos*, no divulgados al desarrollador del extractor B.
+- La versión v1 es una referencia versionada en un commit; modificarla exige una revisión documentada y una versión posterior. No se han ejecutado modelos, ni fijado métricas, ni entrenado el extractor.
 
-- `datasets/gold.v0.1.jsonl`: one annotated record per case. `input.messages[].role` distinguishes advisor statements from customer assertions; `evidence.exactQuote` must be literal.
-- `datasets/gold.schema.json`: structural JSON Schema for the dataset envelope.
-- `validate-gold.mjs`: dependency-free checks on counts, quote substrings, speaker attribution and absence consistency.
+## Archivos
 
-Run `node experiments/structured-extraction-v1/validate-gold.mjs` from repo root.
+- `datasets/gold.v0.1.jsonl`: dataset original propuesto.
+- `datasets/gold.v1.jsonl`: gold candidato auditado con `role`, fuentes, valores específicos, abstenciones esperadas y controles contextuales.
+- `datasets/gold.v1.schema.json`: JSON Schema de estructura, sin prometer exactitud semántica.
+- `datasets/split-manifest.v1.json`: particiones y cobertura; reservados no ciegos.
+- `audit/gold-v1-audit.jsonl`: 48 registros de revisión, seis con correcciones y notas de decisión.
+- `validate-gold-v1.mjs`: validación sin dependencias de atribución, evidencia, casos, partición, riesgos semánticos conocidos.
 
-## Semantics
+Validación local:
 
-`interest` is **explicit interest or explicit rejection of rent-to-own**, with no requirement to say SmartHousing. A question or interest in housing generally is not the same.
+```bash
+node experiments/structured-extraction-v1/validate-gold-v1.mjs
+```
 
-`buyers` is only set when signatories or purchasers are stated; collective finances do not identify purchasers. A denial of loans (F3-23) is `debts.state:"none_declared"`, not missing and not a verified numeric zero. Partial commissions (F4-27) are **contextual** and out of the seven scored total-income fields. An inferred income basis is distinguished using `value.basisDerivation`. Total savings may include an explicitly immobilized amount; do not infer available savings. Relative dates stay relative without a timestamp. Unspecified debt periodicity stays `null`.
+## Correcciones sustantivas v0.1 → v1
 
-Each `gold.assertions[]` is an atomic expected statement; `gold.absentFields` is a complement of the seven fields when no scored assertion exists. `gold.contextChecks` records meaningful no-go inferences, not an extra output field. `annotation.oracleSummary` preserves the written Notion oracle for audit.
+1. **F1-02 y F2-11**: ampliar citas del campo ubicación, evitando fragmentos demasiado incompletos para verificar por sí solos la relación semántica.
+2. **F4-28**: `quincena` no es sinónimo estricto de `fortnight` (14 días); se conserva la unidad declarada.
+3. **F4-30 y F4-31**: ampliar evidencia de deuda hasta incluir la declaración sobre si la cuota está descontada de los ingresos.
+4. **F6-46**: eliminar escapes de corchetes de Markdown de la representación fuente; la frase original se conserva como «[Imagen adjunta no accesible] Ahí aparecen mis ingresos.»
 
-## Limits and next actions
+**Adjudicación que requiere vigilancia:** el oráculo narrativo de F4-31 sugería una cuota mensual de 185 €, pero la frase solo identifica su importe y la relación con ingresos. v1 mantiene `period:null`, fiel a la regla aprobada de no inventar unidades.
 
-All cases use `split:"unassigned"`. This corpus has already been visible while designing the experiment: an internal split cannot be honestly called a *blind* holdout. Create separately protected new cases if blind testing is required.
+**No añadir ni transformar:** ingresos de terceros en ingreso del comprador, comisiones parciales en renta total, ahorro inmovilizado en ahorro disponible, negaciones de deuda en importes ficticios, preferencias de contacto en plazo de compra, ciudades de residencia en destino, meses relativos en fechas absolutas.
 
-The annotations were drafted from approved semantic rules, but **the user has not independently reviewed all 48 atomic gold records**; do not mark them approved or use them as a production certification. Review every assertion, omitted field and quote, then freeze a version and execute the comparison. The legacy V0 baseline still restricts `interest` to SmartHousing, so score that dimension separately.
+## Puertas siguientes
 
-This commit intentionally does **not** change the shipped V0, run a model, publish metrics, or build the benchmark runner.
+1. **Revisión humana independiente** de las 48 anotaciones y del criterio F4-31; si cambia algo, publicar gold v1.1 con changelog.
+2. Congelar prompt/modelos/validador y registrar commit SHA de gold antes de la primera ejecución A/B/C.
+3. Usar `development` para ajustar B, evaluar en `evaluation`. **No llamar holdout** al bloque `reserved_nonblind`; si se necesita holdout real, preparar nuevos casos fuera del entorno de optimización.
+
+**Nota de alcance:** aunque este gold es reproducible, los 48 casos sintéticos no representan una distribución real de clientes y el baseline V0 tiene un criterio más restrictivo para `interest`.
