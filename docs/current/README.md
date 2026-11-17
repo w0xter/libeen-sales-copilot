@@ -2,6 +2,13 @@
 
 **Estado vigente:** PoC supervisada aceptada con limitaciones; los NO-GO anteriores corresponden al contrato más estricto y se conservan como historia. Solo datos ficticios, con revisión humana.
 
+- [Capacidades del producto](PRODUCT_CAPABILITIES.md): qué hace la interfaz, extracción, revisión y ficha CRM.
+- [Arquitectura técnica](TECHNICAL_ARCHITECTURE.md): stack y flujo B → D → E.
+- [Evolución del enfoque](PRODUCT_EVOLUTION.md): del Sales Copilot original a la PoC supervisada.
+- [Fiabilidad y limitaciones](AI_RELIABILITY_AND_LIMITATIONS.md): errores de IA, controles y known issues.
+- [Resumen de evaluaciones](EVALUATION_SUMMARY.md): qué se ha probado y qué no.
+- [Proceso de desarrollo humano–Codex](DEVELOPMENT_PROCESS.md): decisiones, correcciones y dedicación.
+- [Roadmap](roadmap.md): evolución propuesta.
 - [Especificación funcional V0](01_FUNCTIONAL_SPEC_V0.md): problema, alcance y comportamiento.
 - [Plan histórico de implementación B/D/E](02_MINIMAL_BDE_IMPLEMENTATION_PLAN.md): decisiones y puertas de planificación, anteriores al desarrollo. La arquitectura efectiva y el recorrido vigente se resumen en el [README principal](../../README.md) y se contrastan con las [evidencias de hardening](evaluation/HARDENING_RELEASE_REPORT.md).
 - [Criterios PoC aprobados](evaluation/POC_EVALUATION_CRITERIA.md) y [último informe de hardening](evaluation/HARDENING_RELEASE_REPORT.md).
