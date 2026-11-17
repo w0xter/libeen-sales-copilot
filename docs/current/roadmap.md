@@ -1,152 +1,114 @@
-# Roadmap — Libeen AI Lead Intake
+# Roadmap — de AI Lead Intake a Sales Intelligence Copilot
 
-## Visión de producto
+[← Volver al README](../../README.md) · [Qué aprendí de las evaluaciones](EVALUATION_SUMMARY.md) · [Evolución del producto](PRODUCT_EVOLUTION.md)
 
-La V0 se centra en transformar conversaciones comerciales en información estructurada, trazable y revisable, reduciendo el trabajo manual necesario para mantener actualizado el CRM.
+La V0 demuestra un recorrido concreto: partir de una conversación comercial, extraer información con sus fuentes, hacer visibles las dudas y ayudar al asesor a preparar la siguiente intervención.
 
-La evolución natural del producto sería pasar de **entender qué sabemos del cliente** a **comprender cómo evoluciona cada oportunidad comercial y ayudar al asesor a decidir qué hacer a continuación**.
+Mi visión es llevar esa ayuda más allá del primer contacto: que el sistema pueda seguir la evolución de una oportunidad, recordar qué se ha acordado y sugerir acciones cuando sean necesarias. Pero las pruebas también dejaron claro que **no tiene sentido construir más autonomía sobre interpretaciones que todavía requieren tanta supervisión**.
 
-El objetivo a largo plazo no es sustituir al comercial, sino permitirle dedicar menos tiempo a tareas administrativas y más a las interacciones que realmente necesitan su atención.
+Por eso ordenaría la evolución en función de lo que necesitamos aprender y resolver, no de la cantidad de funcionalidades que podemos añadir.
 
-Los siguientes incrementos son propuestas de evolución, no funcionalidades comprometidas ni implementadas como parte de la prueba técnica.
+> Este roadmap es una propuesta de producto, no un calendario ni un compromiso de entrega. Ninguna de las capacidades descritas a continuación forma parte de la V0 salvo que se indique expresamente.
 
-## Fase 1 — Continuidad y gestión de compromisos
+## Primero: hacer fiable y útil el núcleo
 
-**Objetivo:** enriquecer el contexto temporal de las conversaciones y detectar actuaciones pendientes.
+**Prioridad inmediata:** demostrar que el recorrido de AI Lead Intake aporta valor de forma consistente antes de ampliar el ámbito del copiloto.
 
-### Timestamps y contexto temporal
+En el desarrollo vimos tres problemas especialmente relevantes: interés comercial mal interpretado, aclaraciones que no se relacionaban con su pregunta original y recomendaciones demasiado genéricas. La V0 incorpora controles y revisión humana, pero no hemos medido aún su comportamiento sobre un conjunto representativo de conversaciones.
 
-Incorporar timestamps opcionales y explícitos en los mensajes para representar escenarios similares a los de WhatsApp.
+### Lo que trabajaría
 
-Esto permitirá interpretar mejor referencias temporales como «mañana» o «la semana que viene» y sentará las bases para futuros análisis de tiempos de respuesta e inactividad.
+- **Evaluación de la extracción y las preguntas.** Construir un corpus de conversaciones ficticias etiquetadas, incluyendo expresiones de interés, rechazos, cifras rectificadas, ingresos conjuntos, cuotas y solicitudes sensibles. Comparar el resultado con expectativas revisadas por personas y no solo con el formato JSON.
+- **Reconciliación de declaraciones.** Mejorar la relación entre una duda, la pregunta que se hizo y la aclaración posterior; evitar repetir preguntas ya resueltas sin ocultar contradicciones reales.
+- **Medición del trabajo humano.** Registrar cuántos campos se corrigen o descartan, cuántas preguntas se reescriben y cuánto tiempo necesita un asesor para preparar una ficha útil. Estas métricas todavía no están medidas.
+- **Reglas configurables.** Sacar progresivamente los campos obligatorios y las prioridades del código TypeScript, con validación y versionado antes de plantear un editor completo.
 
-La especificación funcional está definida, pero su implementación y validación deben verificarse por separado.
+**Criterio para avanzar:** observar, en escenarios diversos y revisados, que la calidad de las fichas y de las recomendaciones justifica el esfuerzo de supervisión. No fijaría un porcentaje objetivo arbitrario antes de disponer de una línea base.
 
-### Extracción de tareas y compromisos
+## Después: dar continuidad a cada oportunidad
 
-Identificar compromisos expresados durante una conversación, por ejemplo:
+Una vez validado el núcleo, el siguiente problema natural es que la información y las decisiones no desaparezcan al cerrar el navegador.
 
-- «Mañana te envío la documentación».
-- «El jueves te llamamos para explicártelo».
-- «La próxima semana podemos revisar las condiciones».
+### Persistencia, historial y revisión
 
-Cada compromiso podría incluir responsable, fecha límite, prioridad sugerida, estado y referencia al mensaje original.
+Introducir una ficha persistente con historial de declaraciones, cambios y decisiones humanas. Antes de trabajar con conversaciones reales habría que definir acceso, privacidad, conservación de datos y permisos; la V0 no los contempla.
 
-El asesor tendría la posibilidad de confirmar, corregir o descartar estas propuestas antes de convertirlas en tareas operativas.
+Esta base también permitiría distinguir mejor entre una corrección, una nueva declaración y una contradicción todavía pendiente.
+
+### Contexto temporal
+
+Añadir **timestamps explícitos y opcionales** a los mensajes. Sin ellos es difícil interpretar correctamente referencias como «mañana» o «la semana que viene» y calcular tiempos de respuesta.
+
+No inferiría fechas exactas a partir de mensajes sin contexto temporal suficiente.
+
+### Compromisos y tareas
+
+Explorar la extracción de compromisos como «el jueves te llamamos» o «mañana envío la documentación», conservando la fuente original y proponiendo responsable, fecha y estado.
+
+Antes de convertirlos en tareas, el asesor debería poder confirmar, corregir o descartar cada propuesta. Lo mediría tanto por compromisos correctos como por **falsos compromisos**, porque un seguimiento inventado puede ser peor que uno no detectado.
 
 ### Estado operativo de la conversación
 
-Distinguir el estado comercial del estado conversacional.
+Separar la **etapa comercial** (`Nuevo`, `En cualificación`, `Cualificado`) de la situación conversacional: esperando al cliente, acción del asesor, revisión pendiente o ninguna actuación necesaria.
 
-Además de saber si un lead está en cualificación o cualificado, identificar si estamos esperando una respuesta del cliente, una actuación del asesor, una revisión humana o si no corresponde intervenir.
+**Valor que buscaría demostrar:** que el asesor pueda retomar una oportunidad sin releer todo el historial y sin olvidar compromisos reales.
 
-**Valor esperado:** reducir seguimientos olvidados y evitar que el comercial tenga que reconstruir manualmente qué quedó pendiente en cada conversación.
+## Más adelante: priorizar y entender la conversación
 
-## Fase 2 — Inteligencia conversacional
+Con información persistida, timestamps y tareas suficientemente fiables, empezarían a tener sentido capacidades más avanzadas.
 
-**Objetivo:** comprender cómo evoluciona una conversación y detectar cuándo puede ser conveniente intervenir.
+### Ritmo de la conversación
 
-### Análisis del ritmo conversacional
+Analizar tiempos de respuesta, tandas de mensajes y periodos de inactividad. Una conversación silenciosa no implica necesariamente desinterés: habría que considerar horarios, acuerdos de contacto y quién tiene realmente la siguiente acción pendiente.
 
-Analizar métricas temporales y patrones de interacción:
+### Cambios de tono e intención
 
-- Frecuencia de mensajes y períodos de actividad.
-- Agrupación de mensajes enviados en una misma tanda.
-- Tiempo de respuesta por interlocutor.
-- Preguntas y mensajes pendientes de contestación.
-- Períodos de inactividad que requieren atención.
+Explorar señales de preocupación, desconfianza, satisfacción u objeciones que aparecen a lo largo de la conversación, en lugar de asignar al cliente una etiqueta fija de sentimiento.
 
-Estas métricas deberían considerar quién tiene pendiente actuar, los horarios comerciales y los acuerdos explícitos con el cliente. La inactividad por sí sola no implica un problema.
-
-### Evolución del sentimiento
-
-Analizar cómo cambia el tono de la conversación, identificando señales de interés, preocupación, frustración, desconfianza o satisfacción.
-
-Más que clasificar al cliente como positivo o negativo, buscamos reconocer cambios relevantes.
-
-Por ejemplo, detectar que una conversación que inicialmente mostraba interés ha evolucionado hacia una objeción de confianza puede ayudar a priorizar una respuesta adecuada antes de continuar con la cualificación.
+Esta capacidad requiere especial cautela: una interpretación del tono no debería convertirse en un hecho sobre la persona, ni condicionar decisiones financieras.
 
 ### Priorización contextual
 
-Combinar ritmo conversacional, compromisos pendientes, incidencias y estado comercial para responder:
+Combinar compromisos, incidencias, estado comercial y contexto temporal para responder a cuatro preguntas:
 
-1. ¿Quién tiene que actuar ahora?
-2. ¿Qué actuación está pendiente?
-3. ¿Por qué es relevante?
-4. ¿Qué consecuencias puede tener retrasarla?
+1. ¿Quién tiene que actuar?
+2. ¿Qué hay pendiente?
+3. ¿Por qué importa ahora?
+4. ¿Qué evidencia respalda la recomendación?
 
-El resultado sería una recomendación explicable, respaldada por los mensajes originales, no un score opaco de probabilidad de conversión.
+Preferiría recomendaciones explicables y revisables frente a un score de conversión opaco.
 
-**Valor esperado:** ayudar al asesor a concentrarse en las oportunidades que realmente necesitan atención y entender el motivo de su prioridad.
+**Criterio para avanzar:** comprobar que las prioridades propuestas resultan útiles para asesores reales, sin generar una carga excesiva de alertas falsas.
 
-## Fase 3 — Personalización y coaching comercial
+## Visión a largo plazo: integración y coaching
 
-**Objetivo:** adaptar las recomendaciones a cada conversación y ayudar a mejorar la calidad de las interacciones comerciales.
+Si las capacidades anteriores resultan útiles, el copiloto podría acercarse progresivamente a los canales donde ya trabajan los asesores, como WhatsApp y el CRM.
 
-### Perfil de comunicación del cliente
+Empezaría por **preparar actualizaciones para revisión** antes de sincronizar información automáticamente. Cualquier ejecución de tareas o comunicación externa necesitaría permisos claros, confirmación de las acciones y trazabilidad. No plantearía automatizar decisiones de financiación.
 
-Construir un perfil contextual a partir de preferencias explícitas y patrones observados durante la conversación.
+También veo dos líneas de producto posteriores:
 
-Por ejemplo:
+- **Personalización de la comunicación.** Adaptar sugerencias a preferencias explícitas del cliente (canal, nivel de detalle, horarios), sin construir perfiles psicológicos ni deducir atributos sensibles.
+- **Coaching comercial.** Revisar la gestión de objeciones, la pertinencia de respuestas y el cumplimiento de compromisos para proponer mejoras al asesor. Las evaluaciones tendrían que ser explicables, revisables y distinguir falta de información de una actuación deficiente.
 
-- Preferencia por llamadas frente a mensajes.
-- Necesidad de explicaciones detalladas.
-- Preocupaciones recurrentes sobre determinadas condiciones.
-- Preferencia por comunicaciones breves y directas.
+Ambas ideas dependen de tener primero datos y criterios de evaluación suficientemente sólidos; no son prioridades inmediatas.
 
-Este perfil permitiría personalizar las respuestas sugeridas y la estrategia de comunicación.
+## Cómo decidiría qué construir
 
-Las preferencias inferidas deberían ser revisables y estar respaldadas por evidencia. No se trataría de elaborar perfiles psicológicos ni de utilizar atributos sensibles para influir en decisiones financieras.
+Más que comprometer fechas para todas estas fases, evaluaría cada incremento con cinco preguntas:
 
-### Evaluación de calidad del asesor
+| Dimensión | Qué comprobaría |
+| --- | --- |
+| **Calidad** | ¿Se extraen datos y compromisos correctos con fuentes útiles? |
+| **Productividad** | ¿Reduce el tiempo de registro y preparación de seguimientos? |
+| **Utilidad** | ¿El asesor considera relevantes las preguntas y acciones propuestas? |
+| **Fiabilidad** | ¿Cuántas correcciones, preguntas repetidas o alertas injustificadas aparecen? |
+| **Control** | ¿El asesor puede entender, revisar y detener las acciones antes de ejecutarlas? |
 
-Introducir un sistema de evaluación basado en cómo se gestiona una oportunidad comercial, no exclusivamente en cuántas ventas se cierran.
+Los resultados deberían recogerse primero con datos ficticios y escenarios controlados. Para avanzar hacia conversaciones reales, privacidad, seguridad, permisos y retención de información pasarían a ser requisitos previos, no mejoras opcionales.
 
-Algunas dimensiones candidatas serían:
+## Hacia dónde quiero llevarlo
 
-- Calidad y pertinencia de las respuestas.
-- Identificación y gestión de objeciones.
-- Cumplimiento de compromisos.
-- Capacidad para completar la información necesaria.
-- Progreso hacia el siguiente hito comercial apropiado.
-- Respeto de las preferencias y circunstancias del cliente.
+El objetivo final sigue siendo evolucionar de **AI Lead Intake** a un **Sales Intelligence Copilot**: no solo saber qué información tenemos de una oportunidad, sino también **qué ha cambiado, qué hemos acordado, quién debe actuar y por qué**.
 
-Cada evaluación debería ser explicable, permitir revisión humana y distinguir entre falta de evidencia y bajo rendimiento.
-
-Con suficiente validación, podría evolucionar hacia una herramienta de coaching que identificase oportunidades de mejora individuales y del proceso comercial.
-
-**Valor esperado:** mejorar la calidad y consistencia de las conversaciones sin incentivar comportamientos orientados únicamente a cerrar ventas.
-
-## Evolución operativa — Integraciones y automatización supervisada
-
-Una vez validadas las capacidades anteriores, el sistema podría integrarse progresivamente con WhatsApp y el CRM.
-
-La visión sería que los asesores siguieran trabajando desde sus canales habituales, mientras el copiloto mantiene información comercial actualizada, identifica excepciones y propone actuaciones.
-
-La automatización debería ser gradual: extracción de información, preparación de actualizaciones para CRM, revisión por excepción y, posteriormente, ejecución de acciones expresamente autorizadas.
-
-No se automatizarían decisiones financieras, comunicaciones con clientes ni compromisos comerciales sin las validaciones y permisos correspondientes.
-
-## Estrategia de desarrollo y validación
-
-La evolución se plantearía mediante incrementos pequeños, cada uno con un resultado observable y pruebas específicas.
-
-Las primeras capacidades deberían aprovechar la arquitectura y los datos estructurados de la V0, evitando introducir sistemas complejos antes de demostrar su necesidad.
-
-Priorizaríamos la validación de:
-
-- **Calidad:** exactitud de la extracción, trazabilidad y tasa de correcciones humanas.
-- **Productividad:** tiempo dedicado a registrar información y preparar seguimientos.
-- **Utilidad:** porcentaje de recomendaciones consideradas relevantes por los asesores.
-- **Fiabilidad:** falsos compromisos detectados, seguimientos incorrectos y alertas injustificadas.
-- **Seguridad:** ausencia de decisiones financieras o actuaciones externas no autorizadas.
-
-Para evolucionar hacia conversaciones reales sería imprescindible definir previamente las condiciones de privacidad, acceso, conservación de datos y supervisión correspondientes.
-
-## Resultado esperado
-
-La visión es evolucionar desde un **AI Lead Intake**, capaz de convertir conversaciones en datos comerciales útiles, hacia un **Sales Intelligence Copilot** que ayude a gestionar continuamente cada oportunidad.
-
-Un sistema que no solo sepa **qué información tenemos y qué falta**, sino también **qué está pasando, quién debe actuar, cuándo conviene hacerlo y por qué**.
-
-Todo ello manteniendo al asesor como responsable de las decisiones y utilizando la IA allí donde realmente aporta valor.
+La lección de esta primera versión condiciona el camino: **antes de automatizar más decisiones, necesitamos demostrar que la información sobre la que se apoyan es suficientemente buena y que el asesor puede corregirla con poco esfuerzo**.
