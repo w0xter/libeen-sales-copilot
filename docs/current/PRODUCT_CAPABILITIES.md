@@ -1,110 +1,97 @@
-# Capacidades del producto
+# Qué puede hacer el asesor con AI Lead Intake
 
-> Documentación de Libeen AI Lead Intake V0. [Volver al README principal](../../README.md). La aceptación vigente es de una **PoC supervisada con limitaciones**; las observaciones históricas siguen disponibles en los informes.
+[← Volver al README](../../README.md) · [Arquitectura técnica](TECHNICAL_ARCHITECTURE.md) · [Limitaciones conocidas](AI_RELIABILITY_AND_LIMITATIONS.md)
 
-## 2. Capacidades implementadas
+La idea detrás de AI Lead Intake es sencilla: cuando un asesor recibe una conversación comercial, no debería tener que releerla entera para reconstruir los datos del cliente y decidir qué preguntar después.
 
-### 2.1. Análisis de conversaciones
+Esta primera versión le ayuda a convertir esa conversación en una **ficha comercial revisable**, con las declaraciones originales a mano, las dudas visibles y una siguiente intervención sugerida. No intenta mantener una conversación por su cuenta ni decidir si un cliente puede obtener financiación.
 
-El asesor puede seleccionar una conversación ficticia de ejemplo o introducir texto libre identificando los turnos de `Cliente`, `Libeen` o `Asesor`.
+## Un recorrido completo con un cliente ficticio
 
-El análisis se inicia expresamente mediante una acción del usuario; no se ejecuta automáticamente al escribir.
+Para explicar el producto, utilizo el mismo caso de Alicante que aparece en la demo. Es una conversación preparada para la prueba, no información de un cliente real:
 
-La conversación se procesa mediante una ruta de servidor que llama a OpenAI.
+> **Cliente:** Quiero explorar SmartHousing en Alicante. Compraría yo sola y me gustaría mudarme dentro de ocho meses. Gano unos 2.750 euros netos al mes, tengo 11.000 euros ahorrados y pago una cuota de 145 euros mensuales; no sé si la cuota está descontada de mis ingresos.
 
-El parser comprueba que los turnos tengan un emisor reconocible y rechaza entradas ambiguas o mal formadas antes de enviarlas al modelo.
+### 1. Introducir la conversación y analizarla
 
-Los marcadores de audio sin transcripción se conservan como contenido inaccesible: el sistema no inventa su contenido.
+El asesor puede elegir un ejemplo ficticio o utilizar **Texto libre**, indicar un alias para el expediente y pegar una conversación. Los turnos deben identificar quién habla mediante `Cliente:`, `Libeen:` o `Asesor:`.
 
-### 2.2. Extracción de información comercial
+El análisis empieza cuando pulsa **Analizar conversación**. No hay un agente escuchando ni ejecutándose automáticamente en segundo plano.
 
-El módulo de extracción propone valores para siete campos:
+Antes de llamar al modelo se comprueba que la entrada sea interpretable. Si no se distingue quién escribió un mensaje, se pide corregirlo en lugar de atribuirlo por intuición. Los audios marcados sin transcripción no se convierten en afirmaciones inventadas.
 
-| Campo | Ejemplo |
-|---|---|
-| Interés en SmartHousing | Quiere explorar SmartHousing |
-| Zona de búsqueda | Alicante |
-| Horizonte de mudanza | Dentro de ocho meses |
+### 2. Obtener una ficha inicial sin perder las fuentes
+
+El modelo propone candidatos para siete campos comerciales. En la ejecución real registrada del caso de Alicante se obtuvieron:
+
+| Campo | Información extraída en esa ejecución |
+| --- | --- |
+| Interés | Quiere explorar SmartHousing |
+| Zona | Alicante |
+| Horizonte | Dentro de ocho meses |
 | Compradores | Una persona |
-| Ingresos mensuales | Aproximadamente 2.750 € netos |
-| Ahorros declarados | 11.000 € |
-| Cuotas o deudas mencionadas | 145 €/mes |
+| Ingresos | Aproximadamente 2.750 € netos al mes |
+| Ahorros | 11.000 € |
+| Cuotas o deudas | Cuota de 145 € mensuales |
 
-La extracción es parcial por diseño: un campo ausente o incorrecto no obliga a descartar toda la ficha.
+Cada valor se puede contrastar con el **mensaje y fragmento del cliente** del que procede. Cuando corresponde, también se conservan matices como si una cantidad es aproximada, si los ingresos son individuales o conjuntos o si la cifra es neta o bruta.
 
-Cada candidato conserva, cuando corresponde:
+En este ejemplo, el sistema conoce la existencia de la cuota, pero mantiene **desconocido** si ya se ha descontado de los ingresos.
 
-- Mensaje y fragmento de origen.
-- Precisión: explícito, aproximado, rango o incierto.
-- Sujeto: individual, conjunto o desconocido.
-- Base de ingresos: neta, bruta o desconocida.
-- Estado de inclusión de una cuota en los ingresos.
-- Incertidumbres señaladas por el modelo.
+Esta es una distinción central del producto: una respuesta puede ser útil aunque no esté completa. **No informar de una deuda no equivale a declarar que la deuda es cero; declarar que no hay ahorros sí permite registrar un cero explícito.**
 
-**Una fuente literal demuestra de dónde procede el texto, pero no garantiza que la interpretación semántica sea correcta.**
+La [respuesta real del caso de Alicante](evaluation/hardening/poc-real.json) documenta una ejecución satisfactoria; otra inferencia puede devolver un resultado diferente. Los valores son declaraciones, no datos verificados por documentos.
 
-Los valores extraídos se consideran declaraciones del cliente, no información verificada documentalmente.
+### 3. Ver qué falta o qué conviene aclarar
 
-### 2.3. Detección de incidencias
+Después de la extracción, el sistema analiza lo que tenemos y lo que sigue siendo incierto. En Alicante identifica la duda de si la cuota está descontada de los ingresos.
 
-El sistema identifica cuatro categorías principales:
+No depende exclusivamente de que el modelo haya señalado esa duda: si existe una cuota no nula con inclusión desconocida, las reglas pueden generar una incidencia conservadora a partir del candidato y su fuente.
 
-| Categoría | Ejemplo | Tratamiento |
-|---|---|---|
-| Información ausente | No conocemos los ahorros | Solicitar información |
-| Ambigüedad o conflicto | No sabemos si una cuota está descontada | Preguntar o revisar |
-| Contenido inaccesible | Audio sin transcripción | No inferir contenido |
-| Solicitud sensible | Petición de garantía, aprobación o no contacto | Revisión humana |
+También se contemplan otros motivos de revisión: campos esenciales ausentes, ambigüedades, mensajes inaccesibles o solicitudes sensibles como una petición de aprobación o de no contacto.
 
-Las incidencias pueden utilizar señales semánticas del modelo y comprobaciones deterministas sobre los candidatos extraídos.
+Si falta algo, el sistema **no completa los huecos con suposiciones**. Y detectar una incidencia sensible no significa que pueda interpretar correctamente todas las variantes posibles.
 
-Por ejemplo, si existe una cuota declarada cuya inclusión en los ingresos es desconocida, el sistema puede generar una incidencia incluso si el modelo omite esa señal.
+### 4. Proponer una sola siguiente intervención
 
-No pretende detectar perfectamente todas las situaciones sensibles ni resolver automáticamente todos los conflictos.
+Con la ficha parcial y las incidencias, el sistema decide qué intervención conviene presentar primero.
 
-### 2.4. Siguiente pregunta prioritaria
+En el caso de Alicante, la ejecución registrada propuso:
 
-El sistema propone una única intervención a partir de los datos e incidencias disponibles.
+> ¿La cuota que habéis indicado ya está descontada de vuestros ingresos?
 
-La prioridad general es:
+La pregunta **se puede editar y copiar**, pero no se envía. Si aparece una solicitud sensible, el sistema puede priorizar una revisión humana en lugar de una pregunta comercial.
 
-1. Revisión humana de una situación sensible.
-2. Aclaración de una ambigüedad material.
-3. Solicitud de un campo esencial ausente.
-4. Ninguna pregunta prioritaria, si no corresponde intervenir.
+La selección responde a reglas sencillas: primero situaciones sensibles, después ambigüedades materiales y, si no las hay, campos esenciales ausentes. No hay un agente negociando, enviando mensajes ni manteniendo una conversación autónoma.
 
-La pregunta es editable y puede copiarse, pero nunca se envía automáticamente al cliente.
+La pregunta es una ayuda, no una instrucción que el asesor deba seguir sin revisar. En las evaluaciones hemos visto casos en los que la formulación resultaba genérica o repetía una aclaración anterior.
 
-La formulación es una propuesta: puede necesitar corrección por parte del asesor.
+### 5. Corregir datos y continuar la conversación
 
-### 2.5. Revisión y reconciliación humana
+El asesor puede **confirmar, corregir o descartar** candidatos. La aplicación conserva esas intervenciones para construir la ficha efectiva y no confundir un dato propuesto por el modelo con uno corregido manualmente.
 
-El asesor puede confirmar, corregir o descartar candidatos.
+Si llega otra respuesta del cliente, se puede incorporar al texto y volver a analizar el historial completo. Cuando las declaraciones nuevas no encajan con una revisión previa, la aplicación puede mostrar el conflicto y permitir mantener la decisión anterior o adoptar la nueva, en lugar de sobrescribirla sin avisar.
 
-Cuando aparece información nueva, el sistema permite reanalizar la conversación y contrastar los candidatos con las revisiones anteriores.
+También puede marcar una incidencia como resuelta o descartada. En el caso de una cuota, resolver manualmente la incidencia no implica que el metadato pase automáticamente de `unknown` a `included` o `excluded`: **la revisión no fabrica la evidencia que falta**.
 
-Una corrección humana no debería desaparecer silenciosamente ante una nueva extracción.
+Las pruebas de estas interacciones se realizaron con respuestas controladas del navegador. No debemos interpretarlas como prueba de que el modelo reconciliará correctamente cualquier conversación nueva.
 
-Cuando no existe una correspondencia suficientemente clara, se mantiene un conflicto o una revisión pendiente en lugar de seleccionar arbitrariamente un valor.
+### 6. Preparar la ficha para el CRM
 
-Un aprendizaje importante de la implementación fue la necesidad de distinguir entre **lo que la interfaz muestra como seleccionado** y **el valor efectivo que utiliza el resto del sistema**.
+Al final, el asesor puede abrir una **vista previa de ficha CRM** con datos disponibles, procedencia, campos pendientes, incidencias y etapa comercial.
 
-Esto motivó la corrección P8.1 y la introducción de una representación compartida de la ficha efectiva mediante `deriveEffective`.
+Las etapas son `Nuevo`, `En cualificación` y `Cualificado`. Se refieren a **completitud de información comercial**, nunca a solvencia o financiación aprobada.
 
-### 2.6. Etapa comercial y ficha CRM
+La ficha se copia al portapapeles para cargarla manualmente. La aplicación puede impedir esa copia si hay conflictos, resultados desactualizados, ausencia de datos utilizables o una etapa pendiente de revisar. Aun así, es posible consultar una vista previa no exportable para entender qué falta.
 
-El sistema maneja las etapas:
+No existe conexión con un CRM, ni envío al cliente, ni persistencia de expedientes entre sesiones.
 
-- `Nuevo`
-- `En cualificación`
-- `Cualificado`
+## Qué valor buscamos demostrar
 
-Representan el grado de completitud de la información comercial, **no la solvencia ni la aprobación financiera del cliente**.
+Para esta prueba me interesaba validar un recorrido concreto: que un asesor pueda pasar de una conversación a una **lectura comercial útil y corregible**, sin perder tiempo reconstruyendo manualmente cada dato y sin depender ciegamente de una interpretación del LLM.
 
-La ficha CRM presenta los valores disponibles, su procedencia, los campos ausentes y las incidencias.
+Por eso prefiero que el sistema muestre una incertidumbre o pida revisar un caso antes que presentar una ficha aparentemente completa sobre suposiciones.
 
-La exportación se realiza mediante copia manual al portapapeles. No existe sincronización con un CRM real.
+La PoC demuestra ese flujo con los límites descritos en las evaluaciones. No mide todavía cuánto tiempo ahorra a un asesor en un entorno real, ni acredita precisión semántica general.
 
-La aplicación puede bloquear la copia cuando detecta resultados desactualizados, conflictos sin resolver, ausencia de información utilizable o una etapa incoherente con la recomendación vigente.
-
----
+Para entender **cómo** funciona el pipeline, véase [Arquitectura técnica](TECHNICAL_ARCHITECTURE.md). Para los fallos que hemos observado y cómo los tratamos, [Fiabilidad y limitaciones](AI_RELIABILITY_AND_LIMITATIONS.md).
