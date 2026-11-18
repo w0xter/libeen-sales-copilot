@@ -26,7 +26,7 @@ export function pairedComparison(rows: Row[]) {
 }
 
 /** Paired semantic counts use only complete A/B attempts; historical bounds remain unchanged. */
-export function pairedSemanticComparison(rows: { caseId: string; iteration: number; arm: 'A' | 'B' | 'C'; semanticScore: { counts: Counts } | null }[]) {
+export function pairedSemanticComparison(rows: { caseId: string; iteration: number; arm: 'A' | 'B' | 'C'; semanticScore: { counts: Counts } | null }[], version = 'semantic-v1') {
  const keys = new Map<string, { A?: Counts; B?: Counts }>();
  for (const row of rows) {
   if (row.arm === 'C') continue;
@@ -39,5 +39,5 @@ export function pairedSemanticComparison(rows: { caseId: string; iteration: numb
   const counts = pairs.reduce<Counts>((sum, p) => ({ tp: sum.tp + p[arm].tp, fp: sum.fp + p[arm].fp, fn: sum.fn + p[arm].fn }), { tp: 0, fp: 0, fn: 0 });
   return { counts, ...metrics(counts) };
  };
- return { version: 'semantic-v1', pairedCases: pairs.length, incompletePairs: keys.size - pairs.length, A: aggregate('A'), B: aggregate('B') };
+ return { version, pairedCases: pairs.length, incompletePairs: keys.size - pairs.length, A: aggregate('A'), B: aggregate('B') };
 }

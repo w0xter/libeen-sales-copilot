@@ -110,3 +110,20 @@ node --experimental-strip-types experiments/structured-extraction-v1/cli.mjs --m
 ```
 
 G3, elección de C y comparación congelada siguen pendientes de autorización.
+
+## G2.1 — Sujetos y calibración `semantic-v2`
+
+`semantic-v1`, la métrica estricta y sus salidas permanecen disponibles sin cambiar sus reglas. `semantic-v2` recibe también los mensajes originales, exige una cita literal del cliente y conserva el emparejamiento uno a uno. Para un hecho individual admite `customer`, `speaker`, `yo` o sujeto omitido únicamente con evidencia de primera persona y sin otro referente personal ambiguo; si ambos sujetos están explícitos, una cita en primera persona puede desambiguar aun con otros participantes. Una correferencia `ella`/`sister` o `hermana`/`sister` requiere una hermana inequívoca en el mensaje y evidencia pertinente. La regla no se aplica al alcance colectivo. La detección conservadora de referentes y negaciones no es un analizador lingüístico completo: citas ambiguas, nombres no reconocidos y contradicciones contextuales siguen requiriendo revisión humana. Una cita literal aislada no demuestra por sí sola una afirmación. `unknown` no se convierte en un dato afirmado.
+
+El texto de horizonte «desde febrero» y «febrero» sigue sin equipararse automáticamente: falta adjudicar si ambos expresan inicio de disponibilidad, fecha límite o plazo de compra. No se infieren años. El evaluador v2 conserva los atributos y categorías de v1; el runner publica `semanticScoreV2`, `semanticV2` y `semanticV2ComparisonAB` por separado de los campos históricos.
+
+B/C comparten el mismo prompt, esquema, validador y llamada. Se refuerza que el número de familiares, convivientes o contribuyentes no es número de compradores, y que el referente colectivo no se llame compradores sin respaldo. Como la validación local no puede verificar semánticamente ese referente de forma general, elimina las etiquetas genéricas `buyers`, `compradores` y `titulares` de `subjectRef`, conserva el resto de la afirmación y registra `unverifiable_buyer_subject_removed` junto con el candidato original. Esta medida deliberadamente conservadora también elimina esa etiqueta cuando pudiera ser correcta; la salida raw y el diagnóstico permiten identificarlo. El validador no puede garantizar que el LLM se abstenga de emitir `buyers` sin evidencia: eso exige comprobar respuestas y adjudicación.
+
+La matriz y el análisis de ambas ejecuciones persistidas están en [reports/g2.1-offline.md](reports/g2.1-offline.md). Para reproducir cada comparación v1/v2 sin acceso a modelos, con el archivo local correspondiente:
+
+```bash
+node --experimental-strip-types experiments/structured-extraction-v1/compare-semantic-development.mjs experiments/structured-extraction-v1/runs/run-AVaDCG/results.jsonl > /tmp/g21-first.json
+node --experimental-strip-types experiments/structured-extraction-v1/compare-semantic-development.mjs experiments/structured-extraction-v1/runs/run-iMu9qR/results.jsonl > /tmp/g21-second.json
+```
+
+El comando rechaza casos fuera de desarrollo y registra hashes del archivo y ambos evaluadores; no ejecuta el nuevo validador sobre respuestas históricas. La matriz incluye los candidatos aceptados históricos y no demuestra el comportamiento del nuevo prompt. La ejecución real posterior se puede repetir con el comando A/B de la sección G2, una vez configurada `OPENAI_API_KEY`. G3 sigue fuera de alcance.
