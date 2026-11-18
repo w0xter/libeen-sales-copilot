@@ -18,3 +18,16 @@ it('compares only complete A/B pairs and preserves the interval', () => {
  expect(r.otherFields.aF1Interval).toEqual({ min: 0, max: 1 });
  expect(r.otherFields.bMinusAF1Interval).toEqual({ min: 0, max: 1 });
 });
+
+it('compares semantic scores only on complete pairs', async () => {
+ const { pairedSemanticComparison } = await import('./paired');
+ const s = { counts: { tp: 1, fp: 0, fn: 0 } };
+ const result = pairedSemanticComparison([
+  { caseId: 'a', iteration: 1, arm: 'A', semanticScore: s },
+  { caseId: 'a', iteration: 1, arm: 'B', semanticScore: s },
+  { caseId: 'b', iteration: 1, arm: 'A', semanticScore: s },
+  { caseId: 'b', iteration: 1, arm: 'B', semanticScore: null },
+ ]);
+ expect(result.pairedCases).toBe(1); expect(result.incompletePairs).toBe(1);
+ expect(result.A.counts.tp).toBe(1); expect(result.B.counts.tp).toBe(1);
+});

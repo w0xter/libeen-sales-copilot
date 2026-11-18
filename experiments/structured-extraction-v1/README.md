@@ -77,3 +77,36 @@ G2: revisar las normalizaciones indeterminadas y el contrato y prompt B solo con
 ### Verificación local
 
 El validador de gold pasó (48 casos y 51 afirmaciones); `pnpm test` pasó con 265 pruebas y 4 omitidas; `pnpm lint` y `pnpm typecheck` pasaron. La integración offline comprueba dos corridas independientes y una comparación A/B simulada sobre desarrollo. No se probaron llamadas al proveedor ni se calculó un resultado experimental real.
+
+## G2 — Evaluador semántico y refinamiento de B/C
+
+La métrica histórica `score` y `comparisonAB` conservan exactamente su significado. La nueva vista `semanticScore` por intento y `semanticV1` agregada en el informe son independientes y versionadas. La comparación semántica usa emparejamiento máximo uno a uno; normaliza las variantes conocidas de sujeto, moneda, periodo y obligación, y admite nulo/ausencia solo en atributos opcionales de significado desconocido. Un importe cero no equivale a desconocido. Conserva diferencias de sujeto, alcance, negación, componente/total, base y su derivación, precisión, temporalidad y disponibilidad. Una propiedad adicional afirmada no se ignora; `amountText` exige presencia en la cita y coherencia numérica, y `relationEvidence` exige respaldo en la cita. Las discrepancias se agrupan por categoría; `contract` señala atributos que A no puede resolver. Los descartes de postprocesamiento siguen informándose por separado en `classes` y `discards`.
+
+La evidencia debe corresponder al mismo mensaje y contener todos los términos sustantivos de la cita gold en el mismo orden, admitiendo diferencias de puntuación y algunos artículos/preposiciones. Esto reconoce algunas citas alternativas, pero no es un comprobador general de implicación: paráfrasis, correferencias no definidas, negaciones fuera de la cita, diferencias de certeza y hechos insuficientemente respaldados requieren adjudicación humana. Los resultados de `semantic-v1` son conservadores y no sustituyen esa revisión. La cota optimista histórica de A no es una métrica semántica verificada.
+
+B y C continúan compartiendo una sola llamada, instrucciones, esquema y validador. El prompt distingue parentesco/convivencia de compradores, ingreso total de componentes, y residencia de destino. El validador descarta `subjectRef` igual a un ID de mensaje y componentes de ingreso marcados como tales. No puede identificar de forma determinista todos los sujetos inventados o componentes etiquetados como `unknown`; el rendimiento de estas instrucciones aún no se ha probado con modelos reales.
+
+### Reevaluación offline de la corrida existente
+
+Antes de modificar B se evaluaron las respuestas persistidas `runs/run-AVaDCG/results.jsonl` de 12 pares de desarrollo, sin llamadas al modelo. El SHA-256 del archivo es `a910a2d80b649b062ab382f95ec8854253a1d5149faaf963e61d4a738aa3aca7`; el SHA-256 del evaluador final es `0e545b44c959f20f6eb70da67ab59816b17d2316bf519d2dfd1d3560661ecc12`. Una repetición tras terminar las reglas obtuvo el mismo resultado:
+
+| Vista | A TP/FP/FN | A F1 | B TP/FP/FN | B F1 |
+| --- | --- | --- | --- | --- |
+| Histórica estricta | 1/15/13 | 0,0667 | 6/11/8 | 0,3871 |
+| `semantic-v1` conservadora | 1/15/13 | 0,0667 | 9/8/5 | 0,5806 |
+
+Los tres emparejamientos nuevos de B son los dos sujetos de F2-12 y la etiqueta de obligación de F4-30. En F3-20 y F6-45 se conserva la discrepancia del sujeto: el modelo usó el ID del mensaje, no un sujeto. En F2-09 `subjectRef=buyers` no está respaldado; F5-37 conserva una diferencia de certeza que requiere adjudicación. Estos números no demuestran superioridad ni son una evaluación del prompt nuevo. La corrida original tiene `dirty=true` y HEAD `54e5c9c`; de los archivos con hash en su manifiesto, `runner/main.ts` y `cli.mjs` diferían de HEAD y `runner/minimal-request.ts` no existía allí. No es posible reconstruir el estado completo: no se registraron todos los archivos sucios. Los manifiestos nuevos registran además `dirtyPaths`; `runs/` está ignorado por Git.
+
+Para reproducir la reevaluación si el archivo local sigue disponible:
+
+```bash
+node --experimental-strip-types experiments/structured-extraction-v1/rescore-development.mjs experiments/structured-extraction-v1/runs/run-AVaDCG/results.jsonl > /tmp/g2-semantic.json
+```
+
+El comando rechaza filas ajenas a desarrollo y registra hashes de respuestas y evaluador. No reconstruye respuestas perdidas. Una nueva ejecución real requiere autorización expresa, credenciales y árbol limpio:
+
+```bash
+node --experimental-strip-types experiments/structured-extraction-v1/cli.mjs --mode=real --split=development --arms=A,B --repeat=1 --model=gpt-4.1-mini
+```
+
+G3, elección de C y comparación congelada siguen pendientes de autorización.
