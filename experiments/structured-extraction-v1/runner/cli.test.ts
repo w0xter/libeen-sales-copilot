@@ -1,4 +1,4 @@
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -40,5 +40,18 @@ it('reports a controlled A/B interest filter difference in a simulated developme
   expect(a.result.discards[0].reason).toBe('unsupported_interest'); expect(b.score.counts.tp).toBe(1);
   const report = JSON.parse(readFileSync(join(out, dir, 'report.json'), 'utf8'));
   expect(report.warning).toMatch(/SIMULATED/); expect(report.comparisonAB.pairedCases).toBe(12);
+ } finally { rmSync(out, { recursive: true, force: true }); }
+}, 15000);
+
+it('returns an error status while preserving a run with failed responses', () => {
+ const out = mkdtempSync(join(tmpdir(), 'libeen-failed-run-'));
+ try {
+  const input = join(out, 'mock.json'); writeFileSync(input, JSON.stringify({ B: { 'F1-01': { invalid: true } } }));
+  const result = spawnSync(process.execPath, ['--experimental-strip-types', 'experiments/structured-extraction-v1/cli.mjs', '--mode=offline', '--arms=B', `--mock=${input}`, `--output=${out}`], { env: { ...process.env, OPENAI_API_KEY: '' }, encoding: 'utf8' });
+  expect(result.status).toBe(1);
+  expect(result.stderr).toMatch(/1.*error/i);
+  const dir = readdirSync(out).find(x => x.startsWith('run-'))!;
+  const report = JSON.parse(readFileSync(join(out, dir, 'report.json'), 'utf8'));
+  expect(report.report.B.errors).toHaveLength(1);
  } finally { rmSync(out, { recursive: true, force: true }); }
 }, 15000);
