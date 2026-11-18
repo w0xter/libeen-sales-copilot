@@ -41,21 +41,24 @@ export function minimal(arm: 'B' | 'C'): Adapter {
    const a = parsed.data;
    if ('amountRange' in a.value && a.value.amountRange && a.value.amountRange.min > a.value.amountRange.max) { discards.push({ item, reason: 'invalid_range' }); continue; }
    if (('min' in a.value && 'max' in a.value) && typeof a.value.min === 'number' && typeof a.value.max === 'number' && a.value.min > a.value.max) { discards.push({ item, reason: 'invalid_range' }); continue; }
+   const message = messages.find(m => m.id === a.evidence.messageId);
+   const reason = !message ? 'unknown_message' : message.role !== 'customer' ? 'not_customer' : message.text === null ? 'inaccessible' : !message.text.includes(a.evidence.quote) ? 'quote_not_found' : null;
+   if (reason) { discards.push({ item, reason }); continue; }
    const subjectRef = 'subjectRef' in a.value ? a.value.subjectRef : undefined;
    if (subjectRef && messages.some(m => m.id === subjectRef)) { discards.push({ item, reason: 'subject_is_message_id' }); continue; }
    if (a.field === 'income' && a.value.kind === 'component') { discards.push({ item, reason: 'income_component_out_of_scope' }); continue; }
-   if (subjectRef && ['buyers', 'compradores', 'titulares'].includes(subjectRef.trim().toLocaleLowerCase('es'))) {
+   if (a.field === 'buyers' && (!/\b(?:compr\p{L}*|adquir\p{L}*|firm\p{L}*|titular\p{L}*|escritura\p{L}*)\b/iu.test(a.evidence.quote) || /[¿?]|\b(?:no|sin|si|quiz[aá]s?|tal vez)\b/iu.test(a.evidence.quote))) {
+    discards.push({ item, reason: 'buyers_evidence_missing_purchase' }); continue;
+   }
+   const normalizedSubject = subjectRef?.trim().toLocaleLowerCase('es');
+   const buyerSubject = normalizedSubject && ['buyers', 'compradores', 'titulares'].includes(normalizedSubject);
+   const individualForCollective = normalizedSubject && ['customer', 'speaker', 'yo'].includes(normalizedSubject) && 'scope' in a.value && a.value.scope === 'collective';
+   if (buyerSubject || individualForCollective) {
     const { subjectRef: _subjectRef, ...value } = a.value as typeof a.value & { subjectRef: string };
     void _subjectRef;
-    discards.push({ item, reason: 'unverifiable_buyer_subject_removed' });
-    const message = messages.find(m => m.id === a.evidence.messageId);
-    const reason = !message ? 'unknown_message' : message.role !== 'customer' ? 'not_customer' : message.text === null ? 'inaccessible' : !message.text.includes(a.evidence.quote) ? 'quote_not_found' : null;
-    if (reason) discards.push({ item, reason }); else accepted.push({ ...a, value });
-    continue;
-   }
-   const message = messages.find(m => m.id === a.evidence.messageId);
-   const reason = !message ? 'unknown_message' : message.role !== 'customer' ? 'not_customer' : message.text === null ? 'inaccessible' : !message.text.includes(a.evidence.quote) ? 'quote_not_found' : null;
-   if (reason) discards.push({ item, reason }); else accepted.push(a);
+    discards.push({ item, reason: buyerSubject ? 'unverifiable_buyer_subject_removed' : 'individual_subject_removed_from_collective' });
+    accepted.push({ ...a, value });
+   } else accepted.push(a);
   }
   return { raw, rawText, accepted, discards, usage, provider, parameters, limitations: [] };
  }};
